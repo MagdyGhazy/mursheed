@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Chat;
 
+use App\Models\User;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -18,6 +19,7 @@ class ConversationsController extends Controller
     public function show(Conversation $conversation)
     {
         return $conversation->load('participants');
+        
     }
     public function addParticipant(Request $request, Conversation $conversation)
     {
@@ -28,6 +30,12 @@ class ConversationsController extends Controller
         $conversation->participants()->attach($request->post('user_id'), [
             'joined_at' => Carbon::now(),
         ]);
+
+        return response([
+            "data" => $conversation ,
+            "message" => "Success",
+            "status" => true,
+        ], 200);
     }
     public function removeParticipant(Request $request, Conversation $conversation)
     {
@@ -36,5 +44,11 @@ class ConversationsController extends Controller
         ]);
 
         $conversation->participants()->detach($request->post('user_id'));
+
+        return response([
+            "data" => null,
+            "message" => "Deleted Success",
+            "status" => true,
+        ], 200);
     }
 }

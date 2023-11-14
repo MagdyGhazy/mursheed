@@ -1,13 +1,13 @@
 <?php
 
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
 
     Route::controller(\App\Http\Controllers\Api\Chat\ConversationsController::class)->group(function () {
         // Get all conversations
-        Route::get('conversations', 'index');
+        Route::get('conversations', 'index'); //-------
 
         // Route to get a single conversation
-        Route::get('conversations/{conversation}', 'show');
+        Route::get('conversations/{conversation}', 'show'); //--------
 
         Route::post('conversations/{conversation}/participants', 'addParticipant');
 
@@ -19,10 +19,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route for listing messages in a conversation
         Route::get('conversations/{id}/messages', 'index');
 
-        // Route for storing new message
-        Route::post('messages', 'store');
+        // Route for send new message
+        Route::post('messages', 'store'); //-------
 
         // Route for deleting a message
-        Route::delete('messages/{id}', 'destroy');
+        Route::delete('messages/{id}', 'destroy'); 
     });
-});
+
+// });

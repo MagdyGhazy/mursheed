@@ -44,10 +44,9 @@ class MessagesController extends Controller
         ]);
         
 
-        $user = User::find(1); 
-        // Auth::user();
+        $user = User::find(1);  // Auth::user();
         $conversation_id = $request->post('conversation_id');
-        $user_id = $request->post('user_id'); //2
+        $user_id = $request->post('user_id');
 
 
         DB::beginTransaction();
@@ -63,6 +62,7 @@ class MessagesController extends Controller
                             ->where('participants.user_id', '=', $user_id)
                             ->where('participants2.user_id', '=', $user_id);
                     })->first();
+
                 if (!$conversation) {
                     $conversation = Conversation::create([
                         'user_id' => $user->id,
@@ -73,6 +73,7 @@ class MessagesController extends Controller
                         $user_id => ['joined_at' => now()],
                     ]);
                 }
+
             }
 
             $message = $conversation->messages()->create([
@@ -100,7 +101,11 @@ class MessagesController extends Controller
             throw $e;
         }
 
-        return $message;
+        return response([
+            "data" => $message ,
+            "message" => "Success",
+            "status" => true,
+        ], 200);
     }
 
     /**
@@ -122,15 +127,17 @@ class MessagesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         Recipient::where([
             'user_id' => Auth::id(),
             'message_id' => $id,
         ])->delete();
 
-        return [
-            'message' => 'deleted',
-        ];
+        return response([
+            "data" => null,
+            "message" => "Deleted Success",
+            "status" => true,
+        ], 200);
     }
 }
