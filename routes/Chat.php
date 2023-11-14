@@ -1,6 +1,6 @@
 <?php
 
-// Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
 
     Route::controller(\App\Http\Controllers\Api\Chat\ConversationsController::class)->group(function () {
         // Get all conversations
@@ -26,4 +26,4 @@
         Route::delete('messages/{id}', 'destroy'); 
     });
 
-// });
+});

@@ -6,6 +6,7 @@ use Throwable;
 use App\Models\Recipient;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use App\Events\MessageCreated;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\User;
@@ -94,7 +95,7 @@ class MessagesController extends Controller
 
             DB::commit();
 
-            // broadcast(new MessageCreated($message));
+            broadcast(new MessageCreated($message));
 
         } catch (Throwable $e) {
             DB::rollBack();
