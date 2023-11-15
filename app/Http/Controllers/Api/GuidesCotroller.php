@@ -41,29 +41,29 @@ class GuidesCotroller extends Controller
     {
         $guides = Guides::query()
 
-            ->when($request->has('price'),fn($query)=>$query->whereHas('priceServices',fn($query)=>$query->where('price','<=',$request->price)))
-            ->when($request->has('language_id'),fn($query)=>$query->whereHas('languagesable',fn($query)=>$query->whereIn('language_id',$request->language_id)))
-            ->when($request->has('name'),fn($query)=>$query->where('name','LIKE',"%{$request->name}%"))
-            ->when($request->has('rating'),fn($query)=>$query->where('total_rating',(float)$request->rating))
+            ->when($request->has('price'), fn ($query) => $query->whereHas('priceServices', fn ($query) => $query->where('price', '<=', $request->price)))
+            ->when($request->has('language_id'), fn ($query) => $query->whereHas('languagesable', fn ($query) => $query->whereIn('language_id', $request->language_id)))
+            ->when($request->has('name'), fn ($query) => $query->where('name', 'LIKE', "%{$request->name}%"))
+            ->when($request->has('rating'), fn ($query) => $query->where('total_rating', (float)$request->rating))
 
-            ->when($request->has('country_id'),fn($query)=>$query->where('country_id',$request->country_id))
-            ->when($request->has('state_id'),fn($query)=>$query->where('state_id',$request->state_id))->where('status',1)
+            ->when($request->has('country_id'), fn ($query) => $query->where('country_id', $request->country_id))
+            ->when($request->has('state_id'), fn ($query) => $query->where('state_id', $request->state_id))->where('status', 1)
 
-            ->select('id', 'name', 'state_id','total_rating')
-            ->with(['priceServices'=>function($query){
+            ->select('id', 'name', 'state_id', 'total_rating')
+            ->with(['priceServices' => function ($query) {
                 $query->limit(1)->latest();
             }])
-            ->withCount(['favourites' =>function($q){
-                $q->where('tourist_id','=',auth()->user()->user_id);
+            ->withCount(['favourites' => function ($q) {
+                $q->where('tourist_id', '=', auth()->user()->user_id);
             }])
             ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
-            ->orderBy('ratings_sum','DESC');
-//            ->limit(4)->get()
+            ->orderBy('ratings_sum', 'DESC');
+        //            ->limit(4)->get()
 
-            $perPage = $request->input('per_page', 10); // Default to 10 items per page
-            $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 10); // Default to 10 items per page
+        $page = $request->input('page', 1);
 
-            $paginatedGuides = $guides->paginate($perPage, ['*'], 'page', $page);
+        $paginatedGuides = $guides->paginate($perPage, ['*'], 'page', $page);
 
         $paginatedGuides->getCollection()->each(function ($guide) {
             $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0
@@ -77,38 +77,38 @@ class GuidesCotroller extends Controller
         });
 
 
-//        $guides = Pipeline::send(Guides::query())
-//
-//            ->through([
-//
-//                SearchByName::class,
-//                SearchByCountry::class,
-//                SearchByState::class,
-//            ])
-//            ->then(fn ($user) => $user
-//                ->select('id', 'name', 'state_id','total_rating')
-//                ->with(['priceServices'=>function($query){
-//                    $query->limit(1)->latest();
-//                }])
-//
-//                ->withCount(['favourites' =>function($q){
-//                    $q->where('tourist_id','=',auth()->user()->user_id);
-//                 }])
-//                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
-//                ->orderBy('ratings_sum','DESC')
-//                ->limit(4)->get()
-//                ->each(function ($guide) {
-//                    $guide->personal_photo =
-//                        count($guide->getMedia('personal_photo')) == 0
-//                            ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
-//
-//                    $guide->image_background = url("guide_default.jpg");
-//                    unset($guide->media);
-//
-//                    $guide->is_favourite = $guide->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
-//                    unset($guide->favourites_count);
-//                })
-//);
+        //        $guides = Pipeline::send(Guides::query())
+        //
+        //            ->through([
+        //
+        //                SearchByName::class,
+        //                SearchByCountry::class,
+        //                SearchByState::class,
+        //            ])
+        //            ->then(fn ($user) => $user
+        //                ->select('id', 'name', 'state_id','total_rating')
+        //                ->with(['priceServices'=>function($query){
+        //                    $query->limit(1)->latest();
+        //                }])
+        //
+        //                ->withCount(['favourites' =>function($q){
+        //                    $q->where('tourist_id','=',auth()->user()->user_id);
+        //                 }])
+        //                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
+        //                ->orderBy('ratings_sum','DESC')
+        //                ->limit(4)->get()
+        //                ->each(function ($guide) {
+        //                    $guide->personal_photo =
+        //                        count($guide->getMedia('personal_photo')) == 0
+        //                            ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+        //
+        //                    $guide->image_background = url("guide_default.jpg");
+        //                    unset($guide->media);
+        //
+        //                    $guide->is_favourite = $guide->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
+        //                    unset($guide->favourites_count);
+        //                })
+        //);
 
 
         $data = json_decode(json_encode($paginatedGuides), true);
@@ -137,7 +137,7 @@ class GuidesCotroller extends Controller
         // return $this->ControllerHandler->showWith("guide", $guide, ['media']);
 
         $car_photos = [];
-        $guide->load(['country', 'state','priceServices'])->with(['priceServices']);
+        $guide->load(['country', 'state', 'priceServices'])->with(['priceServices']);
 
         if (count($guide->getMedia('car_photo')) >= 0) {
             foreach ($guide->getMedia('car_photo') as $media) {
@@ -156,9 +156,9 @@ class GuidesCotroller extends Controller
                 "lang" => [],
                 "bio" => $guide->bio,
                 "personal_photo" => empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures'),
-                "total_rate"=>$guide->total_rating,
-                "count_rate"=>$guide->ratings_count,
-                "priceServices"=>$guide->priceServices
+                "total_rate" => $guide->total_rating,
+                "count_rate" => $guide->ratings_count,
+                "priceServices" => $guide->priceServices
             ],
         ], 200);
     }
@@ -166,15 +166,15 @@ class GuidesCotroller extends Controller
     public function store(GuideRequest $request)
     {
 
-//        return $this->ControllerHandler->storeWithMediaAndLanguages(
-//            "guide",
-//            array_merge(
-//                $request->except('personal_pictures', 'languages'),
-//                $request->password ? ['password' => Hash::make($request->password), 'status' => -1] : ['status' => -1]
-//            ),
-//            ['personal_pictures'],
-////            $request->languages
-//        );
+        // return $this->ControllerHandler->storeWithMediaAndLanguages(
+        //     "guide",
+        //     array_merge(
+        //         $request->except('personal_pictures', 'languages'),
+        //         $request->password ? ['password' => Hash::make($request->password), 'status' => -1] : ['status' => -1]
+        //     ),
+        //     ['personal_pictures'],
+        //     $request->languages
+        // );
 
         $data = $request->validated();
         $data['password'] = Hash::make($request->validated('password'));
@@ -190,7 +190,6 @@ class GuidesCotroller extends Controller
             "user" => [
                 "id" => $guide->id,
                 "notification_id" => $guide->mursheed_user->id,
-
                 "name" => $guide->name,
                 "phone" => $guide->phone,
                 "email" => $guide->email,
@@ -300,22 +299,22 @@ class GuidesCotroller extends Controller
         // return $this->ControllerHandler->getWhere("guides", 'state_id', $state_id, 4);
 
         $guides = Guides::query()
-            ->select('id', 'name', 'state_id','total_rating')
+            ->select('id', 'name', 'state_id', 'total_rating')
             ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
-            ->when($request->state_id ,function ($query) use ($request) {
+            ->when($request->state_id, function ($query) use ($request) {
                 $query->where('state_id', $request->state_id);
-            })  ->where('status',1)
-            ->with(['priceServices'=>function($query){
+            })->where('status', 1)
+            ->with(['priceServices' => function ($query) {
                 $query->limit(1)->latest();
             }])
-            ->orderBy('ratings_sum','DESC')
+            ->orderBy('ratings_sum', 'DESC')
             ->limit(4)
             ->get()
             ->each(function ($guide) {
                 $guide->personal_photo =
                     count($guide->getMedia('personal_photo')) == 0
                     ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
-                $guide->is_favourite = $guide->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
+                $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
                 $guide->image_background = url("guide_default.jpg");
                 unset($guide->media);
@@ -330,21 +329,20 @@ class GuidesCotroller extends Controller
 
     public function getGuideByCityWithPriceList(Request $request)
     {
-            return response([
-               "guides"=>Guides::with(['priceServices'])->where("state_id",$request->city_id)->get()->append('state_name')->each(function ($driver) {
-                   $driver->personal_photo =
-                       count($driver->getMedia('personal_photo')) == 0
-                           ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+        return response([
+            "guides" => Guides::with(['priceServices'])->where("state_id", $request->city_id)->get()->append('state_name')->each(function ($driver) {
+                $driver->personal_photo =
+                    count($driver->getMedia('personal_photo')) == 0
+                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
-                   $driver->image_background =
-                       count($driver->getMedia('car_photo')) == 0
-                           ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                $driver->image_background =
+                    count($driver->getMedia('car_photo')) == 0
+                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
-                   unset($driver->media);
-               }),
-                "status"=>true
+                unset($driver->media);
+            }),
+            "status" => true
 
-            ]);
-
+        ]);
     }
 }
