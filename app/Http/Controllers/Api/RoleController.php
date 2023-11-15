@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\MainController;
+use App\Http\Requests\StoreRoleRequest;
 use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\PermissionUser;
@@ -11,6 +12,8 @@ use App\Models\Role;
 use App\Models\RolePermission;
 use App\Models\User;
 use Illuminate\Http\Request;
+
+
 
 class RoleController extends Controller
 {
@@ -23,7 +26,7 @@ class RoleController extends Controller
     }
 
 
-    public function store(Request $request) {
+    public function store(StoreRoleRequest $request) {
      
         
         $roles = Role::create([
@@ -57,29 +60,42 @@ class RoleController extends Controller
         return response()->json([
             "data" => $data,
         ], 200);       }
-    public function getallpermaission( ) {
-       
-   
+
+        public function updaterole(Request $request,$id)
+    {
+      
+        $role = Role::find($id);
+        $role->update([
+            "name" => $request->name,
+            'guard_name' => "api"
+        ]);
+      //  $role = Role::where('id', $id)->with('permission')->get();
+        $permaion = $role->permission;
+    //  return $permaion;
+
+      
+        foreach ($permaion as $value) {
+            foreach ($request->permission_id as $data) {
+            
+            
+                $value->update(
+                [
+                    'role_id' => $role->id,
+                    'permission_id' => $data,
+                ]
+            );
+        }
+        }
 
     }
+   
 
-    public function permissions_create(Request $request) {
-        // $permission = Permission::create([
-        //     'name' => $request->name,
-        //     'display_name' => $request->display_name,
-        //     'description' => $request->description
-        // ]);
-
-        // PermissionRole::create([
-        //     'role_id'=> $request->role_id,
-        //     'permission_id' => $permission->id
-        // ]);
-
-        // return response()->json([
-        //     "data"=>$permission
-        // ], 200); 
-            
-
-        }
+    public function destroy($id)
+    {
+     
+        $role = Role::where('id', $id)->with('permission')->delete();
+        
+        return response()->json("sucsses");
+    }
 
 }

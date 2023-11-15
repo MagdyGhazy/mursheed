@@ -81,18 +81,23 @@ class AttactiveController extends Controller
                 $photos[] = $media->getUrl();
             }
         }
-
+        $data = json_decode(json_encode($attractiveLocation), true);
         return response()->json([
             "success" => true,
             "message" => "Attractive Location details",
             "attractiveLocation" => [
                 "id" => $attractiveLocation->id,
-                "name" => $attractiveLocation->name,
+                "name" =>$data['name'],
+                "description"=> $data["description"],
                 "country" => $attractiveLocation->country->country,
                 "state" => $attractiveLocation->state->state,
                 "url" => $attractiveLocation->url,
-                "description" => $attractiveLocation->description,
+                "city_id"=>$attractiveLocation->state_id,
+                "lat"=>$attractiveLocation->lat,
+                "long"=> $attractiveLocation->long,
                 "photos" => empty($photos) ? [url("car_photo_default.jpg")] : $photos,
+
+
             ],
         ], 200);
     }

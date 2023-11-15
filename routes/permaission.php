@@ -9,7 +9,7 @@ use App\Http\Controllers\MobileApi\SocialiteController;
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'permaissions'], function () {
        Route::get('all/permission',[RoleController::class,'permissionsIndex']);
-       
+       Route::post('update/role/{id}',[RoleController::class,'updaterole']);
        Route::apiResource('roles', RoleController::class);
      
 

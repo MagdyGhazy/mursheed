@@ -104,21 +104,11 @@ class AccommmoditionController extends Controller
 
     }
 
-
-
-    /**
-     * @param Child $child
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function show(accommmodition $accommmodition)
     {
         return $this->ControllerHandler->showWith("accommmodition", $accommmodition, ['media', 'country', 'state']);
     }
 
-    /**
-     * @param ChildRequest $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
     public function store(AccommoditionRequest $request)
     {
         //        return response(['k'=>$request->images]);
