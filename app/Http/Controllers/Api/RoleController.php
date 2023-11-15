@@ -25,6 +25,7 @@ class RoleController extends Controller
 
     public function store(Request $request) {
      
+        
         $roles = Role::create([
            "name"=> $request->name,
            'guard_name'=>"api"
