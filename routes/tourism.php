@@ -34,7 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/all', [\App\Http\Controllers\Api\AttactiveController::class, 'index_mobile'])->name('attractive.index_mobile');
         Route::post('/create', [\App\Http\Controllers\Api\AttactiveController::class, 'store'])->name('attractive.create');
         Route::get('home', [\App\Http\Controllers\Api\AttactiveController::class, 'home'])->name('attractive.home');
-        Route::get('/{attractiveLocation}', [\App\Http\Controllers\Api\AttactiveController::class, 'show'])->name('attractive.show');
+//        Route::get('/{attractiveLocation}', [\App\Http\Controllers\Api\AttactiveController::class, 'show'])->name('attractive.show');
+        Route::get('/{attractiveLocation}', function (){
+            return "ds";
+        })->name('attractive.show');
         Route::post('/{attractiveLocation}/update', [\App\Http\Controllers\Api\AttactiveController::class, 'update'])->name('attractive.update');
         Route::delete('/{attractiveLocation}/delete', [\App\Http\Controllers\Api\AttactiveController::class, 'destroy'])->name('attractive.delete');
     });

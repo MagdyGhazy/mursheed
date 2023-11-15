@@ -83,7 +83,7 @@ class AttactiveController extends Controller
         }
 
         return response()->json([
-            "success" => true,
+            "status" => true,
             "message" => "Attractive Location details",
             "attractiveLocation" => [
                 "id" => $attractiveLocation->id,
@@ -148,7 +148,7 @@ class AttactiveController extends Controller
 
 
         return response()->json([
-            "success" => true,
+            "status" => true,
             "message" => "attractive locations",
             "locations" => $locations
         ], 200);
