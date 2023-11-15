@@ -47,7 +47,7 @@ class RoleController extends Controller
 
     public function show($id) 
     {
-        $role = Role::findOrFail($id);
+        $role = Role::where('id',$id)->with('permission')->get();
         return response()->json($role);
     }
     public function permissionsIndex() {
