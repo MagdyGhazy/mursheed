@@ -107,12 +107,11 @@ class AttactiveController extends Controller
         return $this->ControllerHandler->update("attrractive", $attrractive, $request->except('images'));
     }
 
-    public function destroy(AttractiveLocation $attrractive)
+    public function destroy( $attrractive)
     {
-        // here some validation check parent or admin
-
-
-        return $this->ControllerHandler->destory("attrractive", $attrractive);
+        $attracive = AttractiveLocation::find($attrractive);
+        $attracive->delete();
+        return response()->json("suucses");
     }
 
     public function home()
