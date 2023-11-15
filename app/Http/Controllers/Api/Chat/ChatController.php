@@ -21,7 +21,9 @@ class ChatController extends Controller
     public function chats()
     {
         $user = Auth::user();
-        $chats = $user->conversations;
+        $chats = $user->conversations()->with(['lastMessage','participants'=> function($builder) use($user){
+            $builder -> where('id', '<>', $user->id);
+        }])->get();
         return response([
             "data" => $chats,
             "message" => "Success",
