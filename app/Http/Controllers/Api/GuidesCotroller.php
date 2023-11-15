@@ -166,15 +166,15 @@ class GuidesCotroller extends Controller
     public function store(GuideRequest $request)
     {
       
-        return $this->ControllerHandler->storeWithMediaAndLanguages(
-            "guide",
-            array_merge(
-                $request->except('personal_pictures', 'languages'),
-                $request->password ? ['password' => Hash::make($request->password), 'status' => -1] : ['status' => -1]
-            ),
-            ['personal_pictures'],
-            $request->languages
-        );
+        // return $this->ControllerHandler->storeWithMediaAndLanguages(
+        //     "guide",
+        //     array_merge(
+        //         $request->except('personal_pictures', 'languages'),
+        //         $request->password ? ['password' => Hash::make($request->password), 'status' => -1] : ['status' => -1]
+        //     ),
+        //     ['personal_pictures'],
+        //     $request->languages
+        // );
 
         $data = $request->validated();
         $data['password'] = Hash::make($request->validated('password'));
@@ -190,7 +190,6 @@ class GuidesCotroller extends Controller
             "user" => [
                 "id" => $guide->id,
                 "notification_id" => $guide->mursheed_user->id,
-
                 "name" => $guide->name,
                 "phone" => $guide->phone,
                 "email" => $guide->email,

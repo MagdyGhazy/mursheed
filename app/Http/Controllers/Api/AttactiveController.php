@@ -91,6 +91,8 @@ class AttactiveController extends Controller
                 "country" => $attractiveLocation->country->country,
                 "state" => $attractiveLocation->state->state,
                 "url" => $attractiveLocation->url,
+                "long"=>$attractiveLocation->long,
+                "lat"=>$attractiveLocation->lat,
                 "description" => $attractiveLocation->description,
                 "photos" => empty($photos) ? [url("car_photo_default.jpg")] : $photos,
             ],
