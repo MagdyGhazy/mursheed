@@ -71,7 +71,7 @@ class GuidesCotroller extends Controller
                         ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl());
 
                 $guide->image_background = url("guide_default.jpg");
-                unset(json_decode($guide->media));
+                unset($guide->media);
 
                 $guide->is_favourite = $guide->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
                 unset($guide->favourites_count);
@@ -111,10 +111,24 @@ class GuidesCotroller extends Controller
 //);
 
 
+        $data = json_decode(json_encode($paginatedGuides), true);
+
         return response()->json([
             "success" => true,
             "message" => "latest guides in state",
-            "guides" => $paginatedGuides,
+            "current_page" => $data['current_page'],
+            "guides" => $data['data'],
+            "first_page_url" => $data['first_page_url'],
+            "from" => $data['from'],
+            "last_page" => $data['last_page'],
+            "last_page_url" => $data['last_page_url'],
+            "links" => $data['links'],
+            "next_page_url" => $data['next_page_url'],
+            "path" => $data['path'],
+            "prev_page_url" => $data['prev_page_url'],
+            "to" => $data['to'],
+            "total" => $data['total'],
+
         ], 200);
     }
 

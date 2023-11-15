@@ -81,11 +81,27 @@ class AccommmoditionController extends Controller
                     return $data;
                 });
         }
+
+        $data = json_decode(json_encode($paginatedModel), true);
+
         return response([
-            "accommmoditions" => $paginatedModel,
             "message" => "success",
-            "status" => true
+            "status" => true,
+            "current_page" => $data['current_page'],
+            "accommmoditions" => $data['data'],
+            "first_page_url" => $data['first_page_url'],
+            "from" => $data['from'],
+            "last_page" => $data['last_page'],
+            "last_page_url" => $data['last_page_url'],
+            "links" => $data['links'],
+            "next_page_url" => $data['next_page_url'],
+            "path" => $data['path'],
+            "prev_page_url" => $data['prev_page_url'],
+            "to" => $data['to'],
+            "total" => $data['total'],
+
         ], 200);
+
     }
 
 
