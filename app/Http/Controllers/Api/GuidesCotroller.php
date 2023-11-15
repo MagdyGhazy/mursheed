@@ -65,69 +65,69 @@ class GuidesCotroller extends Controller
 
             $paginatedGuides = $guides->paginate($perPage, ['*'], 'page', $page);
 
-            $paginatedGuides->each(function ($guide) {
-                $guide->personal_photo =json_decode(
-                    count($guide->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl());
+        $paginatedGuides->getCollection()->each(function ($guide) {
+            $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0
+                ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
 
-                $guide->image_background = url("guide_default.jpg");
-                unset($guide->media);
+            $guide->image_background = url("guide_default.jpg");
+            unset($guide->media);
 
-                $guide->is_favourite = $guide->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
-                unset($guide->favourites_count);
-            });
+            $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
+            unset($guide->favourites_count);
+        });
 
-//        $guides = Pipeline::send($guides)
+
+//        $guides = Pipeline::send(Guides::query())
 //
 //            ->through([
 //
-////                SearchByName::class,
-////                SearchByCountry::class,
-////                SearchByState::class,
+//                SearchByName::class,
+//                SearchByCountry::class,
+//                SearchByState::class,
 //            ])
 //            ->then(fn ($user) => $user
-////                ->select('id', 'name', 'state_id','total_rating')
-////                ->with(['priceServices'=>function($query){
-////                    $query->limit(1)->latest();
-////                }])
+//                ->select('id', 'name', 'state_id','total_rating')
+//                ->with(['priceServices'=>function($query){
+//                    $query->limit(1)->latest();
+//                }])
 //
-////                ->withCount(['favourites' =>function($q){
-////                    $q->where('tourist_id','=',auth()->user()->user_id);
-////                 }])
-////                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
-////                ->orderBy('ratings_sum','DESC')
-////                ->limit(4)->get()
-////                ->each(function ($guide) {
-////                    $guide->personal_photo =
-////                        count($guide->getMedia('personal_photo')) == 0
-////                            ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
-////
-////                    $guide->image_background = url("guide_default.jpg");
-////                    unset($guide->media);
-////
-////                    $guide->is_favourite = $guide->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
-////                    unset($guide->favourites_count);
-////                })
+//                ->withCount(['favourites' =>function($q){
+//                    $q->where('tourist_id','=',auth()->user()->user_id);
+//                 }])
+//                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
+//                ->orderBy('ratings_sum','DESC')
+//                ->limit(4)->get()
+//                ->each(function ($guide) {
+//                    $guide->personal_photo =
+//                        count($guide->getMedia('personal_photo')) == 0
+//                            ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+//
+//                    $guide->image_background = url("guide_default.jpg");
+//                    unset($guide->media);
+//
+//                    $guide->is_favourite = $guide->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
+//                    unset($guide->favourites_count);
+//                })
 //);
 
 
-        $data = json_decode(json_encode($paginatedGuides), true);
+//        $data = json_decode(json_encode($paginatedGuides), true);
 
         return response()->json([
             "success" => true,
             "message" => "latest guides in state",
-            "current_page" => $data['current_page'],
-            "guides" => $data['data'],
-            "first_page_url" => $data['first_page_url'],
-            "from" => $data['from'],
-            "last_page" => $data['last_page'],
-            "last_page_url" => $data['last_page_url'],
-            "links" => $data['links'],
-            "next_page_url" => $data['next_page_url'],
-            "path" => $data['path'],
-            "prev_page_url" => $data['prev_page_url'],
-            "to" => $data['to'],
-            "total" => $data['total'],
+//            "current_page" => $data['current_page'],
+            "guides" => $paginatedGuides,
+//            "first_page_url" => $data['first_page_url'],
+//            "from" => $data['from'],
+//            "last_page" => $data['last_page'],
+//            "last_page_url" => $data['last_page_url'],
+//            "links" => $data['links'],
+//            "next_page_url" => $data['next_page_url'],
+//            "path" => $data['path'],
+//            "prev_page_url" => $data['prev_page_url'],
+//            "to" => $data['to'],
+//            "total" => $data['total'],
 
         ], 200);
     }
@@ -165,16 +165,16 @@ class GuidesCotroller extends Controller
 
     public function store(GuideRequest $request)
     {
-      
-        return $this->ControllerHandler->storeWithMediaAndLanguages(
-            "guide",
-            array_merge(
-                $request->except('personal_pictures', 'languages'),
-                $request->password ? ['password' => Hash::make($request->password), 'status' => -1] : ['status' => -1]
-            ),
-            ['personal_pictures'],
-            $request->languages
-        );
+
+//        return $this->ControllerHandler->storeWithMediaAndLanguages(
+//            "guide",
+//            array_merge(
+//                $request->except('personal_pictures', 'languages'),
+//                $request->password ? ['password' => Hash::make($request->password), 'status' => -1] : ['status' => -1]
+//            ),
+//            ['personal_pictures'],
+////            $request->languages
+//        );
 
         $data = $request->validated();
         $data['password'] = Hash::make($request->validated('password'));

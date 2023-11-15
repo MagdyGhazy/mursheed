@@ -92,16 +92,17 @@ class Drivercontroller extends Controller
             $page = $request->input('page', 1);
             $paginatedDrivers = $drivers->paginate($perPage, ['*'], 'page', $page);
 
-            $paginatedDrivers->each(function ($driver) {
-                $driver->personal_photo =
-                    count($driver->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
-                $driver->image_background =
-                    count($driver->getMedia('car_photo')) == 0
-                        ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
-                unset($driver->media);
-                $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
-            });
+        $paginatedDrivers->getCollection()->each(function ($guide) {
+            $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0
+                ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+
+            $guide->image_background = url("guide_default.jpg");
+            unset($guide->media);
+
+            $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
+            unset($guide->favourites_count);
+        });
+        
 //        $drivers = Pipeline::send($drivers)
 //            ->through([
 ////                SearchByName::class,
