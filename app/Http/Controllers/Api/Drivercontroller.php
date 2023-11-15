@@ -102,7 +102,7 @@ class Drivercontroller extends Controller
             $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
             unset($guide->favourites_count);
         });
-        
+
 //        $drivers = Pipeline::send($drivers)
 //            ->through([
 ////                SearchByName::class,
