@@ -14,6 +14,15 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+
+  
+         function __construct()
+         {
+              $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index','store']]);
+              $this->middleware('permission:role-create', ['only' => ['create','store']]);
+              $this->middleware('permission:role-edit', ['only' => ['edit','update']]);
+              $this->middleware('permission:role-delete', ['only' => ['destroy']]);
+    }
     public function index()
     {
         $data = Role::with('permission')->get();
@@ -59,7 +68,7 @@ class RoleController extends Controller
             "data" => $data,
         ], 200);
     }
-    public function updaterole(Request      $request,$id)
+    public function updaterole(Request $request,$id)
     {
       
         $role = Role::find($id);
@@ -67,19 +76,20 @@ class RoleController extends Controller
             "name" => $request->name,
             'guard_name' => "api"
         ]);
-      //  $role = Role::where('id', $id)->with('permission')->get();
+     
         $permaion = $role->permission;
-      return response()->json($permaion);
-
+        foreach ($permaion as $value) {
+           $data=RolePermission::find($value->id);
+           $data->delete();
+        }
         foreach ($request->permission_id as $value) {
-            $per->update(
+            RolePermission::create(
                 [
                     'role_id' => $role->id,
                     'permission_id' => $value
                 ]
             );
         }
-
     }
    
 

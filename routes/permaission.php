@@ -11,8 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
        Route::get('all/permission',[RoleController::class,'permissionsIndex']);
        Route::post('update/role/{id}',[RoleController::class,'updaterole']);
        Route::apiResource('roles', RoleController::class);
-     
-
+      
     });
 });
 
