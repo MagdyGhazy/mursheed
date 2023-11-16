@@ -20,7 +20,7 @@ class OrderRepository
             $order->orderDetails()->createMany($order_details);
             DB::commit();
 
-            (new NotificationController())->sendNotificationToMobile([strval(auth()->user()->id),strval(User::where('email','admin@admin.com')->get()->first()->id),strval(MursheedUser::where('user_id',$order->user_id)->where('user_type','App\Models\\'. $order->user_type)->get()->first()->id)],"your order","your order has been submitted");
+            (new NotificationController())->sendNotificationToMobile([strval(auth()->user()->id),strval(User::where('email','admin@admin.com')->get()->first()->id),strval(MursheedUser::where('user_id',$order->user_id)->where('user_type','App\Models\\'. $order->user_type)->get()->first()->id)],"New order","your order has been submitted");
 
 
             return response(['message' => "success",'status'=>200, "cost"=>$order->cost , 'order_id'=>$order->id,"country_price"=>$country_price , "sub_total"=>round($sub_total )]);
