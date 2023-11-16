@@ -47,12 +47,26 @@ class AttactiveController extends Controller
         });
 
 
+        $data = json_decode(json_encode($paginatedLocations), true);
 
-        return response()->json([
-            "success" => true,
-            "message" => "attractive locations",
-            "locations" => $paginatedLocations
+        return response([
+            "message" => "success",
+            "status" => true,
+            "current_page" => $data['current_page'],
+            "locations" => $data['data'],
+            "first_page_url" => $data['first_page_url'],
+            "from" => $data['from'],
+            "last_page" => $data['last_page'],
+            "last_page_url" => $data['last_page_url'],
+            "links" => $data['links'],
+            "next_page_url" => $data['next_page_url'],
+            "path" => $data['path'],
+            "prev_page_url" => $data['prev_page_url'],
+            "to" => $data['to'],
+            "total" => $data['total'],
+
         ], 200);
+
     }
 
     public function show(AttractiveLocation $attractiveLocation)
@@ -77,6 +91,8 @@ class AttactiveController extends Controller
                 "country" => $attractiveLocation->country->country,
                 "state" => $attractiveLocation->state->state,
                 "url" => $attractiveLocation->url,
+                "long"=>$attractiveLocation->long,
+                "lat"=>$attractiveLocation->lat,
                 "description" => $attractiveLocation->description,
                 "photos" => empty($photos) ? [url("car_photo_default.jpg")] : $photos,
             ],
@@ -107,12 +123,11 @@ class AttactiveController extends Controller
         return $this->ControllerHandler->update("attrractive", $attrractive, $request->except('images'));
     }
 
-    public function destroy(AttractiveLocation $attrractive)
+    public function destroy( $attrractive)
     {
-        // here some validation check parent or admin
-
-
-        return $this->ControllerHandler->destory("attrractive", $attrractive);
+        $attracive = AttractiveLocation::find($attrractive);
+        $attracive->delete();
+        return response()->json("suucses");
     }
 
     public function home()

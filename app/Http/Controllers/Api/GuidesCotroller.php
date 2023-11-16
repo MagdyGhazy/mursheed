@@ -66,9 +66,9 @@ class GuidesCotroller extends Controller
             $paginatedGuides = $guides->paginate($perPage, ['*'], 'page', $page);
 
             $paginatedGuides->each(function ($guide) {
-                $guide->personal_photo =
+                $guide->personal_photo =json_decode(
                     count($guide->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+                        ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl());
 
                 $guide->image_background = url("guide_default.jpg");
                 unset($guide->media);
@@ -111,10 +111,24 @@ class GuidesCotroller extends Controller
 //);
 
 
+        $data = json_decode(json_encode($paginatedGuides), true);
+
         return response()->json([
             "success" => true,
             "message" => "latest guides in state",
-            "guides" => $paginatedGuides,
+            "current_page" => $data['current_page'],
+            "guides" => $data['data'],
+            "first_page_url" => $data['first_page_url'],
+            "from" => $data['from'],
+            "last_page" => $data['last_page'],
+            "last_page_url" => $data['last_page_url'],
+            "links" => $data['links'],
+            "next_page_url" => $data['next_page_url'],
+            "path" => $data['path'],
+            "prev_page_url" => $data['prev_page_url'],
+            "to" => $data['to'],
+            "total" => $data['total'],
+
         ], 200);
     }
 
@@ -151,6 +165,7 @@ class GuidesCotroller extends Controller
 
     public function store(GuideRequest $request)
     {
+      
         // return $this->ControllerHandler->storeWithMediaAndLanguages(
         //     "guide",
         //     array_merge(
@@ -175,7 +190,6 @@ class GuidesCotroller extends Controller
             "user" => [
                 "id" => $guide->id,
                 "notification_id" => $guide->mursheed_user->id,
-
                 "name" => $guide->name,
                 "phone" => $guide->phone,
                 "email" => $guide->email,

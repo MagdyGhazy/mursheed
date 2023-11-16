@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-       public function index() {
+    public function index()
+    {
         $data = Role::with('permission')->get();
 
         return response()->json([
@@ -23,62 +24,70 @@ class RoleController extends Controller
     }
 
 
-    public function store(Request $request) {
-     
+    public function store(Request $request)
+    {
         $roles = Role::create([
-           "name"=> $request->name,
-           'guard_name'=>"api"
+            "name" => $request->name,
+            'guard_name' => "api"
         ]);
-    foreach ($request->permission_id as $value) 
-        {
-        RolePermission::create(
-               [
-                'role_id'=>$roles->id,
-                'permission_id'=> $value
-               ]);
+        foreach ($request->permission_id as $value) {
+            RolePermission::create(
+                [
+                    'role_id' => $roles->id,
+                    'permission_id' => $value
+                ]
+            );
         }
-        
-   
+
+
         return response()->json([
             "data" => $roles,
-           
+
         ], 200);
     }
 
-    public function show($id) 
+    public function show($id)
     {
-        $role = Role::findOrFail($id);
+        $role = Role::where('id', $id)->with('permission')->get();
         return response()->json($role);
     }
-    public function permissionsIndex() {
+    public function permissionsIndex()
+    {
         $data = Permission::get();
 
         return response()->json([
             "data" => $data,
-        ], 200);       }
-    public function getallpermaission( ) {
-       
-   
-
+        ], 200);
     }
+    public function updaterole(Request      $request,$id)
+    {
+      
+        $role = Role::find($id);
+        $role->update([
+            "name" => $request->name,
+            'guard_name' => "api"
+        ]);
+      //  $role = Role::where('id', $id)->with('permission')->get();
+        $permaion = $role->permission;
+      return response()->json($permaion);
 
-    public function permissions_create(Request $request) {
-        // $permission = Permission::create([
-        //     'name' => $request->name,
-        //     'display_name' => $request->display_name,
-        //     'description' => $request->description
-        // ]);
-
-        // PermissionRole::create([
-        //     'role_id'=> $request->role_id,
-        //     'permission_id' => $permission->id
-        // ]);
-
-        // return response()->json([
-        //     "data"=>$permission
-        // ], 200); 
-            
-
+        foreach ($request->permission_id as $value) {
+            $per->update(
+                [
+                    'role_id' => $role->id,
+                    'permission_id' => $value
+                ]
+            );
         }
 
+    }
+   
+
+    public function destroy($id)
+    {
+     
+        $role = Role::where('id', $id)->with('permission')->delete();
+        
+        return response()->json("sucsses");
+    }
 }

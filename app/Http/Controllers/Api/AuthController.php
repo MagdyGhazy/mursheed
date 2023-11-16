@@ -103,12 +103,12 @@ class AuthController extends Controller
             ], 500);
         }
     }
-  
+
 
 
     public function loginClients(Request $request)
     {
-      
+
         try {
 
             $validateUser = Validator::make(
@@ -122,14 +122,14 @@ class AuthController extends Controller
             $user = MursheedUser::where('email', $request->email)->first();
 
 
-            // if ($user->email_verified_at == null)
-            // {
-            //     return response()->json([
-            //         'status' => false,
-            //         'message' => 'your email must be verified first !',
-            //     ], 402);
-            // }
-        
+            if ($user->email_verified_at == null)
+            {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'your email must be verified first !',
+                ], 402);
+            }
+
 
             if ($validateUser->fails()) {
                 return response()->json([
@@ -138,44 +138,100 @@ class AuthController extends Controller
                     'errors' => $validateUser->errors()
                 ], 422);
             }
-        
-            if( explode("\\", get_class($user->user))[2]=="Driver")
-            {
-               
-                $data = Driver::where("email", $request->email)->with('media')->first();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'User Logged In Successfully',
-                    'token' => $user->createToken("API TOKEN")->plainTextToken,
-                    'user'=>$user,
-                    "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
-                ]);
+
+            if (explode("\\", get_class($user->user))[2] == "Driver") {
+
+                if (Hash::check($request->password, $user->password)) {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'User Logged In Successfully',
+                        'token' => $user->createToken("API TOKEN")->plainTextToken,
+                        "user" => [
+                            "id" => $user->user->id,
+                            "notification_id" => $user->id,
+                            "name" => $user->user->name,
+                            "phone" => $user->user->phone,
+                            "email" => $user->user->email,
+                            "is_verified" => $user->email_verified_at ? true : false,
+                            "type" =>  explode("\\", get_class($user->user))[2],
+                            "nationality" => $user->user->nationality,
+                            "country_id" => $user->user->country_id,
+                            "state_id" => $user->user->state_id,
+                            "gender" =>  $user->user->gender ? ($user->user->gender == 1 ? "male" : "female") : null,
+                            "des_city_id" => $user->user->dest_city_id,
+                            "bio" => $user->user->bio,
+                            "car_number" => $user->user->car_number,
+                            "driver_licence_number" => $user->user->driver_licence_number,
+                            "gov_id" => $user->user->gov_id,
+                            "status" => $user->user->status,
+                            "car_type" => $user->user->car_type,
+                            "car_brand_name" => $user->user->car_brand_name,
+                            "car_manufacturing_date" => $user->user->car_manufacturing_date,
+                            "admin_rating" => $user->user->admin_rating,
+                            "ratings_count" => $user->user->ratings_count,
+                            "ratings_sum" => $user->user->ratings_sum,
+                            "total_rating" => $user->user->total_rating,
+                            "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
+                        ],
+                    ], 200);
+                }
             }
 
-            if( explode("\\", get_class($user->user))[2]=="Guides")
-            {
-               
-                $user = Guides::where("email", $request->email)->first();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'User Logged In Successfully',
-                    'token' => $user->createToken("API TOKEN")->plainTextToken,
-                    'user'=>$user,
-                    "personal_photo" => empty($user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->getFirstMediaUrl('personal_pictures'),
-                ]);
+            if (explode("\\", get_class($user->user))[2] == "Guides") {
+                if (Hash::check($request->password, $user->password)) {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'User Logged In Successfully',
+                        'token' => $user->createToken("API TOKEN")->plainTextToken,
+                        "user" => [
+                            "id" => $user->user->id,
+                            "notification_id" => $user->id,
+                            "name" => $user->user->name,
+                            "phone" => $user->user->phone,
+                            "email" => $user->user->email,
+                            "is_verified" => $user->email_verified_at ? true : false,
+                            "type" =>  explode("\\", get_class($user->user))[2],
+                            "nationality" => $user->user->nationality,
+                            "country_id" => $user->user->country_id,
+                            "state_id" => $user->user->state_id,
+                            "gender" =>  $user->user->gender ? ($user->user->gender == 1 ? "male" : "female") : null,
+                            "des_city_id" => $user->user->dest_city_id,
+                            "bio" => $user->user->bio,
+                            "car_number" => $user->user->car_number,
+                            "status" => $user->user->status,
+                            "admin_rating" => $user->user->admin_rating,
+                            "ratings_count" => $user->user->ratings_count,
+                            "ratings_sum" => $user->user->ratings_sum,
+                            "total_rating" => $user->user->total_rating,
+                            "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
+                        ],
+                    ], 200);
+                }
             }
 
-            if( explode("\\", get_class($user->user))[2]=="Tourist")
-            {
-               
-                $user = Tourist::where("email", $request->email)->with('media')->first();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'User Logged In Successfully',
-                    'token' => $user->createToken("API TOKEN")->plainTextToken,
-                    'user'=>$user,
-                    "personal_photo" => empty($user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->getFirstMediaUrl('personal_pictures'),
-                ]);
+            if (explode("\\", get_class($user->user))[2] == "Tourist") {
+                if (Hash::check($request->password, $user->password)) {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'User Logged In Successfully',
+                        'token' => $user->createToken("API TOKEN")->plainTextToken,
+                        "user" => [
+                            "id" => $user->user->id,
+                            "notification_id" => $user->id,
+                            "name" => $user->user->name,
+                            "phone" => $user->user->phone,
+                            "email" => $user->user->email,
+                            "is_verified" => $user->email_verified_at ? true : false,
+                            "type" =>  explode("\\", get_class($user->user))[2],
+                            "nationality" => $user->user->nationality,
+                            "country_id" => $user->user->country_id,
+                            "state_id" => $user->user->state_id,
+                            "gender" =>  $user->user->gender ? ($user->user->gender == 1 ? "male" : "female") : null,
+                            "des_city_id" => $user->user->dest_city_id,
+                            "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
+                        ],
+                    ], 200);
+                }
             }
 
             if ($user != null) {
@@ -186,10 +242,11 @@ class AuthController extends Controller
                         'token' => $user->createToken("API TOKEN")->plainTextToken,
                         "user" => [
                             "id" => $user->user->id,
-                            "notification_id"=>$user->id,
+                            "notification_id" => $user->id,
                             "name" => $user->user->name,
                             "phone" => $user->user->phone,
                             "email" => $user->user->email,
+
                             "is_verified" => $user->email_verified_at ? true : false,
                             "type" =>  explode("\\", get_class($user->user))[2],
                             "nationality" => $user->user->nationality,

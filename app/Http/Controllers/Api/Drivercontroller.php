@@ -135,10 +135,24 @@ class Drivercontroller extends Controller
 ////
 ////                })
 //            );
+        $data = json_decode(json_encode($paginatedDrivers), true);
+
         return response()->json([
             "success" => true,
             "message" => "latest drivers in state",
-            "drivers" => $paginatedDrivers,
+            "current_page" => $data['current_page'],
+            "drivers" => $data['data'],
+            "first_page_url" => $data['first_page_url'],
+            "from" => $data['from'],
+            "last_page" => $data['last_page'],
+            "last_page_url" => $data['last_page_url'],
+            "links" => $data['links'],
+            "next_page_url" => $data['next_page_url'],
+            "path" => $data['path'],
+            "prev_page_url" => $data['prev_page_url'],
+            "to" => $data['to'],
+            "total" => $data['total'],
+
         ], 200);
     }
 
@@ -264,7 +278,7 @@ class Drivercontroller extends Controller
         if ($driver == null) {
             return response()->json(["message" => "unauthenticated"], 401);
         }
-        
+
         $global_user = $request->user();
 
         $global_user->update([
@@ -292,7 +306,7 @@ class Drivercontroller extends Controller
         }
 
         $driver->update($data);
-    
+
         return response()->json([
             'status' => true,
             'message' => 'Driver Update Is Successfully',
@@ -304,7 +318,7 @@ class Drivercontroller extends Controller
 
     public function update(GuideRequest $request, driver $driver)
     {
-      
+
         $global_user = MursheedUser::where('email', $driver->email)->first();
         $global_user->update([
             'email' => $request->email ? $request->email : $global_user->email,
