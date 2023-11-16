@@ -102,17 +102,17 @@ class OrderController extends Controller
         $adminId=strval(User::where('email','admin@admin.com')->first()->id);
 //        MursheedUser::where('user_id',$order->user_id)->where('user_type','App\Models\\'. $order->user_type)->get()->first()->id)
         if ($request->status == 1)
-            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->user_id)->where('user_type','App\Models\\'. $order->user_type)->get()->first()->id),$adminId], "Mursheed Order", "your order has been " . OrderStatus::fromName($request->status));
+            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->user_id)->where('user_type','App\Models\\'. $order->user_type)->get()->first()->id),$adminId], "New Order", "your order has been " . OrderStatus::fromName($request->status));
 
         elseif ($request->status == 2)
         {
-            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->tourist_id)->where('user_type','App\Models\Tourist')->get()->first()->id),$adminId], "Mursheed Order", "your order has been " . OrderStatus::fromName($request->status));
+            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->tourist_id)->where('user_type','App\Models\Tourist')->get()->first()->id),$adminId], "New Order", "your order has been " . OrderStatus::fromName($request->status));
         }
 
         elseif($request->status ==5)
-            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->tourist_id)->where('user_type','App\Models\Tourist')->get()->first()->id),$adminId], "Mursheed Order", "your order has been " . OrderStatus::fromName($request->status));
+            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->tourist_id)->where('user_type','App\Models\Tourist')->get()->first()->id),$adminId], "New Order", "your order has been " . OrderStatus::fromName($request->status));
         elseif ($request->status == 6)
-            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->user_id)->where('user_type','App\Models\\'. $order->user_type)->get()->first()->id),$adminId], "Mursheed Order", "your order has been " . OrderStatus::fromName($request->status));
+            (new NotificationController())->sendNotificationToMobile([strval(MursheedUser::where('user_id',$order->user_id)->where('user_type','App\Models\\'. $order->user_type)->get()->first()->id),$adminId], "New Order", "your order has been " . OrderStatus::fromName($request->status));
 
 
 
