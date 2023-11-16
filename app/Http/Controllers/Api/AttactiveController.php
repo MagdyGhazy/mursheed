@@ -89,6 +89,7 @@ class AttactiveController extends Controller
             "attractiveLocation" => [
                 "id" => $attractiveLocation->id,
                 "name" => $data['name'],
+                "country_id" => $attractiveLocation->country->id,
                 "country" => $attractiveLocation->country->country,
                 "state" => $attractiveLocation->state->state,
                 "city_id"=>$attractiveLocation->state_id,
