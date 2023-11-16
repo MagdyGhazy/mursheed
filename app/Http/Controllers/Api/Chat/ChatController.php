@@ -22,7 +22,7 @@ class ChatController extends Controller
     {
         $user = Auth::user();
         $chats = $user->conversations()->with(['lastMessage','participants'=> function($builder) use($user){
-            $builder -> where('id', '<>', $user->id);
+            $builder -> where('id', '<>', $user->id)->where('role','admin');
         }])->get();
         return response([
             "data" => $chats,

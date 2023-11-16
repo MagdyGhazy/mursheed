@@ -7,6 +7,7 @@ use App\Models\Recipient;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use App\Events\MessageCreated;
+use App\Http\Requests\ChatRequest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\User;
@@ -22,38 +23,33 @@ class MessagesController extends Controller
     {
         $user = Auth::user();
         $conversation = $user->conversations()->findOrFail($id);
-        return $conversation->messages()->paginate();
+
+        $isAdmin = $conversation->participants()->where('user_id', $user->id)->where('role', 'admin')->exists();
+        $isUser = $conversation->participants()->where('user_id', $user->id)->where('role', 'user')->exists();
+
+        $messages = $conversation->messages()->paginate();
+
+        return response([
+            "data" => $messages,
+            "message" => "Success",
+            "status" => true,
+        ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ChatRequest $request)
     {
-        $request->validate([
-            'message' => ['required', 'string'],
-            'conversation_id' => [
-                'required_if:user_id,null',
-                'integer',
-                'exists:conversations,id',
-            ],
-            'user_id' => [
-                'required_if:conversation_id,null',
-                'integer',
-                'exists:users,id',
-            ],
-        ]);
-        
+        $validated = $request->validated();
 
         $user =  Auth::user();
         $conversation_id = $request->post('conversation_id');
         $user_id = $request->post('user_id');
 
-
         DB::beginTransaction();
 
         try {
-
             if ($conversation_id) {
                 $conversation = $user->conversations()->findOrFail($conversation_id);
             } else {
@@ -74,7 +70,6 @@ class MessagesController extends Controller
                         $user_id => ['joined_at' => now()],
                     ]);
                 }
-
             }
 
             $message = $conversation->messages()->create([
@@ -88,22 +83,21 @@ class MessagesController extends Controller
             WHERE participants.conversation_id = ?
         ', [$message->id, $conversation->id]);
 
-        $conversation->update([
-            'last_message_id'=>$message->id,
-        ]);
-        
+            $conversation->update([
+                'last_message_id' => $message->id,
+            ]);
+
 
             DB::commit();
 
             broadcast(new MessageCreated($message));
-
         } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
         }
 
         return response([
-            "data" => $message ,
+            "data" => $message,
             "message" => "Success",
             "status" => true,
         ], 200);
