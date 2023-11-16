@@ -8,9 +8,13 @@ class Permission extends PermissionModel
 {
     public $guarded = [];
 
-    public function role()
+    public function allroles()
     {
+        return $this->belongsToMany(Role::class, 'roles_permissions');
+    }
 
-        return $this->belongsToMany(Role::class, 'role_user');
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'users_permissions');
     }
 }
