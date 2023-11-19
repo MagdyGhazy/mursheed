@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -96,6 +97,41 @@ class NotificationController extends Controller
         $notification->notification=$title;
         $notification->save();
         return response()->json($publishResponse);
+    }
+
+
+    public function GetUnreadNotifications()
+    {
+        $unreadNotifications = Notification::whereNull('read_at')->get();
+
+        return response([
+            "data" => $unreadNotifications,
+            "message" => "Unread Notifications Fetched Successfully",
+            "status" => true,
+        ], 200);
+    }
+    public function GetAllNotifications()
+    {
+        $unreadNotifications = Notification::all();
+
+        return response([
+            "data" => $unreadNotifications,
+            "message" => " Notifications Fetched Successfully",
+            "status" => true,
+        ], 200);
+    }
+
+    public function MarkAllNotifications()
+    {
+        $notifications = Notification::where('read_at', null)->get();
+
+        foreach ($notifications as $notification) {
+            $notification->update(['read_at' => now()]);
+        }
+        return response([
+            "message" => " Mark As Read Successfully",
+            "status" => true,
+        ], 200);
     }
 
 
