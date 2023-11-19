@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api\Tickets;
 
 use App\Http\Controllers\Api\Services\TicketServices;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Ticket\AddMessageRequest;
+use App\Http\Requests\Ticket\AddReplayRequest;
+use App\Http\Requests\Ticket\StoreTicketRequest;
 use App\Models\Tickets\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -31,17 +34,17 @@ class TicketController extends Controller
         return $this->ticketServices->userTickets($UserId);
     }
 
-    public function store(Request $request)
+    public function store(StoreTicketRequest $request)
     {
         return $this->ticketServices->createTicket($request);
     }
 
-    public function addReplay(Request $request , $ticket_id)
+    public function addReplay(AddReplayRequest $request , $ticket_id)
     {
         return $this->ticketServices->createReplay($request,$ticket_id);
     }
 
-    public function addMessage(Request $request,$ticket_id)
+    public function addMessage(AddMessageRequest $request,$ticket_id)
     {
         return $this->ticketServices->createMessage($request,$ticket_id);
     }
