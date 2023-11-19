@@ -24,22 +24,22 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
 
-         \App\Models\User::create([
-             'first_name' => 'Test User',
-             'last_name' => 'Test User',
-             'password' => Hash::make("password"),
-             'email' => 'admin@admin.com',
-             'mobile_number' => '01285323276',
-         ]);
-
-        \App\Models\Driver::create([
-            "name"=>"driver",
-            "email"=>"driver@mursheed.com",
-            "nationality"=>"Egyption",
-            "country_id"=>"1",
-            "state_id"=>"1",
-            "password"=>"password"
-        ]);
+//         \App\Models\User::create([
+//             'first_name' => 'Test User',
+//             'last_name' => 'Test User',
+//             'password' => Hash::make("password"),
+//             'email' => 'admin@admin.com',
+//             'mobile_number' => '01285323276',
+//         ]);
+//
+//        \App\Models\Driver::create([
+//            "name"=>"driver",
+//            "email"=>"driver@mursheed.com",
+//            "nationality"=>"Egyption",
+//            "country_id"=>"1",
+//            "state_id"=>"1",
+//            "password"=>"password"
+//        ]);
 
         // $this->call([
         //     pagesSeeder::class,
