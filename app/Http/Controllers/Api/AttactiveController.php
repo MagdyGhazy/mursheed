@@ -104,27 +104,34 @@ class AttactiveController extends Controller
 
     public function store(AttractiveRequest $request)
     {
-        //        return response(['k'=>$request->images]);
+            //    return response(['k'=>$request->images]);
 
-        //            $created->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
-        //            }
-        //            $fileAdder->toMediaCollection('photos');
-        //        });
+            //        $created->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
+            //        }
+            //        $fileAdder->toMediaCollection('photos');
+            //    });
 
         return $this->ControllerHandler->store("attrractive", $request->except('images'));
     }
 
-    public function update(AttractiveUpdateRequest $request, AttractiveLocation $attrractive)
+    public function update(AttractiveUpdateRequest $request, $id)
     {
-
-        $attrractive->clearMediaCollection('photos');
-        //
-        if (request()->images)
-        $attrractive->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
-            $fileAdder->toMediaCollection('photos');
-        });
+        $attrractive=AttractiveLocation::find($id);
+        
+        if (!$attrractive) {
+            return response([
+                "data" => null,
+                "message" => "Not Found",
+                "status" => false,
+            ], 404);
+        }
+        
+        $attrractive->clearMediaCollection('images');
+        $attrractive->addMediaFromRequest('images')->toMediaCollection('images');
+    
         return $this->ControllerHandler->update("attrractive", $attrractive, $request->except('images'));
     }
+    
 
     public function destroy( $attrractive)
     {
