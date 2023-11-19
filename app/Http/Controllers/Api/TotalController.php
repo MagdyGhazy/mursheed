@@ -14,16 +14,16 @@ use Illuminate\Http\Request;
 class TotalController extends Controller
 {
     public function index(){
-        $driver_pending = Driver::where('status',1)->count();
-        $driver_approved = Driver::where('status',2)->count();
-        $guides_pending = Guides::where('status',1)->count();
-        $guides_approved = Guides::where('status',2)->count();
+        $driver_pending = Driver::where('status',-1)->count();
+        $driver_approved = Driver::where('status',1)->count();
+        $guides_pending = Guides::where('status',-1)->count();
+        $guides_approved = Guides::where('status',1)->count();
         $tourists = Tourist::count();
         $users = User::count();
         $accommmoditions = accommmodition::count();
-        $order_pending = Order::where('status',1)->count();
+        $order_pending = Order::where('status',-1)->count();
         $order_approved = Order::where('status',1)->count();
-        
+
         return response()->json([
             "message" => "Total successfully",
             "driver_pending" => $driver_pending,
