@@ -78,6 +78,7 @@ class Order extends Model
             'end_date' => null,
             'status' => null,
             'user_type' => null,
+            'country_id'=>null,
 
 
         ], $arrayOfData);
@@ -88,6 +89,9 @@ class Order extends Model
             $builder->where('end_date', $value);
         });
 
+        $builder->when($arrayOfData['country_id'], function (Builder $builder, $value) {
+            $builder->where('country_id', $value);
+        });
         $builder->when($arrayOfData['status'], function (Builder $builder, $value) {
             $builder->where('status', $value);
         });
