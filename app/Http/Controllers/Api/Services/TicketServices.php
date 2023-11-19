@@ -15,28 +15,75 @@ class TicketServices
 
     public function index()
     {
-        $tickets = Ticket::with(['message','replay'])->get()->makeHidden(['created_at', 'updated_at']);
+        $tickets = Ticket::with(['user.user', 'message', 'replay'])
+            ->get()
+            ->makeHidden(['created_at', 'updated_at', 'user_id'])
+            ->map(function ($ticket) {
+                $user = $ticket->user->user;
+                $ticketData = [
+                    "id" => $ticket->id,
+                    "number" => $ticket->number,
+                    "title" => $ticket->title,
+                    "status" => $ticket->status,
+                    "priority" => $ticket->priority,
+                    "type" => $ticket->type,
+                    "user" =>$user,
+                    "message" => $ticket->message,
+                    "replay" => $ticket->replay,
+                ];
+                return $ticketData;
+            })
+            ->toArray();
 
         return response([
             "status" => "success",
             "tickets" => $tickets,
         ], 200);
     }
-
     public function show($id)
     {
 
-        $ticket = Ticket::with(['message','replay'])->find($id)->makeHidden(['created_at', 'updated_at']);
+        $ticket = Ticket::with(['user.user', 'message', 'replay'])->find($id);
 
-        return response([
+        $response = [
             "status" => "success",
-            "ticket" => $ticket,
-        ], 200);
+            "tickets" => [
+                [
+                    "id" => $ticket->id,
+                    "number" => $ticket->number,
+                    "title" => $ticket->title,
+                    "status" => $ticket->status,
+                    "priority" => $ticket->priority,
+                    "type" => $ticket->type,
+                    "user" => $ticket->user->user,
+                    "message" => $ticket->message,
+                    "replay" => $ticket->replay,
+                ],
+            ],
+        ];
+        return response($response, 200);
     }
 
     public function userTickets($UserId)
     {
-        $ticket = Ticket::with(['user'])->where('user_id',$UserId)->get()->makeHidden(['created_at', 'updated_at']);
+        $ticket = Ticket::with(['user'])->where('user_id',$UserId)->get()
+            ->makeHidden(['created_at', 'updated_at'])
+            ->map(function ($ticket) {
+                $user = $ticket->user->user;
+                $ticketData = [
+                    "id" => $ticket->id,
+                    "number" => $ticket->number,
+                    "title" => $ticket->title,
+                    "status" => $ticket->status,
+                    "priority" => $ticket->priority,
+                    "type" => $ticket->type,
+                    "user" =>$user,
+                    "message" => $ticket->message,
+                    "replay" => $ticket->replay,
+                ];
+                return $ticketData;
+            })
+            ->toArray();;
 
         return response([
             "status" => "success",
@@ -45,10 +92,10 @@ class TicketServices
     }
 
 
-    public function createMessage($message ,$ticket_id)
+    public function createMessage($request ,$ticket_id)
     {
         return TicketMessage::create([
-            'content' => $message,
+            'content' => $request['message'],
             'ticket_id' => $ticket_id,
         ]);
     }

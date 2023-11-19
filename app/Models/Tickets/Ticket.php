@@ -25,7 +25,7 @@ class Ticket extends Model
 
     public function user():BelongsTo
     {
-        return $this->belongsTo(MursheedUser::class);
+        return $this->belongsTo(MursheedUser::class)->select(['id', 'user_type','user_id']);
     }
 
 }
