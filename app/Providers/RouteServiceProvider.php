@@ -78,6 +78,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/country_price.php'));
+
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/trip.php'));
@@ -85,24 +86,30 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/rating.php'));
+
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/favourite.php'));
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
-                Route::middleware('api')
+            Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/report.php'));
 
-                Route::middleware('api')
+            Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/TermsAndCondition.php'));
 
-                Route::middleware('api')
+            Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/permaission.php'));
+
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/ticket.php'));
+
         });
-        
+
     }
 }

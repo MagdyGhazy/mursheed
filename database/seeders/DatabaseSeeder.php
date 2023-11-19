@@ -24,13 +24,22 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
 
-        // \App\Models\User::create([
-        //     'first_name' => 'Test User',
-        //     'last_name' => 'Test User',
-        //     'password' => Hash::make("password"),
-        //     'email' => 'admin@admin.com',
-        //     'mobile_number' => '01285323276',
-        // ]);
+         \App\Models\User::create([
+             'first_name' => 'Test User',
+             'last_name' => 'Test User',
+             'password' => Hash::make("password"),
+             'email' => 'admin@admin.com',
+             'mobile_number' => '01285323276',
+         ]);
+
+        \App\Models\Driver::create([
+            "name"=>"driver",
+            "email"=>"driver@mursheed.com",
+            "nationality"=>"Egyption",
+            "country_id"=>"1",
+            "state_id"=>"1",
+            "password"=>"password"
+        ]);
 
         // $this->call([
         //     pagesSeeder::class,
@@ -40,10 +49,10 @@ class DatabaseSeeder extends Seeder
 
         $driver =  Driver::first();
 
-       for ($i = 0; $i < 200000; $i++) {
+       for ($i = 0; $i < 200; $i++) {
            $driver->reviews()->create([
                'tourist_id' => 3,
-               'comment' => "This Gude is good",
+               'comment' => "This Guide is good",
                'tourist_rating' => 5,
            ]);
             $driver->total_rating = ($driver->reviews()->avg('tourist_rating') + $driver->admin_rating) / 2;
