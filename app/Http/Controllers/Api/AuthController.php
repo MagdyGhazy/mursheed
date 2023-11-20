@@ -26,7 +26,8 @@ class AuthController extends Controller
                 [
                     'name' => 'required',
                     'email' => 'required|email|unique:users,email',
-                    'password' => 'required'
+                    'password' => 'required',
+                    'role'=>'required'
                 ]
             );
 
@@ -121,7 +122,6 @@ class AuthController extends Controller
 
             $user = MursheedUser::where('email', $request->email)->first();
 
-
             if ($user->email_verified_at == null)
             {
                 return response()->json([
@@ -129,7 +129,6 @@ class AuthController extends Controller
                     'message' => 'your email must be verified first !',
                 ], 402);
             }
-
 
             if ($validateUser->fails()) {
                 return response()->json([
