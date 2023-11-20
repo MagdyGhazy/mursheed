@@ -83,7 +83,7 @@ class TicketServices
                 ];
                 return $ticketData;
             })
-            ->toArray();;
+            ->toArray();
 
         return response([
             "status" => "success",

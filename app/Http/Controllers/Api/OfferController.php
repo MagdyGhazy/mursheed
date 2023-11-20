@@ -15,8 +15,6 @@ class OfferController extends Controller
 
     public function __construct()
     {
-
-
         $this->ControllerHandler = new ControllerHandler(new Offer());
     }
 
@@ -27,6 +25,12 @@ class OfferController extends Controller
     {
         return $this->ControllerHandler->getAllWith("offers",['media']);
     }
+
+    public function approvedOffers()
+    {
+        return $this->ControllerHandler->getAllWithWhere("offers",['media'],'status',1);
+    }
+
 
 
     /**
