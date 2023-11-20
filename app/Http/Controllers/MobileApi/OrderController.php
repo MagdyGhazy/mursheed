@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Geocoder\Geocoder;
 use \KMLaravel\GeographicalCalculator\Facade\GeoFacade;
 use function Laravel\Prompts\select;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -138,5 +139,24 @@ class OrderController extends Controller
                 ->when(request('status') == 'close', function ($query) {
                     return $query->where('status', OrderStatus::canceled)->where('status', OrderStatus::paid)->where('status', OrderStatus::expired)->where('status', OrderStatus::approved);
                 })->where('tourist_id', auth()->user()->user->id)->orderBy('created_at','DESC')->get(), "status" => true]);
+    }
+      public function profiteCost()
+    {
+        $user = Auth::user()->user_id;
+
+        $orderData = Order::where('user_id', $user)
+            ->where('status', "1")->with('orderDetails')->get()
+            ->map(function ($orderData) {
+                $details = $orderData['orderDetails'];
+                foreach ($details as $detail) {
+                    $newdata = 0;
+                    $newdata = $newdata + $detail->price_city;
+                }
+                return $newdata;
+            })
+            ->toArray();
+        return response()->json([
+            'sumOrder' => array_sum($orderData)
+        ]);
     }
 }
