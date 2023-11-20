@@ -49,7 +49,6 @@ class ControllerHandler
             });
         }
 
-
         return response([
             "$key" => $model,
             "message" => "success",
@@ -96,7 +95,27 @@ class ControllerHandler
             "total" => $data['total'],
 
         ], 200);
-        
+
+    }
+
+
+    public function getAllWithWhere($key, $with ,$coulmn, $value, $limit = null)
+    {
+         $model = $this->model::with($with)->where($coulmn, $value)->latest('id')->limit($limit)->get();
+        $k = array_search('media', $with, true);
+        if ($k !== false) {
+            $model = $this->model::with($with)->where($coulmn, $value)->latest('id')->limit($limit)->get()->map(function ($data) {
+                $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
+
+                $data['pictures'] = count($collect) ? $collect : null;
+                return $data;
+            });
+        }
+        return response([
+            "$key" => $model,
+            "message" => "success",
+            "status" => true
+        ], 200);
     }
 
 
@@ -108,6 +127,8 @@ class ControllerHandler
             "status" => true
         ], 200);
     }
+
+
     public function getAllwithOrderBy($key,$with,$coulmn, $value)
     {
         $model = $this->model::with($with)->orderBy($coulmn,$value)->get();
