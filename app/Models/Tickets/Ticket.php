@@ -13,6 +13,8 @@ class Ticket extends Model
     use HasFactory;
 
     protected $fillable = ['number','title','user_id','status','priority','type'];
+    public $translatable = ['title'];
+
 
     public function message():HasMany
     {

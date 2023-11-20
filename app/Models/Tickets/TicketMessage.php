@@ -10,6 +10,8 @@ class TicketMessage extends Model
 {
     use HasFactory;
     protected $fillable = ['content','ticket_id'];
+    public $translatable = ['content'];
+
 
     public function ticket():BelongsTo
     {
