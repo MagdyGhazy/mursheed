@@ -46,7 +46,7 @@ class TicketController extends Controller
 
     public function addMessage(AddMessageRequest $request,$ticket_id)
     {
-        return $this->ticketServices->createMessage($request,$ticket_id);
+        return $this->ticketServices->createMessage($request['message'],$ticket_id);
     }
 
     public function inActiveTicket($ticket_id)
