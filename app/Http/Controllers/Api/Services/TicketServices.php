@@ -92,10 +92,10 @@ class TicketServices
     }
 
 
-    public function createMessage($request ,$ticket_id)
+    public function createMessage($message ,$ticket_id)
     {
         return TicketMessage::create([
-            'content' => $request['message'],
+            'content' => $message,
             'ticket_id' => $ticket_id,
         ]);
     }
