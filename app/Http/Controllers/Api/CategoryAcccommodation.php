@@ -63,7 +63,7 @@ class CategoryAcccommodation extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
 
-    public function update(CategoryRequest $request, CategoryAccommodation $accommmodition)
+    public function update(CategoryRequest $request, accommmodition $accommmodition)
     {
 
         // here some validation check parent or admin

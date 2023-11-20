@@ -22,7 +22,16 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>'required'
+            'name'=>'required|string ',
+            'owner_info'=>'required|string ',
+            'description'=>'required|string ',
+            'address'=>'required|string ',
+            'country_id'=>'required|int ',
+            'state_id'=>'required|int ',
+            'city_id'=>'required|int ',
+            'aval_status'=>'required|int ',
+            'info_status'=>'required|int ',
+            'category_accommodations_id'=>'required|int ',
         ];
     }
 }
