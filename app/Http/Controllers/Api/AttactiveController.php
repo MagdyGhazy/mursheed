@@ -117,7 +117,7 @@ class AttactiveController extends Controller
     public function update(AttractiveUpdateRequest $request, $id)
     {
         $attrractive=AttractiveLocation::find($id);
-        
+
         if (!$attrractive) {
             return response([
                 "data" => null,
@@ -125,13 +125,13 @@ class AttactiveController extends Controller
                 "status" => false,
             ], 404);
         }
-        
+
         $attrractive->clearMediaCollection('images');
         $attrractive->addMediaFromRequest('images')->toMediaCollection('images');
-    
+
         return $this->ControllerHandler->update("attrractive", $attrractive, $request->except('images'));
     }
-    
+
 
     public function destroy( $attrractive)
     {

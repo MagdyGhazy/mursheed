@@ -30,7 +30,7 @@ class AttractiveUpdateRequest extends FormRequest
         return [
             "name" => "required|string",
             "country_id" => "required|int",
-            "city_id" => "required|int",
+            "state_id" => "required|int",
             "description" => "required|string",
             "lat" => "required|string",
             "long" => "required|string",
