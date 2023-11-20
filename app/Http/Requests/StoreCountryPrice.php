@@ -26,6 +26,7 @@ class StoreCountryPrice extends FormRequest
             'price' => ["required", "numeric"],
             'fees' => ["required", "numeric"],
             'tax' => ["required", "numeric"],
+            'status' => ["required", "numeric"],
         ];
     }
 }
