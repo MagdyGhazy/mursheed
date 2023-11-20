@@ -22,19 +22,40 @@ class MessagesController extends Controller
     public function index($id)
     {
         $user = Auth::user();
-        $conversation = $user->conversations()->findOrFail($id);
-
-        $isAdmin = $conversation->participants()->where('user_id', $user->id)->where('role', 'admin')->exists();
-        $isUser = $conversation->participants()->where('user_id', $user->id)->where('role', 'user')->exists();
-
-        $messages = $conversation->messages()->paginate();
-
-        return response([
-            "data" => $messages,
-            "message" => "Success",
-            "status" => true,
-        ], 200);
+    
+        if (!$user) {
+            return response([
+                "data" => null,
+                "message" => "User Not Authenticated",
+                "status" => false,
+            ], 401);
+        }
+    
+        $conversation = $user->conversations()->find($id);
+    
+        if ($conversation) {
+            $isAdmin = $conversation->participants()->where('user_id', $user->id)->where('role', 'admin')->exists();
+            $isUser = $conversation->participants()->where('user_id', $user->id)->where('role', 'user')->exists();
+    
+            $messages = $conversation->messages()->paginate();
+    
+            if ($messages == null) {
+                return response([
+                    "data" => null,
+                    "message" => "Chat Not Found",
+                    "status" => false,
+                ], 404);
+            } else {
+                return response([
+                    "data" => $messages,
+                    "message" => "Success",
+                    "status" => true,
+                ], 200);
+            }
+        }
     }
+    
+
 
     /**
      * Store a newly created resource in storage.
@@ -43,7 +64,7 @@ class MessagesController extends Controller
     {
         $validated = $request->validated();
 
-        $user =  Auth::user();
+        $user = Auth::user();
         $conversation_id = $request->post('conversation_id');
         $user_id = $request->post('user_id');
 
