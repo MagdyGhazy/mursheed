@@ -11,7 +11,7 @@ class ChatController extends Controller
 {
     public function index()
     {
-        $friends = User::where('id', '<>', auth()->guard('api')->user()->id)->get(['first_name']);
+        $friends = User::where('id', '<>', auth()->guard('api')->user()->id)->get(['id','first_name','email']);
         return response([
             "data" => $friends,
             "message" => "Success",
