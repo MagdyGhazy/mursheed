@@ -20,5 +20,14 @@ class ReportServes
         ]);
     }
 
-   
+//    public function filter($request)
+//    {
+//        $filterData = Order::filter($request)->get();
+//        return response()->json([
+//            "filterData" => $filterData
+//        ]);
+//    }
+
+
+
 }

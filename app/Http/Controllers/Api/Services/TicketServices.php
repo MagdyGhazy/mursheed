@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Services;
 
+use App\Enums\TicketStatusEnum;
 use App\Models\MursheedUser;
 use App\Models\Tickets\Message;
 use App\Models\Tickets\MessageReplay;
@@ -107,7 +108,7 @@ class TicketServices
     public function createReplay($request,$ticket_id)
     {
         $ticket = Ticket::find($ticket_id);
-        $ticket->update(['status' => 'active']);
+        $ticket->update(['status' => TicketStatusEnum::ACTIVE]);
 
         return TicketReplay::create([
             'content' => $request['replay'],
@@ -123,6 +124,7 @@ class TicketServices
 
         $data['user_id'] = auth()->id();
         $data['number'] = 'MUR|'. Str::random(10) . '|' . $data['user_id'] ;
+        $data['status'] = TicketStatusEnum::PENDING ;
 
         $ticket = Ticket::create($data);
 
@@ -139,7 +141,7 @@ class TicketServices
     public function inActiveTicket($ticket_id)
     {
         $ticket = Ticket::find($ticket_id);
-        $ticket->update(['status' => 'inactive']);
+        $ticket->update(['status' => TicketStatusEnum::INACTIVE]);
 
         return response([
             "status" => "success",
