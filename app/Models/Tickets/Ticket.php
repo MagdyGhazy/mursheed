@@ -13,7 +13,7 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['number','title','user_id','priority','type'];
+    protected $fillable = ['number','title','user_id','status','priority','type'];
     public $translatable = ['title'];
     protected $casts = ['status' => TicketStatusEnum::class];
 
