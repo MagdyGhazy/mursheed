@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('number');
             $table->string('title');
             $table->foreignId('user_id')->constrained('mursheed_users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->enum('status', ['active', 'inactive', 'pending'])->default('pending');
+            $table->tinyInteger('status')->default(-1);
             $table->enum('priority', ['high', 'mid', 'low'])->default('low');
             $table->enum('type', ['sales', 'issue', 'inquire'])->default('inquire');
             $table->timestamps();

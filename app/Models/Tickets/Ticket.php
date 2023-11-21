@@ -2,6 +2,7 @@
 
 namespace App\Models\Tickets;
 
+use App\Enums\TicketStatusEnum;
 use App\Models\MursheedUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,8 +13,9 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['number','title','user_id','status','priority','type'];
+    protected $fillable = ['number','title','user_id','priority','type'];
     public $translatable = ['title'];
+    protected $casts = ['status' => TicketStatusEnum::class];
 
 
     public function message():HasMany
