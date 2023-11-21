@@ -112,9 +112,12 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/Notification.php'));
-                Route::middleware('api')
+            Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/order.php'));
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/Chat.php'));
         });
     }
 }
