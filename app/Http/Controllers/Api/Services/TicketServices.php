@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\Services;
 
+use App\Models\MursheedUser;
 use App\Models\Tickets\Message;
 use App\Models\Tickets\MessageReplay;
 use App\Models\Tickets\Replay;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketMessage;
 use App\Models\Tickets\TicketReplay;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class TicketServices
@@ -44,9 +46,11 @@ class TicketServices
     {
 
         $ticket = Ticket::with(['user.user', 'message', 'replay'])->find($id);
+        $user = User::where('id',auth()->user()->id)->first();
 
         $response = [
             "status" => "success",
+            "user" => $user,
             "tickets" => [
                 [
                     "id" => $ticket->id,
