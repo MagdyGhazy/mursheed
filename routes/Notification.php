@@ -13,5 +13,8 @@ Route::controller(\App\Http\Controllers\NotificationController::class)->group(fu
     //Mark All Notifications
     Route::get('/Notifications/markAsRead', 'MarkAllNotifications');
 
+    // Read At One Notification
+    Route::get('/Notifications/ReadAtOneNotification/{id}', 'ReadAtOneNotification');
+
 
 });
