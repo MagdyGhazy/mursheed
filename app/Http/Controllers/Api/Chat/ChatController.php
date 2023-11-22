@@ -38,12 +38,8 @@ class ChatController extends Controller
             ], 401);
         }
 
-        $chats = $user->conversations()->with([
-            'lastMessage',
-            'participants' => function ($builder) use ($user) {
-                $builder->where('id', '<>', $user->id)->where('role', 'admin');
-            }
-        ])->get();
+        $chats = $user->conversations()->with(['lastMessage', 'participants'])->get();
+
 
         if ($chats == null) {
             return response([
