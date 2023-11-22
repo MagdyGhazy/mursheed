@@ -20,8 +20,6 @@ class Order extends Model
     protected $casts = [
         'status' => OrderStatus::class
     ];
-
-
     protected $appends = [
         'vendor', 'tourist_name', 'rating'
     ];
@@ -40,7 +38,10 @@ class Order extends Model
             parent::delete();
         });
     }
-
+public function driver ()
+{
+    return $this->belongsTo(Driver::class);
+}
     public function user()
     {
         return $this->morphTo();
