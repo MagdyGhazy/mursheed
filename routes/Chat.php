@@ -9,12 +9,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('conversations', 'index');
 
         // Route to get a single conversation
-        Route::get('conversations/{conversation}', 'show');
-
-        Route::post('conversations/{conversation}/participants', 'addParticipant');
-
-        // Route to delete a message
-        Route::delete('conversations/{conversation}/participants', 'removeParticipant');
+        Route::get('conversations/{conversation}', 'show');//------------
     });
 
     Route::controller(\App\Http\Controllers\Api\Chat\MessagesController::class)->group(function () {
@@ -22,18 +17,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('conversations/{id}/messages', 'index');
 
         // Route for send new message
-        Route::post('messages', 'store');
+        Route::post('messages', 'store'); //--------
+        Route::post('storeMusheeduser', 'storeMusheeduser'); //--------
 
-        // Route for deleting a message
-        Route::delete('messages/{id}', 'destroy');
     });
 
     Route::controller(\App\Http\Controllers\Api\Chat\ChatController::class)->group(function () {
         // Get All Friends
-        Route::get('friends', 'index');
+        Route::get('friends', 'index');//----------
 
         //Get Al Chats
-        Route::get('chats', 'chats');
+        Route::get('chats', 'chats');//----------
     });
 
 });

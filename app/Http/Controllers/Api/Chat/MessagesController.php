@@ -124,36 +124,4 @@ class MessagesController extends Controller
         ], 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        Recipient::where([
-            'user_id' => Auth::id(),
-            'message_id' => $id,
-        ])->delete();
-
-        return response([
-            "data" => null,
-            "message" => "Deleted Success",
-            "status" => true,
-        ], 200);
-    }
 }

@@ -21,34 +21,5 @@ class ConversationsController extends Controller
         return $conversation->load('participants');
         
     }
-    public function addParticipant(Request $request, Conversation $conversation)
-    {
-        $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
-        ]);
 
-        $conversation->participants()->attach($request->post('user_id'), [
-            'joined_at' => Carbon::now(),
-        ]);
-
-        return response([
-            "data" => $conversation ,
-            "message" => "Success",
-            "status" => true,
-        ], 200);
-    }
-    public function removeParticipant(Request $request, Conversation $conversation)
-    {
-        $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
-        ]);
-
-        $conversation->participants()->detach($request->post('user_id'));
-
-        return response([
-            "data" => null,
-            "message" => "Deleted Success",
-            "status" => true,
-        ], 200);
-    }
 }
