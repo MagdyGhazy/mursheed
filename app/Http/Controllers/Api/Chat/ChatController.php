@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Chat;
 
 use App\Http\Controllers\Controller;
+use App\Models\MursheedUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +12,8 @@ class ChatController extends Controller
 {
     public function index()
     {
-        $friends = User::where('id', '<>', auth()->guard('api')->user()->id)->get(['id', 'first_name', 'email']);
+        
+        $friends = MursheedUser::select('id', 'user_type', 'email')->get();
         if ($friends == null) {
             return response([
                 "data" => null,
