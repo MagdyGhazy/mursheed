@@ -18,8 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Route for send new message
         Route::post('messages', 'store'); //--------
-        Route::post('storeMusheeduser', 'storeMusheeduser'); //--------
-
     });
 
     Route::controller(\App\Http\Controllers\Api\Chat\ChatController::class)->group(function () {
