@@ -5,7 +5,11 @@ use App\Http\Controllers\MobileApi\OrderController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'reports'], function () {
-        Route::post("fillter", [ReportController::class, "index"]);
+
+        Route::get("fillter", [ReportController::class, "index"]);
         Route::get('profite',[OrderController::class,'profiteCost']);
+
+
+        Route::post('allProfits/{country_id}',[ReportController::class,'allProfits']);
     });
 });
