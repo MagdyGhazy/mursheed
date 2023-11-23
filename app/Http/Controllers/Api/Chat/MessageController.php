@@ -36,14 +36,15 @@ class MessageController extends Controller
     }
 
 
-    public function createMessage(Request $request, $con_id)
+    public function createMessage(Request $request)
     {
 
+        $conversation_id = $request->input('conversation_id');
         $message = Message::create(
             [
                 'content' => $request['content'],
                 'user_id' => $request['user_id'],
-                'conversation_id' => $con_id,
+                'conversation_id' => $conversation_id,
             ]
         );
         return response([
