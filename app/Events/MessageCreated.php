@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Message;
+use App\Models\Replay;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Queue\SerializesModels;
@@ -23,12 +24,14 @@ class MessageCreated implements ShouldBroadcast
      * Create a new event instance.
      * 
      * @param  \App\Models\Message $message
+     * @param  \App\Models\Replay $replay
      * 
      * @return  void
      */
-    public function __construct(Message $message)
+    public function __construct(Message $message , Replay $replay)
     {
         $this->message = $message;
+        $this->replay = $replay;
     }
 
     /**
@@ -43,5 +46,12 @@ class MessageCreated implements ShouldBroadcast
         return [
             new PresenceChannel('Chat.' . $other_user->id),
         ];
+
+        if ($this->replay) {
+            $other_user_replay = $this->replay->conversation->participants()->where('user_id', '<>', Auth::id())->first();
+            $channels[] = new PresenceChannel('Chat.' . $other_user_replay->id);
+        }
+
+        return $channels;
     }
 }
