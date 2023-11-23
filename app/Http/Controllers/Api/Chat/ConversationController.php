@@ -13,6 +13,7 @@ class ConversationController extends Controller
         $Conversations = Conversation::with('Message','Replies')->get(); 
         return response([
             "data" => $Conversations,
+            "message" => "All Conversations Successfully",
             "status" => true,
         ], 200);
     }

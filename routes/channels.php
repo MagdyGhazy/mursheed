@@ -18,7 +18,7 @@ Broadcast::channel('notification', function () {
 });
 
 Broadcast::channel('Chat.{id}', function($user,$id){
-    if($user->id == $id){
+    if ($user->id == $id) {
         return $user;
     }
 });

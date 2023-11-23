@@ -20,6 +20,7 @@ class MessageCreated implements ShouldBroadcast
      * @var\App\Models\Message
      */
     public $message;
+    public $replay;
     /**
      * Create a new event instance.
      * 
@@ -41,11 +42,10 @@ class MessageCreated implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        $other_user = $this->message->conversation->participants()->where('user_id', '<>',Auth::id())->first();
-        
-        return [
-            new Channel('Chat.' . $other_user->id),
-        ];
+        $channels = [];
+
+        $other_user = $this->message->conversation->participants()->where('user_id', '<>', Auth::id())->first();
+        $channels[] = new Channel('Chat.' . $other_user->id);
 
         if ($this->replay) {
             $other_user_replay = $this->replay->conversation->participants()->where('user_id', '<>', Auth::id())->first();
