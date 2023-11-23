@@ -22,7 +22,7 @@ class ReplayController extends Controller
         $message = Replay::create(
             [
                 'content' => $request['content'],
-                'user_id' => $request['user_id'],
+                'user_id' => auth()->user()->id,
                 'conversation_id' => $conversation_id,
             ]
         );

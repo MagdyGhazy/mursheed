@@ -25,7 +25,7 @@ class MessageController extends Controller
         $message = Message::create(
             [
                 'content' => $request['content'],
-                'user_id' => $request['user_id'],
+                'user_id' => auth()->user()->id,
                 'conversation_id' => $con->id,
             ]
         );
@@ -43,7 +43,7 @@ class MessageController extends Controller
         $message = Message::create(
             [
                 'content' => $request['content'],
-                'user_id' => $request['user_id'],
+                'user_id' => auth()->user()->id,
                 'conversation_id' => $conversation_id,
             ]
         );
