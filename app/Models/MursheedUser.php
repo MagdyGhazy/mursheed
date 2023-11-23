@@ -25,4 +25,9 @@ class MursheedUser extends Authenticatable implements MustVerifyEmail
     {
         return $this->morphTo();
     }
+
+    public function sendMessages()
+    {
+        return $this->hasMany(Message::class,'user_id');
+    }
 }

@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Message extends Model
+class Replay extends Model
 {
     protected $fillable=['content','user_id','conversation_id'];
     use HasFactory;
-    public function mursheedUsers()
+    public function Users()
     {
-        return $this->belongsTo(MursheedUser::class);
+        return $this->belongsTo(User::class);
     }
     public function conversations()
     {
