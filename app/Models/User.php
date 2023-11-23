@@ -61,5 +61,8 @@ class User extends Authenticatable
     }
 
     //Chat
-
+    public function sendMessages()
+    {
+        return $this->hasMany(Replay::class,'user_id');
+    }
 }
