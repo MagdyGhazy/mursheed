@@ -23,10 +23,10 @@ return new class extends Migration
             $table->integer('country_id');
             $table->enum('status',\App\Enums\OrderStatus::values());
             $table->string('address');
-
-
-
-
+            $table->decimal('profit');
+            $table->decimal('tax_amount');
+            $table->decimal('fees');
+            $table->decimal('tax');
             $table->timestamps();
         });
     }

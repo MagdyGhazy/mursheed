@@ -48,9 +48,8 @@ class OrderServices
 //            return ['cities'=>$cities, 'cost' => $cost+ $this->country_price->fees + $this->country_price->tax  ];
             $this->cities = $cities;
             $this->sub_total = $cost;
-                $cost += ($cost* ($this->country_price->tax/100));
-
-            $this->cost = $cost+ ($cost* ($this->country_price->fees/100));
+            $total_cost = $cost + ( $cost * ($this->country_price->tax/100) + $cost * ($this->country_price->fees/100) );
+            $this->cost = $total_cost;
 
             return $this;
         }
@@ -78,6 +77,12 @@ class OrderServices
     }
     public function storeOrderWithDetailsForUser($order, $model)
     {
-        return OrderRepository::createOrderWithDetails(array_merge($order,['cost'=>round($this->cost)]),$this->cities,$model,$this->country_price,$this->sub_total);
+        $profit =round($this->sub_total * ($this->country_price->fees/100),2);
+        $taxAmount =round($this->sub_total * ($this->country_price->tax/100),2);
+        $fees = round($this->country_price->fees,2);
+        $tax = round($this->country_price->tax,2);
+        $cost = round($this->sub_total + $taxAmount + $profit,2);
+
+        return OrderRepository::createOrderWithDetails(array_merge($order,['cost'=>$cost],['sub_total'=>$this->sub_total],['profit'=>$profit],['tax_amount'=>$taxAmount],['fees'=>$fees],['tax'=>$tax]),$this->cities,$model,$this->country_price,$this->sub_total,);
     }
 }
