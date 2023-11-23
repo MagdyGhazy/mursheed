@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::controller(\App\Http\Controllers\Api\Chat\MessageController::class)->group(function () {
-        Route::post('messages', 'createConversation');
+        Route::post('Conversation/messages', 'createConversation');
+        Route::post('messages', 'createMessage');
         Route::get('AllMessages', 'index');
     });
     Route::controller(\App\Http\Controllers\Api\Chat\ReplayController::class)->group(function () {
