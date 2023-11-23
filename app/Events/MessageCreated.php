@@ -44,11 +44,11 @@ class MessageCreated implements ShouldBroadcast
     {
         $channels = [];
 
-        $other_user = $this->message->conversation->participants()->where('user_id', '<>', Auth::id())->first();
+        $other_user = $this->message->mursheedUsers->where('user_id', '<>', Auth::id())->first();
         $channels[] = new Channel('Chat.' . $other_user->id);
 
         if ($this->replay) {
-            $other_user_replay = $this->replay->conversation->participants()->where('user_id', '<>', Auth::id())->first();
+            $other_user_replay = $this->replay->Users->where('user_id', '<>', Auth::id())->first();
             $channels[] = new Channel('Chat.' . $other_user_replay->id);
         }
 
