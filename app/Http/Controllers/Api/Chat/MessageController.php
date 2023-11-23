@@ -14,6 +14,7 @@ class MessageController extends Controller
         $Message = Message::all(); 
         return response([
             "data" => $Message,
+            "message" => "All Messages Successfully",
             "status" => true,
         ], 200);
     }
@@ -31,6 +32,7 @@ class MessageController extends Controller
         );
         return response([
             "data" => $message,
+            "message" => "Create Conversation And Send Message Successfully",
             "status" => true,
         ], 200);
     }
@@ -48,7 +50,8 @@ class MessageController extends Controller
             ]
         );
         return response([
-            "message" => $message,
+            "data" => $message,
+            "message" => "Send Message Successfully",
             "status" => true,
         ], 200);
     }

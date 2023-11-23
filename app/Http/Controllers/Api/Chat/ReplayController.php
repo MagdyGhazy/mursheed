@@ -12,6 +12,7 @@ class ReplayController extends Controller
         $Replies = Replay::all(); 
         return response([
             "data" => $Replies,
+            "message" => "All Replays Successfully",
             "status" => true,
         ], 200);
     }
@@ -28,6 +29,7 @@ class ReplayController extends Controller
         );
         return response([
             "data" => $message,
+            "message" => " Replay Successfully",
             "status" => true,
         ], 200);
     }
