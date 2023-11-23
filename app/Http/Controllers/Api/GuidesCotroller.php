@@ -233,7 +233,32 @@ class GuidesCotroller extends Controller
         }
 
         $guide->update($data);
+return response()->json([
+            'status' => true,
+            'message' => 'tourist successfully created',
+            'token' => $global_user->createToken("API TOKEN")->plainTextToken,
+            "user" => [
+                "id" => $guide->id,
+                "notification_id" => $guide->mursheed_user->id,
+                "name" => $guide->name,
+                "phone" => $guide->phone,
+                "email" => $guide->email,
+                "is_verified" => $guide->email_verified_at ? true : false,
+                "type" =>  "Guides",
+                "nationality" => $guide->nationality,
+                "country_id" => (int)$guide->country_id,
+                "state_id" => (int)$guide->state_id,
+                "gender" => $guide->gender ? ($guide->gender == 1 ? "male" : "female") : null,
+                "personal_photo" => empty($guide->getFirstMediaUrl('personal_pictures')) ? null : $guide->getFirstMediaUrl('personal_pictures'),
+                "bio"=>$guide->bio,
+                "status"=> $guide->status,
+                "admin_rating"=> $guide->admin_rating,
+                "ratings_count"=> $guide->ratings_count,
+                "ratings_sum"=> $guide->name,
+                "total_rating"=> $guide->name,
 
+            ],
+        ], 201);
         return response()->json([
             'status' => true,
             'message' => 'Driver Update ggg Is Successfully',

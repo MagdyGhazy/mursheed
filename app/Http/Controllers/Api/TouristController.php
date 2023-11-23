@@ -70,7 +70,7 @@ class TouristController extends Controller
     {
 
         $tourist = Tourist::where('email', $request->user()->email)->first();
-
+    
         if ($tourist == null) {
             return response()->json(["message" => "unauthenticated"], 401);
         }
@@ -95,7 +95,24 @@ class TouristController extends Controller
         }
 
         $tourist->update($data);
-
+        
+        return response()->json([
+            'status' => true,
+            'message' => 'tourist successfully created',
+            'token' => $global_user->createToken("API TOKEN")->plainTextToken,
+            "user" => [
+                "id" => $tourist->id,
+                "name" => $tourist->name,
+                "notification_id" => $tourist->mursheed_user->id,
+                "phone" => $tourist->phone,
+                "email" => $tourist->email,
+                "is_verified" => $tourist->email_verified_at ? true : false,
+                "type" =>  "Tourist",
+                "nationality" => $tourist->nationality,
+                "gender" => $tourist->gender ? ($tourist->gender == 1 ? "male" : "female") : null,
+                "personal_photo" => empty($tourist->getFirstMediaUrl('personal_pictures')) ? null : $tourist->getFirstMediaUrl('personal_pictures'),
+            ],
+        ], 201);
         return response()->json([
             'status' => true,
             'message' => 'Tourist Update Is Successfully',
