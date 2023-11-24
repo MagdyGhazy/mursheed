@@ -351,6 +351,7 @@ class Drivercontroller extends Controller
             ],
         ], 201);
 
+
     }
     
     public function update(GuideRequest $request, driver $driver)
