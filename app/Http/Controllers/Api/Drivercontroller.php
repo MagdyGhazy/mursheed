@@ -42,7 +42,7 @@ class Drivercontroller extends Controller
         $k = array_search('media', ['languagesable', 'country', 'state', 'media'], true);
 
         if ($k !== false) {
-            $model = Driver::with(['languagesable', 'country', 'state', 'media','priceServices'=>function($query){
+            $model = Driver::with(['languagesable', 'country', 'state', 'media', 'priceServices' => function ($query) {
                 $query->first();
             }])
                 ->addSelect([
@@ -66,31 +66,31 @@ class Drivercontroller extends Controller
     }
     public function index_mobile(Request $request)
     {
-//        return $request->carBrandName;
+        //        return $request->carBrandName;
 
         $drivers = Driver::query()
-            ->when($request->has('price'), fn($query) => $query->whereHas('priceServices', fn($query) => $query->where('price', '<=', $request->price)))
-            ->when($request->has('language_id'), fn($query) => $query->whereHas('languagesable', fn($query) => $query->whereIn('language_id', $request->language_id)))
-            ->when($request->has('carBrandName'),fn($query)=>$query->where('car_brand_name',"$request->carBrandName"))
-            ->when($request->has('name'),fn($query)=>$query->where('name','LIKE',"%{$request->name}%"))
-            ->when($request->has('rating'),fn($query)=>$query->where('total_rating',(float)$request->rating))
-            ->when($request->has('country_id'),fn($query)=>$query->where('country_id',$request->country_id))
-            ->when($request->has('state_id'),fn($query)=>$query->where('state_id',$request->state_id))
-            ->when($request->has('car_type'),fn($query)=>$query->where('car_type',$request->car_type))
-            ->where('status',1)
+            ->when($request->has('price'), fn ($query) => $query->whereHas('priceServices', fn ($query) => $query->where('price', '<=', $request->price)))
+            ->when($request->has('language_id'), fn ($query) => $query->whereHas('languagesable', fn ($query) => $query->whereIn('language_id', $request->language_id)))
+            ->when($request->has('carBrandName'), fn ($query) => $query->where('car_brand_name', "$request->carBrandName"))
+            ->when($request->has('name'), fn ($query) => $query->where('name', 'LIKE', "%{$request->name}%"))
+            ->when($request->has('rating'), fn ($query) => $query->where('total_rating', (float)$request->rating))
+            ->when($request->has('country_id'), fn ($query) => $query->where('country_id', $request->country_id))
+            ->when($request->has('state_id'), fn ($query) => $query->where('state_id', $request->state_id))
+            ->when($request->has('car_type'), fn ($query) => $query->where('car_type', $request->car_type))
+            ->where('status', 1)
             ->select('id', 'name', 'state_id', 'country_id', 'total_rating', 'ratings_count')
             ->withCount(['favourites' => function ($q) {
                 $q->where('tourist_id', '=', auth()->user()->user_id);
             }])
             ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
-            ->with(['priceServices'=>function($query){
+            ->with(['priceServices' => function ($query) {
                 $query->limit(1)->latest();
             }])
             ->orderBy('total_rating', 'DESC');
 
-            $perPage = $request->input('per_page', 10); // Default to 10 items per page
-            $page = $request->input('page', 1);
-            $paginatedDrivers = $drivers->paginate($perPage, ['*'], 'page', $page);
+        $perPage = $request->input('per_page', 10); // Default to 10 items per page
+        $page = $request->input('page', 1);
+        $paginatedDrivers = $drivers->paginate($perPage, ['*'], 'page', $page);
 
         $paginatedDrivers->getCollection()->each(function ($guide) {
             $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0
@@ -103,39 +103,39 @@ class Drivercontroller extends Controller
             unset($guide->favourites_count);
         });
 
-//        $drivers = Pipeline::send($drivers)
-//            ->through([
-////                SearchByName::class,
-////                SearchByCountry::class,
-////                SearchByState::class,
-////                SearchByCarCategory::class,
-////                SearchByCarModel::class,
-//            ])
-//            ->then(fn($user) => $user
-////                ->select('id', 'name', 'state_id', 'country_id', 'total_rating', 'ratings_count')
-////                ->withCount(['favourites' => function ($q) {
-////                    $q->where('tourist_id', '=', auth()->user()->user_id);
-////                }])
-////                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
-////                ->with(['priceServices'=>function($query){
-////                    $query->limit(1)->latest();
-////                }])
-////                ->orderBy('total_rating', 'DESC')
-////                ->get()
-////                ->each(function ($driver) {
-////                    $driver->personal_photo =
-////                        count($driver->getMedia('personal_photo')) == 0
-////                            ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
-////
-////                    $driver->image_background =
-////                        count($driver->getMedia('car_photo')) == 0
-////                            ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
-////                    unset($driver->media);
-////
-////                    $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
-////
-////                })
-//            );
+        //        $drivers = Pipeline::send($drivers)
+        //            ->through([
+        ////                SearchByName::class,
+        ////                SearchByCountry::class,
+        ////                SearchByState::class,
+        ////                SearchByCarCategory::class,
+        ////                SearchByCarModel::class,
+        //            ])
+        //            ->then(fn($user) => $user
+        ////                ->select('id', 'name', 'state_id', 'country_id', 'total_rating', 'ratings_count')
+        ////                ->withCount(['favourites' => function ($q) {
+        ////                    $q->where('tourist_id', '=', auth()->user()->user_id);
+        ////                }])
+        ////                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
+        ////                ->with(['priceServices'=>function($query){
+        ////                    $query->limit(1)->latest();
+        ////                }])
+        ////                ->orderBy('total_rating', 'DESC')
+        ////                ->get()
+        ////                ->each(function ($driver) {
+        ////                    $driver->personal_photo =
+        ////                        count($driver->getMedia('personal_photo')) == 0
+        ////                            ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+        ////
+        ////                    $driver->image_background =
+        ////                        count($driver->getMedia('car_photo')) == 0
+        ////                            ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+        ////                    unset($driver->media);
+        ////
+        ////                    $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
+        ////
+        ////                })
+        //            );
         $data = json_decode(json_encode($paginatedDrivers), true);
 
         return response()->json([
@@ -198,9 +198,9 @@ class Drivercontroller extends Controller
                 "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
                 "total_rate" => $driver->total_rating,
                 "count_rate" => $driver->ratings_count,
-                'pictures'=>$driver->pictures,
-                'document'=>$driver->document,
-                'priceServices'=>$driver->priceServices,
+                'pictures' => $driver->pictures,
+                'document' => $driver->document,
+                'priceServices' => $driver->priceServices,
             ],
         ], 200);
     }
@@ -242,7 +242,6 @@ class Drivercontroller extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($request->validated('password'));
         $data['status'] = -1;
-
 
         $driver = Driver::create($data);
         $global_user = MursheedUser::where("email", $driver->email)->first();
@@ -287,11 +286,20 @@ class Drivercontroller extends Controller
             'password' => $request->password ? Hash::make($request->password) : $global_user->password
         ]);
 
+        if ($request->document) {
+            $driver->clearMediaCollection('document');
+            $driver->addMultipleMediaFromRequest(['document'])->each(function ($fileAdder) {
+                $fileAdder->toMediaCollection('document');
+            });
+        }
+
         if ($request->personal_pictures) {
             $driver->clearMediaCollection('personal_pictures');
             $driver->addMultipleMediaFromRequest(['personal_pictures'])->each(function ($fileAdder) {
                 $fileAdder->toMediaCollection('personal_pictures');
             });
+
+         
         }
         if ($request->car_photos) {
             $driver->clearMediaCollection('car_photos');
@@ -300,23 +308,52 @@ class Drivercontroller extends Controller
             });
         }
 
-        $data = $request->except('personal_pictures', 'languages', 'car_photos');
+        $data = $request->except('personal_pictures', 'languages', 'car_photos','document');
 
         if ($request->password) {
             $data['password'] = Hash::make($request->password);
         }
 
         $driver->update($data);
-
         return response()->json([
             'status' => true,
             'message' => 'Driver Update Is Successfully',
-            "user" =>  $driver,
-            "personal_photo" => empty($global_user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $global_user->user->getFirstMediaUrl('personal_pictures'),
-"car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,        ], 200);
+            'token' => $global_user->createToken("API TOKEN")->plainTextToken,
+            "user" => [
+                "id" => $driver->id,
+                "name" => $driver->name,
+                "notification_id" => $driver->mursheed_user->id,
+                "phone" => $driver->phone,
+                "email" => $driver->email,
+                "is_verified" => $driver->email_verified_at ? true : false,
+                "type" => "Driver",
+                "nationality" => $driver->nationality,
+                "country_id" => (int)$driver->country_id,
+                "state_id" => (int)$driver->state_id,
+                "gender" => $driver->gender ? ($driver->gender == 1 ? "male" : "female") : null,
+                "bio" => $driver->bio,
+                "car_number" => $driver->car_number,
+                "driver_licence_number"=>$driver->driver_licence_number,
+                "gov_id"=>$driver->gov_id,
+                "status"=>$driver->status,
+                "car_type"=>$driver->car_type,
+                "car_brand_name"=>$driver->car_brand_name,
+                "car_manufacturing_date"=>$driver->car_manufacturing_date,
+                "admin_rating"=>$driver->admin_rating,
+                "ratings_count"=>$driver->ratings_count,
+                "ratings_sum"=>$driver->ratings_sum,
+                "total_rating"=>$driver->total_rating,
+                "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
+                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? null : $driver->getFirstMediaUrl('personal_pictures'),
+                "document" => empty($driver->getFirstMediaUrl('document')) ? null : $driver->getFirstMediaUrl('document'),
+
+                
+            ],
+        ], 201);
+
 
     }
-
+    
     public function update(GuideRequest $request, driver $driver)
     {
 
@@ -359,7 +396,6 @@ class Drivercontroller extends Controller
     {
 
         $this->ControllerHandler->update("driver", $driver, ['status' => 1]);
-
     }
 
     public function inActive(driver $driver)
@@ -380,31 +416,31 @@ class Drivercontroller extends Controller
         //     ->getWhere("drivers", 'state_id', $state_id, 4);
 
         $drivers = Driver::query()
-            ->select('id', 'name', 'state_id','total_rating')->with(['priceServices'=>function($query){
+            ->select('id', 'name', 'state_id', 'total_rating')->with(['priceServices' => function ($query) {
                 $query->first();
             }])
             ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
-            ->when($request->state_id ,function ($query) use ($request) {
-                    $query->where('state_id', $request->state_id);
+            ->when($request->state_id, function ($query) use ($request) {
+                $query->where('state_id', $request->state_id);
             })
-            ->orderBy('ratings_sum','DESC')
-            ->with(['priceServices'=>function($query){
+            ->orderBy('ratings_sum', 'DESC')
+            ->with(['priceServices' => function ($query) {
                 $query->limit(1)->latest();
             }])
-            ->where('status',1)
+            ->where('status', 1)
 
             ->limit(4)
             ->get()
             ->each(function ($driver) {
                 $driver->personal_photo =
                     count($driver->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
                 $driver->image_background =
                     count($driver->getMedia('car_photo')) == 0
-                        ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
-                $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
+                $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
 
                 unset($driver->media);
@@ -420,22 +456,21 @@ class Drivercontroller extends Controller
     public function getDriverByCityWithPriceList(Request $request)
     {
         return response([
-            "drivers" => Driver::whereHas('priceServices',function ($query) use ($request){
-                 $query->where('city_id',$request->city_id);
+            "drivers" => Driver::whereHas('priceServices', function ($query) use ($request) {
+                $query->where('city_id', $request->city_id);
             })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
                 $driver->personal_photo =
                     count($driver->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
                 $driver->image_background =
                     count($driver->getMedia('car_photo')) == 0
-                        ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
                 unset($driver->media);
             }),
             "status" => true
 
         ]);
-
     }
 }

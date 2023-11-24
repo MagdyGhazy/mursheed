@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('attractive_locations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->longText('description');
             $table->unsignedInteger('country_id');
             $table->unsignedInteger('city_id');
             $table->string('lat');

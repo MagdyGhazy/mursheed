@@ -50,4 +50,9 @@ class Tourist extends Authenticatable implements HasMedia
 
         return parent::delete();
     }
+    public function accommmadationOrder()
+    {
+        return $this->hasMany(OrderAccommmodition::class);
+    }
+
 }
