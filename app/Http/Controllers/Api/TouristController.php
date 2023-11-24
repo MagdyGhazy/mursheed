@@ -110,13 +110,13 @@ class TouristController extends Controller
                 "email" => $tourist->email,
                 "is_verified" => $tourist->email_verified_at ? true : false,
                 "type" =>  "Tourist",
-                "dest_city_id "=>$tourist->dest_city_id,
+                "dest_city_id"=>$tourist->dest_city_id,
                 "county"=>$tourist->county,
                 "country_id"=>$tourist->country_id,
                 "state_id"=>$tourist->state_id,
                 "nationality" => $tourist->nationality,
                 "gender" => $tourist->gender ? ($tourist->gender == 1 ? "male" : "female") : null,
-                "personal_pictures" => empty($tourist->getFirstMediaUrl('personal_pictures')) ? null : $tourist->getFirstMediaUrl('personal_pictures'),
+                "personal_photo" => empty($tourist->getFirstMediaUrl('personal_pictures')) ? null : $tourist->getFirstMediaUrl('personal_pictures'),
             ],
         ], 201);
     }
