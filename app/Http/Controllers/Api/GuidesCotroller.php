@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
+use App\Models\State;
+use App\Models\Guides;
+use Ramsey\Uuid\Guid\Guid;
+use App\Models\MursheedUser;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Http\Requests\UserRequest;
+use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Support\Facades\Pipeline;
+use App\Notifications\SendEmailForApprove;
 use App\Http\Controllers\ControllerHandler;
-use App\Http\Controllers\Filter\SearchByCountry;
-use App\Http\Controllers\Filter\SearchByLanguage;
 use App\Http\Controllers\Filter\SearchByName;
 use App\Http\Controllers\Filter\SearchByPrice;
 use App\Http\Controllers\Filter\SearchByState;
+use App\Http\Controllers\Filter\SearchByCountry;
+use App\Http\Controllers\Filter\SearchByLanguage;
 use App\Http\Requests\Guide\UpdateProfileRequest;
-use App\Http\Requests\GuideRequest;
-use App\Http\Requests\UserRequest;
-use App\Http\Requests\UserUpdateRequest;
-use App\Models\Guides;
-use App\Models\MursheedUser;
-use App\Models\State;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Notifications\SendEmailForApprove;
-use Illuminate\Support\Facades\Pipeline;
-use Ramsey\Uuid\Guid\Guid;
 
 class GuidesCotroller extends Controller
 {
@@ -34,7 +35,31 @@ class GuidesCotroller extends Controller
 
     public function index()
     {
-        return $this->ControllerHandler->getAllWith("guides", ['media']);
+        $model = Guides::with(['languagesable', 'country', 'state', 'media'])->orderBy('total_rating', 'DESC')->get();
+        $k = array_search('media', ['languagesable', 'country', 'state', 'media'], true);
+
+        if ($k !== false) {
+            $model = Guides::with(['languagesable', 'country', 'state', 'media', 'priceServices' => function ($query) {
+                $query->first();
+            }])
+                ->addSelect([
+                    'email_verified' => MursheedUser::select('email_verified_at')->whereColumn('mursheed_users.email', 'guides.email')
+                ])
+                ->get()
+                ->map(function ($data) {
+                    $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
+
+                    $data['pictures'] = count($collect) ? $collect : null;
+                    $data['email_verified'] = $data['email_verified'] ? Carbon::parse($data['email_verified'])->diffForHumans() : "Not Yet";
+                    return $data;
+                });
+        }
+
+        return response([
+            "guides" => $model,
+            "message" => "success",
+            "status" => true
+        ], 200);
     }
 
     public function index_mobile(Request $request)

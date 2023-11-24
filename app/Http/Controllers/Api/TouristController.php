@@ -86,6 +86,8 @@ class TouristController extends Controller
             $tourist->addMultipleMediaFromRequest(['personal_pictures'])->each(function ($fileAdder) {
                 $fileAdder->toMediaCollection('personal_pictures');
             });
+
+         
         }
 
         $data = $request->except('personal_pictures', 'languages', 'car_photos');
@@ -108,17 +110,15 @@ class TouristController extends Controller
                 "email" => $tourist->email,
                 "is_verified" => $tourist->email_verified_at ? true : false,
                 "type" =>  "Tourist",
+                "dest_city_id "=>$tourist->dest_city_id,
+                "county"=>$tourist->county,
+                "country_id"=>$tourist->country_id,
+                "state_id"=>$tourist->state_id,
                 "nationality" => $tourist->nationality,
                 "gender" => $tourist->gender ? ($tourist->gender == 1 ? "male" : "female") : null,
-                "personal_photo" => empty($tourist->getFirstMediaUrl('personal_pictures')) ? null : $tourist->getFirstMediaUrl('personal_pictures'),
+                "personal_pictures" => empty($tourist->getFirstMediaUrl('personal_pictures')) ? null : $tourist->getFirstMediaUrl('personal_pictures'),
             ],
         ], 201);
-        return response()->json([
-            'status' => true,
-            'message' => 'Tourist Update Is Successfully',
-            "user" =>  $tourist,
-            "personal_photo" => empty($global_user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $global_user->user->getFirstMediaUrl('personal_pictures'),
-        ], 200);
     }
 
     public function update(TouristRequest $request, Tourist $tourist)
