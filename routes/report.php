@@ -9,7 +9,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("fillter", [ReportController::class, "index"]);
         Route::get('profite',[OrderController::class,'profiteCost']);
 
-        Route::post('allProfits/{country_id}',[ReportController::class,'profits']);
+        Route::post('allProfits/{country_id?}',[ReportController::class,'profits']);
 
     });
 });
