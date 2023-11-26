@@ -22,15 +22,15 @@ class ReportServes
     }
 
 
-    public function profits($request,$country_id)
+    public function profits($request)
     {
         $start_date = $request->has('start_date')?  $request->start_date : Order::first()->created_at->format('Y-m-d');
         $end_date = $request->has('end_date')?   Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->addDays(1)->format('Y-m-d');
 
 
-        $allProfits = $country_id == null ? $this->allProfits($start_date, $end_date) : $this->allCountryProfits($start_date, $end_date, $country_id);
-        $driversProfits = $country_id == null ? $this->allProfitsWithDriver($start_date, $end_date) : $this->allCountryProfitsWithDriver($start_date, $end_date, $country_id);
-        $guidesProfits = $country_id == null ? $this->allProfitsWithGuides($start_date, $end_date) :  $this->allCountryProfitsWithGuides($start_date, $end_date, $country_id);
+        $allProfits = $request->country_id == null ? $this->allProfits($start_date, $end_date) : $this->allCountryProfits($start_date, $end_date, $request->country_id);
+        $driversProfits = $request->country_id == null ? $this->allProfitsWithDriver($start_date, $end_date) : $this->allCountryProfitsWithDriver($start_date, $end_date, $request->country_id);
+        $guidesProfits = $request->country_id == null ? $this->allProfitsWithGuides($start_date, $end_date) :  $this->allCountryProfitsWithGuides($start_date, $end_date, $request->country_id);
 
         return response()->json([
             'message' => "success",

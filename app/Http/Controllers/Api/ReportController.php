@@ -18,9 +18,9 @@ class ReportController extends Controller
         return $this->reportService->filter($request->all());
     }
 
-    public function profits(Request $request , $country_id = null)
+    public function profits(Request $request)
     {
-        return $this->reportService->Profits($request , $country_id);
+        return $this->reportService->Profits($request);
     }
 
 }
