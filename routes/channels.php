@@ -17,7 +17,7 @@ Broadcast::channel('notification', function () {
         return true;
 });
 
-Broadcast::channel('Chat', function(){
+Broadcast::channel('Message', function(){
         return true;
 });
 Broadcast::channel('Replay', function(){
