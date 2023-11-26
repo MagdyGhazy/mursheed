@@ -24,6 +24,19 @@ class ReportServes
 
     public function profits($request)
     {
+        if ( Order::first() == 100)
+        {
+            return response()->json([
+                'message' => "no orders",
+                'profits' => [
+                    'all_profits' => 0,
+                    'drivers_profits' => 0,
+                    'guides_profits' => 0,
+                ],
+            ]);
+
+        }
+
         $start_date = $request->has('start_date')?  $request->start_date : Order::first()->created_at->format('Y-m-d');
         $end_date = $request->has('end_date')?   Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->addDays(1)->format('Y-m-d');
 
