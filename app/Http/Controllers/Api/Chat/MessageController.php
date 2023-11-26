@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers\Api\Chat;
 
+use Throwable;
 use App\Models\Message;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use App\Events\MessageCreated;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class MessageController extends Controller
 {
     public function index()
     {
-        $Message = Message::all(); 
+        $Message = Message::all();
         return response([
             "data" => $Message,
             "message" => "All Messages Successfully",
@@ -21,38 +24,60 @@ class MessageController extends Controller
     public function createConversation(Request $request)
     {
 
-        $con = Conversation::create();
+        DB::beginTransaction();
+        try {
+            $conversation = Conversation::create();
 
-        $message = Message::create(
-            [
-                'content' => $request['content'],
-                'user_id' => auth()->user()->id,
-                'conversation_id' => $con->id,
-            ]
-        );
-        return response([
-            "data" => $message,
-            "message" => "Create Conversation And Send Message Successfully",
-            "status" => true,
-        ], 200);
+            $message = Message::create(
+                [
+                    'content' => $request['content'],
+                    'user_id' => auth()->user()->id,
+                    'conversation_id' => $conversation->id,
+                ]
+            );
+
+            DB::commit();
+            broadcast(new MessageCreated($message));
+
+            return response([
+                "data" => $message,
+                "message" => "Create Conversation And Send Message Successfully",
+                "status" => true,
+            ], 200);
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
 
     public function createMessage(Request $request)
     {
 
-        $conversation_id = $request->input('conversation_id');
-        $message = Message::create(
-            [
-                'content' => $request['content'],
-                'user_id' => auth()->user()->id,
-                'conversation_id' => $conversation_id,
-            ]
-        );
-        return response([
-            "data" => $message,
-            "message" => "Send Message Successfully",
-            "status" => true,
-        ], 200);
+        DB::beginTransaction();
+        try{
+            $conversation_id = $request->input('conversation_id');
+            $message = Message::create(
+                [
+                    'content' => $request['content'],
+                    'user_id' => auth()->user()->id,
+                    'conversation_id' => $conversation_id,
+                ]
+            );
+    
+            DB::commit();
+            broadcast(new MessageCreated($message));
+    
+            return response([
+                "data" => $message,
+                "message" => "Send Message Successfully",
+                "status" => true,
+            ], 200);
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }

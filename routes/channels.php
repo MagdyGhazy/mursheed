@@ -17,9 +17,9 @@ Broadcast::channel('notification', function () {
         return true;
 });
 
-Broadcast::channel('Message', function(){
+Broadcast::channel('Message', function () {
         return true;
 });
-Broadcast::channel('Replay', function(){
-        return true;
-});
+// Broadcast::channel('Replay', function () {
+//         return true;
+// });

@@ -20,19 +20,17 @@ class MessageCreated implements ShouldBroadcast
      * @var\App\Models\Message
      */
     public $message;
-    public $replay;
+
     /**
      * Create a new event instance.
      * 
      * @param  \App\Models\Message $message
-     * @param  \App\Models\Replay $replay
      * 
      * @return  void
      */
-    public function __construct(Message $message , Replay $replay)
+    public function __construct(Message $message)
     {
         $this->message = $message;
-        $this->replay = $replay;
     }
 
     /**
@@ -40,13 +38,10 @@ class MessageCreated implements ShouldBroadcast
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn()
+    public function broadcastOn(): array
     {
-        if ($this->replay) {
-            return new Channel('Replay');
-        }
-    
-        return new Channel('Message');
+        return [
+            new Channel('Message'),
+        ];
     }
-    
 }
