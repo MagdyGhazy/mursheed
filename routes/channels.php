@@ -14,11 +14,12 @@ use Illuminate\Support\Facades\Broadcast;
 */
 
 Broadcast::channel('notification', function () {
-    return true;
+        return true;
 });
 
-Broadcast::channel('Chat.{id}', function($user,$id){
-    if($user->id == $id){
-        return $user;
-    }
+Broadcast::channel('Message', function () {
+        return true;
 });
+// Broadcast::channel('Replay', function () {
+//         return true;
+// });
