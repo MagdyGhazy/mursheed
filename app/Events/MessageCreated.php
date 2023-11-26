@@ -40,18 +40,13 @@ class MessageCreated implements ShouldBroadcast
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        $channels = [];
-
-        $other_user = $this->message->mursheedUsers->where('user_id', '<>', Auth::id())->first();
-        $channels[] = new Channel('Chat.' . $other_user->id);
-
         if ($this->replay) {
-            $other_user_replay = $this->replay->Users->where('user_id', '<>', Auth::id())->first();
-            $channels[] = new Channel('Chat.' . $other_user_replay->id);
+            return new Channel('Replay');
         }
-
-        return $channels;
+    
+        return new Channel('Message');
     }
+    
 }
