@@ -25,14 +25,12 @@ class ReportController extends Controller
     }
 
     public function profitsFromSixMonths(Request $request)
-    {    
+    {
         $data['country_id'] = $request->country_id;
         $data['start_date'] = Carbon::now()->subMonths(6);
         $data['end_date'] = now();
-    
+
         return $this->reportService->Profits($data);
     }
     
-
-
 }
