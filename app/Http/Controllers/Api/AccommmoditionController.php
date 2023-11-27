@@ -145,7 +145,7 @@ class AccommmoditionController extends Controller
 
         // here some validation check parent or admin
         if (request()->images) {
-            $accommmodition->clearMediaCollection('photos');
+//            $accommmodition->clearMediaCollection('photos');
             //
             $accommmodition->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
                 $fileAdder->toMediaCollection('photos');
@@ -156,6 +156,11 @@ class AccommmoditionController extends Controller
             "aval_status" => $request->aval_status ? 1 : 0,
             "info_status" => $request->info_status ? 1 : 0
         ]));
+    }
+
+    public function deleteImage(accommmodition $accommmodition)
+    {
+        $accommmodition->clearMediaCollection('photos');
     }
 
 
