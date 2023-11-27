@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\ControllerHandler;
-use App\Http\Requests\GuideRequest;
-use App\Http\Requests\Tourist\UpdateProfileRequest;
-use App\Http\Requests\TouristRequest;
 use App\Models\Guides;
-use App\Models\MursheedUser;
 use App\Models\Tourist;
+use App\Models\MursheedUser;
 use Illuminate\Http\Request;
+use App\Models\Languagesable;
+use App\Http\Requests\GuideRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\TouristRequest;
+use App\Http\Controllers\ControllerHandler;
+use App\Http\Requests\Tourist\UpdateProfileRequest;
 
 class TouristController extends Controller
 {
@@ -68,7 +70,29 @@ class TouristController extends Controller
 
     public function update_mobile(UpdateProfileRequest $request)
     {
+        $user = Auth::user();
+   
 
+        $guide = Guides::where('email', $request->user()->email)->first();
+        if ($request->has('languages')) {
+            $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
+        }
+
+        foreach ($request->languages as $value) {
+          $data =  Languagesable::create(
+                [
+                    'languagesable_type' => "App\Models\Guides",
+                    'languagesable_id' => $user->user_id,
+                    'language_id' => $value
+                ]
+            );
+        }
+
+        $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
+            'language' => function ($query) {
+            $query->select('id','lang')
+            ;}
+        ])->get();
         $tourist = Tourist::where('email', $request->user()->email)->first();
     
         if ($tourist == null) {
@@ -115,6 +139,7 @@ class TouristController extends Controller
                 "country_id"=>$tourist->country_id,
                 "state_id"=>$tourist->state_id,
                 "nationality" => $tourist->nationality,
+                "languages"=>$languages,
                 "gender" => $tourist->gender ? ($tourist->gender == 1 ? "male" : "female") : null,
                 "personal_photo" => empty($tourist->getFirstMediaUrl('personal_pictures')) ? null : $tourist->getFirstMediaUrl('personal_pictures'),
             ],

@@ -7,10 +7,11 @@ use App\Models\OTP;
 use App\Models\User;
 use App\Models\Driver;
 use App\Models\Guides;
+use App\Models\Tourist;
 use App\Models\MursheedUser;
 use Illuminate\Http\Request;
+use App\Models\Languagesable;
 use App\Http\Controllers\Controller;
-use App\Models\Tourist;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -121,7 +122,11 @@ class AuthController extends Controller
             );
 
             $user = MursheedUser::where('email', $request->email)->first();
-
+            $languages = Languagesable::where('languagesable_id', $user->id)->with([
+                'language' => function ($query) {
+                $query->select('id','lang')
+                ;}
+            ])->get();
 
             // if ($user->email_verified_at == null)
             // {
@@ -142,6 +147,22 @@ class AuthController extends Controller
             if (explode("\\", get_class($user->user))[2] == "Driver") {
 
                 if (Hash::check($request->password, $user->password)) {
+
+                  
+                        $user->clearMediaCollection('car_photos');
+                        foreach ($request->file('car_photos') as $image) {
+                            $user->addMedia($image)->toMediaCollection('car_photos');
+                        }
+                   
+            
+                    if (count($user->getMedia('car_photos')) >= 0) {
+                        foreach ($user->getMedia('car_photos') as $media) {
+                            $car_photos[] = $media->getUrl();
+                        }
+                    }
+
+                    
+
                     return response()->json([
                         'status' => true,
                         'message' => 'User Logged In Successfully',
@@ -171,6 +192,8 @@ class AuthController extends Controller
                             "ratings_count" => $user->user->ratings_count,
                             "ratings_sum" => $user->user->ratings_sum,
                             "total_rating" => $user->user->total_rating,
+                            "languages"=>$languages,
+                            "car_photo" =>empty($user->user->getMedia('car_photos')) ? url("default_user.jpg") : $user->user->getMedia('car_photos'),
                             "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
                         ],
                     ], 200);
@@ -203,6 +226,7 @@ class AuthController extends Controller
                             "ratings_count" => $user->user->ratings_count,
                             "ratings_sum" => $user->user->ratings_sum,
                             "total_rating" => $user->user->total_rating,
+                            "languages"=>$languages,
                             "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
                         ],
                     ], 200);
@@ -226,6 +250,7 @@ class AuthController extends Controller
                             "nationality" => $user->user->nationality,
                             "country_id" => $user->user->country_id,
                             "state_id" => $user->user->state_id,
+                            "languages"=>$languages,
                             "gender" =>  $user->user->gender ? ($user->user->gender == 1 ? "male" : "female") : null,
                             "des_city_id" => $user->user->dest_city_id,
                             "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
@@ -246,7 +271,7 @@ class AuthController extends Controller
                             "name" => $user->user->name,
                             "phone" => $user->user->phone,
                             "email" => $user->user->email,
-
+                            "languages"=>$languages,
                             "is_verified" => $user->email_verified_at ? true : false,
                             "type" =>  explode("\\", get_class($user->user))[2],
                             "nationality" => $user->user->nationality,

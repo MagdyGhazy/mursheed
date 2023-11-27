@@ -28,6 +28,10 @@ class MursheedUser extends Authenticatable implements MustVerifyEmail
 
     public function sendMessages()
     {
-        return $this->hasMany(Message::class,'user_id');
+        return $this->hasMany(Message::class, 'user_id');
+    }
+    public function languageesable()
+    {
+        return $this->hasMany(Languagesable::class, 'languagesable_id', 'id');
     }
 }
