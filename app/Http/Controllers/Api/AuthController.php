@@ -122,11 +122,7 @@ class AuthController extends Controller
             );
 
             $user = MursheedUser::where('email', $request->email)->first();
-            $languages = Languagesable::where('languagesable_id', $user->id)->with([
-                'language' => function ($query) {
-                $query->select('id','lang')
-                ;}
-            ])->get();
+
 
             // if ($user->email_verified_at == null)
             // {
@@ -135,7 +131,11 @@ class AuthController extends Controller
             //         'message' => 'your email must be verified first !',
             //     ], 402);
             // }
-
+            $languages = Languagesable::where('languagesable_id', $user->id)->with([
+                'language' => function ($query) {
+                    $query->select('id', 'lang');
+                }
+            ])->get();
             if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
@@ -148,21 +148,12 @@ class AuthController extends Controller
 
                 if (Hash::check($request->password, $user->password)) {
 
-                  
-                        $user->clearMediaCollection('car_photos');
-                        foreach ($request->file('car_photos') as $image) {
-                            $user->addMedia($image)->toMediaCollection('car_photos');
-                        }
-                   
-            
-                    if (count($user->getMedia('car_photos')) >= 0) {
-                        foreach ($user->getMedia('car_photos') as $media) {
+                    $driver = Driver::where('email', $request->email)->first();
+                    if (count($driver->getMedia('car_photos')) >= 0) {
+                        foreach ($driver->getMedia('car_photos') as $media) {
                             $car_photos[] = $media->getUrl();
                         }
                     }
-
-                    
-
                     return response()->json([
                         'status' => true,
                         'message' => 'User Logged In Successfully',
@@ -192,9 +183,9 @@ class AuthController extends Controller
                             "ratings_count" => $user->user->ratings_count,
                             "ratings_sum" => $user->user->ratings_sum,
                             "total_rating" => $user->user->total_rating,
-                            "languages"=>$languages,
-                            "car_photo" =>empty($user->user->getMedia('car_photos')) ? url("default_user.jpg") : $user->user->getMedia('car_photos'),
+                            "car_photo" => empty($user->user->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos,
                             "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
+                            "languages" => $languages
                         ],
                     ], 200);
                 }
@@ -226,7 +217,7 @@ class AuthController extends Controller
                             "ratings_count" => $user->user->ratings_count,
                             "ratings_sum" => $user->user->ratings_sum,
                             "total_rating" => $user->user->total_rating,
-                            "languages"=>$languages,
+                            "languages" => $languages,
                             "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
                         ],
                     ], 200);
@@ -250,7 +241,7 @@ class AuthController extends Controller
                             "nationality" => $user->user->nationality,
                             "country_id" => $user->user->country_id,
                             "state_id" => $user->user->state_id,
-                            "languages"=>$languages,
+                            "languages" => $languages,
                             "gender" =>  $user->user->gender ? ($user->user->gender == 1 ? "male" : "female") : null,
                             "des_city_id" => $user->user->dest_city_id,
                             "personal_photo" => empty($user->user->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $user->user->getFirstMediaUrl('personal_pictures'),
@@ -271,7 +262,7 @@ class AuthController extends Controller
                             "name" => $user->user->name,
                             "phone" => $user->user->phone,
                             "email" => $user->user->email,
-                            "languages"=>$languages,
+                            "languages" => $languages,
                             "is_verified" => $user->email_verified_at ? true : false,
                             "type" =>  explode("\\", get_class($user->user))[2],
                             "nationality" => $user->user->nationality,
