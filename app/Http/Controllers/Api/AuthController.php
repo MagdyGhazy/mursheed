@@ -149,11 +149,11 @@ class AuthController extends Controller
                 if (Hash::check($request->password, $user->password)) {
 
                     $driver = Driver::where('email', $request->email)->first();
-                    if (count($driver->getMedia('car_photos')) >= 0) {
+//                    if (count($driver->getMedia('car_photos')) >= 0) {
                         foreach ($driver->getMedia('car_photos') as $media) {
                             $car_photos[] = $media->getUrl();
                         }
-                    }
+//                    }
                     return response()->json([
                         'status' => true,
                         'message' => 'User Logged In Successfully',
