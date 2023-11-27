@@ -118,6 +118,9 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/Chat.php'));
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/allMursheedUsers.php'));
         });
     }
 }
