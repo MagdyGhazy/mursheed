@@ -10,6 +10,7 @@ use App\Http\Requests\AccommoditionRequest;
 use App\Models\accommmodition;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Http\Request;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class AccommmoditionController extends Controller
 {
@@ -142,10 +143,14 @@ class AccommmoditionController extends Controller
 
     public function update(AccommoditionRequest $request, accommmodition $accommmodition)
     {
+//        return $request;
 
         // here some validation check parent or admin
+        $request->media_id == null ?   : $accommmodition->deleteMedia($request->media_id) ;
+
         if (request()->images) {
 //            $accommmodition->clearMediaCollection('photos');
+
             //
             $accommmodition->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
                 $fileAdder->toMediaCollection('photos');
@@ -157,12 +162,6 @@ class AccommmoditionController extends Controller
             "info_status" => $request->info_status ? 1 : 0
         ]));
     }
-
-    public function deleteImage(accommmodition $accommmodition)
-    {
-        $accommmodition->clearMediaCollection('photos');
-    }
-
 
     public function destroy(accommmodition $accommmodition)
     {
