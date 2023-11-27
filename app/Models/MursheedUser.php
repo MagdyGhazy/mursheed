@@ -25,4 +25,10 @@ class MursheedUser extends Authenticatable implements MustVerifyEmail
     {
         return $this->morphTo();
     }
+
+    public function languageesable()
+    {
+        return $this->hasMany(Languagesable::class,'languagesable_id','id');
+    }
+ 
 }

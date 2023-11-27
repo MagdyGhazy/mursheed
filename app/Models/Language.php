@@ -16,6 +16,8 @@ class Language extends Model
     {
         return $query->orderBy('lang');
     }
-
-
+    public function languageseable()
+    {
+        return $this->hasMany(Languagesable::class,'language_id','id');
+    }
 }

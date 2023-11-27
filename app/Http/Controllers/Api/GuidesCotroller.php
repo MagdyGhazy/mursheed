@@ -8,10 +8,12 @@ use App\Models\Guides;
 use Ramsey\Uuid\Guid\Guid;
 use App\Models\MursheedUser;
 use Illuminate\Http\Request;
+use App\Models\Languagesable;
 use Illuminate\Support\Carbon;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Support\Facades\Pipeline;
@@ -231,9 +233,30 @@ class GuidesCotroller extends Controller
 
     public function update_mobile(UpdateProfileRequest $request)
     {
+        $user = Auth::user();
+   
 
         $guide = Guides::where('email', $request->user()->email)->first();
+        if ($request->has('languages')) {
+            $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
+        }
 
+        foreach ($request->languages as $value) {
+          $data =  Languagesable::create(
+                [
+                    'languagesable_type' => "App\Models\Guides",
+                    'languagesable_id' => $user->user_id,
+                    'language_id' => $value
+                ]
+            );
+        }
+
+        $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
+            'language' => function ($query) {
+            $query->select('id','lang')
+            ;}
+        ])->get();
+      
         if ($guide == null) {
             return response()->json(["message" => "unauthenticated"], 401);
         }
@@ -260,7 +283,7 @@ class GuidesCotroller extends Controller
         $guide->update($data);
 return response()->json([
             'status' => true,
-            'message' => 'tourist successfully created',
+            'message' => 'guides successfully created',
             'token' => $global_user->createToken("API TOKEN")->plainTextToken,
             "user" => [
                 "id" => $guide->id,
@@ -280,16 +303,11 @@ return response()->json([
                 "admin_rating"=> $guide->admin_rating,
                 "ratings_count"=> $guide->ratings_count,
                 "ratings_sum"=> $guide->name,
+                "languages"=>$languages,
                 "total_rating"=> $guide->name,
 
             ],
         ], 201);
-        return response()->json([
-            'status' => true,
-            'message' => 'Driver Update ggg Is Successfully',
-            "user" =>  $guide,
-            "personal_photo" => empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures'),
-        ], 200);
     }
 
     public function update(GuideRequest $request, Guides $guide)

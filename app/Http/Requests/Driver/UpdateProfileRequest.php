@@ -37,7 +37,7 @@ class UpdateProfileRequest extends FormRequest
             "bio" => "nullable|string",
             "car_number" => "nullable|string",
             "driver_licence_number" => "nullable|string",
-            'car_photos' => "nullable|image",
+            'car_photos' => "nullable",
             'personal_pictures' => "nullable",
             'languages' => 'nullable'
         ];

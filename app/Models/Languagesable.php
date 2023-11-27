@@ -19,4 +19,8 @@ class Languagesable extends Model
     {
         return $this->belongsTo(Language::class);
     }
+    public function user()
+    {
+        $this->belongsTo(MursheedUser::class);
+    }
 }

@@ -2,29 +2,32 @@
 
 namespace App\Http\Controllers\Api;
 
+use Carbon\Carbon;
+use App\Models\State;
+use App\Models\Driver;
+use App\Models\Guides;
+use App\Models\Favourite;
+use App\Models\MursheedUser;
+use Illuminate\Http\Request;
+use App\Models\Languagesable;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DriverRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Pipeline;
+use App\Notifications\SendEmailForApprove;
 use App\Http\Controllers\ControllerHandler;
-use App\Http\Controllers\Filter\SearchByCarCategory;
-use App\Http\Controllers\Filter\SearchByCarModel;
-use App\Http\Controllers\Filter\SearchByCountry;
-use App\Http\Controllers\Filter\SearchByLanguage;
 use App\Http\Controllers\Filter\SearchByName;
 use App\Http\Controllers\Filter\SearchByPrice;
 use App\Http\Controllers\Filter\SearchByState;
+use App\Http\Controllers\Filter\SearchByCountry;
+use App\Http\Controllers\Filter\SearchByCarModel;
+use App\Http\Controllers\Filter\SearchByLanguage;
 use App\Http\Requests\Driver\UpdateProfileRequest;
-use App\Http\Requests\DriverRequest;
-use App\Http\Requests\GuideRequest;
-use App\Models\Driver;
-use App\Models\Favourite;
-use App\Models\Guides;
-use App\Models\MursheedUser;
-use App\Models\State;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Notifications\SendEmailForApprove;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Pipeline;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Filter\SearchByCarCategory;
+use App\Models\Language;
 
 class Drivercontroller extends Controller
 {
@@ -268,13 +271,11 @@ class Drivercontroller extends Controller
 
     public function update_mobile(UpdateProfileRequest $request)
     {
+        $user = Auth::user();
+
         $car_photos = [];
-        $driver = Driver::where('email', $request->user()->email)->first();
-        if (count($driver->getMedia('car_photo')) >= 0) {
-            foreach ($driver->getMedia('car_photo') as $media) {
-                $car_photos[] = $media->getUrl();
-            }
-        }
+        $driver = Driver::where('email', $request->email)->first();
+
         if ($driver == null) {
             return response()->json(["message" => "unauthenticated"], 401);
         }
@@ -285,7 +286,26 @@ class Drivercontroller extends Controller
             'email' => $request->email ? $request->email : $global_user->email,
             'password' => $request->password ? Hash::make($request->password) : $global_user->password
         ]);
+        if ($request->has('languages')) {
+            $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
+        }
 
+        foreach ($request->languages as $value) {
+            Languagesable::create(
+                [
+                    'languagesable_type' => "App\Models\Driver",
+                    'languagesable_id' => $user->user_id,
+                    'language_id' => $value
+                ]
+            );
+        }
+        $languages = Languagesable::where('languagesable_id', $user->id)->with([
+            'language' => function ($query) {
+            $query->select('id','lang')
+            ;}
+        ])->get();
+        
+      
         if ($request->document) {
             $driver->clearMediaCollection('document');
             $driver->addMultipleMediaFromRequest(['document'])->each(function ($fileAdder) {
@@ -293,22 +313,32 @@ class Drivercontroller extends Controller
             });
         }
 
+
+
+
+
+        if ($request->hasFile('car_photos')) {
+            $driver->clearMediaCollection('car_photos');
+            foreach ($request->file('car_photos') as $image) {
+                $driver->addMedia($image)->toMediaCollection('car_photos');
+            }
+        }
+
+        if (count($driver->getMedia('car_photos')) >= 0) {
+            foreach ($driver->getMedia('car_photos') as $media) {
+                $car_photos[] = $media->getUrl();
+            }
+        }
+
         if ($request->personal_pictures) {
             $driver->clearMediaCollection('personal_pictures');
             $driver->addMultipleMediaFromRequest(['personal_pictures'])->each(function ($fileAdder) {
                 $fileAdder->toMediaCollection('personal_pictures');
             });
-
-         
-        }
-        if ($request->car_photos) {
-            $driver->clearMediaCollection('car_photos');
-            $driver->addMultipleMediaFromRequest(['car_photos'])->each(function ($fileAdder) {
-                $fileAdder->toMediaCollection('car_photos');
-            });
         }
 
-        $data = $request->except('personal_pictures', 'languages', 'car_photos','document');
+
+        $data = $request->except('personal_pictures', 'languages', 'car_photos', 'document');
 
         if ($request->password) {
             $data['password'] = Hash::make($request->password);
@@ -333,27 +363,26 @@ class Drivercontroller extends Controller
                 "gender" => $driver->gender ? ($driver->gender == 1 ? "male" : "female") : null,
                 "bio" => $driver->bio,
                 "car_number" => $driver->car_number,
-                "driver_licence_number"=>$driver->driver_licence_number,
-                "gov_id"=>$driver->gov_id,
-                "status"=>$driver->status,
-                "car_type"=>$driver->car_type,
-                "car_brand_name"=>$driver->car_brand_name,
-                "car_manufacturing_date"=>$driver->car_manufacturing_date,
-                "admin_rating"=>$driver->admin_rating,
-                "ratings_count"=>$driver->ratings_count,
-                "ratings_sum"=>$driver->ratings_sum,
-                "total_rating"=>$driver->total_rating,
+                "driver_licence_number" => $driver->driver_licence_number,
+                "gov_id" => $driver->gov_id,
+                "status" => $driver->status,
+                "car_type" => $driver->car_type,
+                "car_brand_name" => $driver->car_brand_name,
+                "car_manufacturing_date" => $driver->car_manufacturing_date,
+                "admin_rating" => $driver->admin_rating,
+                "ratings_count" => $driver->ratings_count,
+                "ratings_sum" => $driver->ratings_sum,
+                "total_rating" => $driver->total_rating,
+                "languages" => $languages,
                 "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
                 "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? null : $driver->getFirstMediaUrl('personal_pictures'),
                 "document" => empty($driver->getFirstMediaUrl('document')) ? null : $driver->getFirstMediaUrl('document'),
 
-                
+
             ],
         ], 201);
-
-
     }
-    
+
     public function update(GuideRequest $request, driver $driver)
     {
 
