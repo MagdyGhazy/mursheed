@@ -24,7 +24,7 @@ class ReportServes
 
     public function profits($request)
     {
-        if ( Order::first() == 100)
+        if ( Order::first() == null)
         {
             return response()->json([
                 'message' => "no orders",
