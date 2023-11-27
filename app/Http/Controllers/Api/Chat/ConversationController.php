@@ -10,7 +10,7 @@ class ConversationController extends Controller
 {
     public function index()
     {
-        $Conversations = Conversation::with('Message','Replies')->get(); 
+        $Conversations = Conversation::with('Message','Replies.Users:first_name')->get(); 
         return response([
             "data" => $Conversations,
             "message" => "All Conversations Successfully",
