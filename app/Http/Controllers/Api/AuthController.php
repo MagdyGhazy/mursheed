@@ -150,6 +150,7 @@ class AuthController extends Controller
 
                     $driver = Driver::where('email', $request->email)->first();
 //                    if (count($driver->getMedia('car_photos')) >= 0) {
+                         $car_photos = [] ;
                         foreach ($driver->getMedia('car_photos') as $media) {
                             $car_photos[] = $media->getUrl();
                         }
