@@ -110,13 +110,33 @@ class AttactiveController extends Controller
             //        $fileAdder->toMediaCollection('photos');
             //    });
 
-        return $this->ControllerHandler->store("attrractive", $request->except('images'));
+        return $this->ControllerHandler->store("attrractive", $request->except(''));
     }
 
     public function update(AttractiveUpdateRequest $request, $id)
     {
-        $attrractive=AttractiveLocation::find($id);
+        $attrractive=AttractiveLocation::find($id); 
+     
 
+        if ($request->images) {
+          
+            $attrractive->clearMediaCollection('photos');
+
+            $attrractive->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
+            $fileAdder->toMediaCollection('photos');
+
+            });
+                // $attrractive->addMedia('images')->toMediaCollection('photos');
+
+        }
+
+        if (count($attrractive->getMedia('images')) >= 0) {
+            foreach ($attrractive->getMedia('images') as $media) {
+                $images[] = $media->getUrl();
+            }
+        }
+
+// return response()->json($request->all());
         if (!$attrractive) {
             return response([
                 "data" => null,
@@ -124,9 +144,6 @@ class AttactiveController extends Controller
                 "status" => false,
             ], 404);
         }
-
-        $attrractive->clearMediaCollection('images');
-        $attrractive->addMediaFromRequest('images')->toMediaCollection('images');
 
         return $this->ControllerHandler->update("attrractive", $attrractive, $request->except('images'));
     }
