@@ -108,7 +108,8 @@ class Drivercontroller extends Controller
 
 
 //            $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
-            $driver->image_background = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
+            $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+            $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
             unset($driver->media);
 
             $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
@@ -488,7 +489,7 @@ class Drivercontroller extends Controller
                 $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
 
-                $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                $driver->image_background = count($driver->getMedia('car_photos')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
                 $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
