@@ -32,5 +32,5 @@ class ReportController extends Controller
 
         return $this->reportService->Profits($data);
     }
-    
+
 }
