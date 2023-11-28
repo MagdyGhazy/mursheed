@@ -9,6 +9,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("fillter", [ReportController::class, "index"]);
         Route::get('profite',[OrderController::class,'profiteCost']);
           Route::apiResource('roles', RoleController::class);
+
+        
+          Route::post('accommmodition/order/filter',[AccommmoditionOrderController::class,'filter']);
         Route::apiResource('accommmodition/order',AccommmoditionOrderController::class);
     });
 });

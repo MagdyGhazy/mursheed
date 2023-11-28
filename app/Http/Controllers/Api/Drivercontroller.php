@@ -166,11 +166,6 @@ class Drivercontroller extends Controller
         $document = [];
         $driver->load(['country', 'state'])->with('priceServices');
 
-        if (count($driver->getMedia('car_photo')) >= 0) {
-            foreach ($driver->getMedia('car_photo') as $media) {
-                $car_photos[] = $media->getUrl();
-            }
-        }
 
         if (count($driver->getMedia('document')) >= 0) {
             foreach ($driver->getMedia('document') as $media) {

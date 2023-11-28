@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\OrderAccommmodition;
 use App\Http\Controllers\Controller;
 
@@ -14,7 +15,7 @@ class AccommmoditionOrderController extends Controller
      */
     public function index()
     {
-       $data =OrderAccommmodition::with('tourist');
+       $data =OrderAccommmodition::get();
        return response()->json([
         "data"=>$data,
         "stutes"=>"successfuly To Add"
@@ -24,14 +25,24 @@ class AccommmoditionOrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function filter(Request $request)
     {
-
+        // $employees = OrderAccommmodition::orderBy('id', 'desc')
+        // ->when(
+        //     $request->date_from && $request->date_to,
+        //     function (Builder $builder) use ($request) {
+        //         $builder->whereBetween(
+        //             DB::raw('DATE(created_at)'),
+        //             [
+        //                 $request->date_from,
+        //                 $request->date_to
+        //             ]
+        //         );
+        //     }
+        // )->paginate(5);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+   
     public function store(Request $request)
     {
        $data = OrderAccommmodition::create($request->all());
@@ -43,7 +54,11 @@ class AccommmoditionOrderController extends Controller
 
     public function show(string $id)
     {
-        //
+        $data = OrderAccommmodition::find($id);
+        return response()->json([
+            "data"=>$data,
+            "stutes"=>"successfuly To Add"
+           ]);
     }
 
     /**
