@@ -12,10 +12,26 @@ use App\Http\Controllers\Controller;
 class ReplayController extends Controller
 {
     public function index(){
-        $Replies = Replay::all(); 
+        $Replies = Replay::with('user:email')->get(); 
         return response([
             "data" => $Replies,
             "message" => "All Replays Successfully",
+            "status" => true,
+        ], 200);
+    }
+
+    public function getOneReplay($id)
+    {
+        $replay = Replay::where('conversation_id', $id)->get();
+        if (!$replay) {
+            return response([
+                "message" => "Replay not found",
+                "status" => false,
+            ], 404);
+        }
+        return response([
+            "data" => $replay,
+            "message" => "Get One Replay Successfully",
             "status" => true,
         ], 200);
     }
