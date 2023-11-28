@@ -14,10 +14,26 @@ class MessageController extends Controller
 {
     public function index()
     {
-        $Message = Message::all();
+        $Message = Message::with('mursheedUsers:user_type')->get();
         return response([
             "data" => $Message,
             "message" => "All Messages Successfully",
+            "status" => true,
+        ], 200);
+    }
+
+    public function getOneMessage($id)
+    {
+        $messages = Message::where('conversation_id', $id)->get();
+        if (!$messages) {
+            return response([
+                "message" => "Messages not found",
+                "status" => false,
+            ], 404);
+        }
+        return response([
+            "data" => $messages,
+            "message" => "Get One Messages Successfully",
             "status" => true,
         ], 200);
     }
