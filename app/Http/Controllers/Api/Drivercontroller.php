@@ -313,7 +313,7 @@ class Drivercontroller extends Controller
         ]);
         if ($request->has('languages')) {
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
-        }
+
 
         foreach ($request->languages as $value) {
             Languagesable::create(
@@ -323,6 +323,8 @@ class Drivercontroller extends Controller
                     'language_id' => $value
                 ]
             );
+        }
+
         }
         $languages = Languagesable::where('languagesable_id', $user->id)->with([
             'language' => function ($query) {
@@ -494,7 +496,7 @@ class Drivercontroller extends Controller
                     $car_photos[] = $media->getUrl();
                 }
                 $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
-                
+
                 $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
 
                 $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
