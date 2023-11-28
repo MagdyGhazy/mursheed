@@ -93,8 +93,9 @@ class GuidesCotroller extends Controller
         $paginatedGuides = $guides->paginate($perPage, ['*'], 'page', $page);
 
         $paginatedGuides->getCollection()->each(function ($guide) {
-            $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0
-                ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+//            $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+            $guide->personal_photo = empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
+
 
             $guide->image_background = url("guide_default.jpg");
             unset($guide->media);

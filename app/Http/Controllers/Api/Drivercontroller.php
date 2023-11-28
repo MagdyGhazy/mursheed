@@ -107,7 +107,7 @@ class Drivercontroller extends Controller
             }
 
 
-            $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+//            $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
             $driver->image_background = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
             unset($driver->media);
 
