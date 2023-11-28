@@ -484,13 +484,11 @@ class Drivercontroller extends Controller
             ->limit(4)
             ->get()
             ->each(function ($driver) {
-                $driver->personal_photo =
-                    count($driver->getMedia('personal_photo')) == 0
-                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+//                $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
-                $driver->image_background =
-                    count($driver->getMedia('car_photo')) == 0
-                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+
+                $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
                 $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
