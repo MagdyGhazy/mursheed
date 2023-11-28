@@ -110,7 +110,7 @@ class AttactiveController extends Controller
             //        $fileAdder->toMediaCollection('photos');
             //    });
 
-        return $this->ControllerHandler->store("attrractive", $request->except(''));
+        return $this->ControllerHandler->store("attrractive", $request->except('images'));
     }
 
     public function update(AttractiveUpdateRequest $request, $id)
