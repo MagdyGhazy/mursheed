@@ -296,6 +296,12 @@ class AuthController extends Controller
         return response(["status" => true, "message" => "success"]);
     }
 
+    public function logoutt()
+    {
+        Auth::guard('api')->logout();
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
     public function ressetPassword(Request $request)
     {
         $request->validate([

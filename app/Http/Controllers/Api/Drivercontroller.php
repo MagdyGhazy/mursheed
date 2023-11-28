@@ -101,7 +101,14 @@ class Drivercontroller extends Controller
             $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
 
+            $car_photos = [] ;
+            foreach ($driver->getMedia('car_photos') as $media) {
+                $car_photos[] = $media->getUrl();
+            }
+
+
             $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+            $driver->image_background = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
             unset($driver->media);
 
             $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
@@ -213,7 +220,7 @@ class Drivercontroller extends Controller
                 "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
 
 //                "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
-                "car_photo" => empty($user->user->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos,
+                "car_photo" => empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos,
 
                 "total_rate" => $driver->total_rating,
                 "count_rate" => $driver->ratings_count,

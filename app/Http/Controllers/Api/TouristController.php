@@ -71,30 +71,30 @@ class TouristController extends Controller
     public function update_mobile(UpdateProfileRequest $request)
     {
         $user = Auth::user();
-   
+
 
         $guide = Guides::where('email', $request->user()->email)->first();
         if ($request->has('languages')) {
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
         }
-
-        foreach ($request->languages as $value) {
-          $data =  Languagesable::create(
-                [
-                    'languagesable_type' => "App\Models\Guides",
-                    'languagesable_id' => $user->user_id,
-                    'language_id' => $value
-                ]
-            );
+        if ($request->has('languages')) {
+            foreach ($request->languages as $value) {
+                $data = Languagesable::create(
+                    [
+                        'languagesable_type' => "App\Models\Guides",
+                        'languagesable_id' => $user->user_id,
+                        'language_id' => $value
+                    ]
+                );
+            }
         }
-
         $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
             'language' => function ($query) {
             $query->select('id','lang')
             ;}
         ])->get();
         $tourist = Tourist::where('email', $request->user()->email)->first();
-    
+
         if ($tourist == null) {
             return response()->json(["message" => "unauthenticated"], 401);
         }
@@ -111,7 +111,7 @@ class TouristController extends Controller
                 $fileAdder->toMediaCollection('personal_pictures');
             });
 
-         
+
         }
 
         $data = $request->except('personal_pictures', 'languages', 'car_photos');
@@ -121,7 +121,7 @@ class TouristController extends Controller
         }
 
         $tourist->update($data);
-        
+
         return response()->json([
             'status' => true,
             'message' => 'tourist successfully created',

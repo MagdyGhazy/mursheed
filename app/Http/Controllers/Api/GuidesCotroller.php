@@ -234,29 +234,29 @@ class GuidesCotroller extends Controller
     public function update_mobile(UpdateProfileRequest $request)
     {
         $user = Auth::user();
-   
+
 
         $guide = Guides::where('email', $request->user()->email)->first();
         if ($request->has('languages')) {
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
         }
-
-        foreach ($request->languages as $value) {
-          $data =  Languagesable::create(
-                [
-                    'languagesable_type' => "App\Models\Guides",
-                    'languagesable_id' => $user->user_id,
-                    'language_id' => $value
-                ]
-            );
+        if ($request->has('languages')) {
+            foreach ($request->languages as $value) {
+                $data = Languagesable::create(
+                    [
+                        'languagesable_type' => "App\Models\Guides",
+                        'languagesable_id' => $user->user_id,
+                        'language_id' => $value
+                    ]
+                );
+            }
         }
-
         $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
             'language' => function ($query) {
             $query->select('id','lang')
             ;}
         ])->get();
-      
+
         if ($guide == null) {
             return response()->json(["message" => "unauthenticated"], 401);
         }
