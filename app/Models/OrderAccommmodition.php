@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderAccommmodition extends Model
 {
     use HasFactory;
-    protected $fillable = ['tourist_id', 'accommmodition_id', 'total_cost','price'];
+    protected $fillable = ['tourist_id', 'accommmodition_id', 'total_cost','price','end_date','start_date'];
 
     public function tourist ()
     {

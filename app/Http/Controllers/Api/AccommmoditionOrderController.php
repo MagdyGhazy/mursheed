@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\OrderAccommmodition;
 use App\Http\Controllers\Controller;
-
+use Illuminate\Database\Eloquent\Builder;
 class AccommmoditionOrderController extends Controller
 {
     /**
@@ -24,9 +25,25 @@ class AccommmoditionOrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function filter(Request $request)
     {
-
+        $data = OrderAccommmodition::when(
+            $request->start_date && $request->end_date,
+            function (Builder $builder) use ($request) {
+                $builder->whereBetween(
+                    DB::raw('DATE(start_date)'),
+                    [
+                        $request->start_date,
+                        $request->end_date
+                    ]
+                );
+            }
+        )->paginate(5);
+        return response()->json([
+            "data"=>$data,
+            "stutes"=>"successfuly To Add"
+           ]);
+        
     }
 
     /**

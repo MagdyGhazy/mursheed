@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('allProfitsSixMonths', [ReportController::class, 'profitsFromSixMonths']);
 
                 Route::apiResource('roles', RoleController::class);
+                Route::post("filter/accommmodition/order",[AccommmoditionOrderController::class,'filter']);
                 Route::apiResource('accommmodition/order', AccommmoditionOrderController::class);
         });
 });
