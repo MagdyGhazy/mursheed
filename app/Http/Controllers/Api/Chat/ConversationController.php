@@ -11,13 +11,27 @@ class ConversationController extends Controller
 {
     public function index()
     {
-        $Conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
+        $conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
+    
+        $data = [];
+    
+        foreach ($conversations as $conversation) {
+            $messages = $conversation->Message;
+            $replies = $conversation->Replies;
+    
+            $data[] = [
+                "messages" => $messages,
+                "replies" => $replies,
+            ];
+        }
+    
         return response([
-            "data" => $Conversations,
+            "data" => $data,
             "message" => "All Conversations Successfully",
             "status" => true,
         ], 200);
     }
+    
 
     public function getOneConversation($id)
     {
@@ -28,11 +42,23 @@ class ConversationController extends Controller
                 "status" => false,
             ], 404);
         }
+    
+        $messages = $conversation->Message->toArray();
+        $replies = $conversation->Replies->toArray();
+    
+        $mergedData = array_merge($messages, $replies);
+        
+        usort($mergedData, function($a, $b) {
+            return strcmp($a['created_at'], $b['created_at']);
+        });
+    
         return response([
-            "data" => $conversation,
+            "data" => $mergedData,
             "message" => "Get One Conversation Successfully",
             "status" => true,
         ], 200);
     }
+    
+    
     
 }
