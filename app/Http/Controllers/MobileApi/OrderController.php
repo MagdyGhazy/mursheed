@@ -78,7 +78,7 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::all();
+        $orders = Order::with('orderDetails')->get();
 
         return response(['orders' => $orders]);
     }
