@@ -114,11 +114,14 @@ class Drivercontroller extends Controller
             unset($driver->media);
 
             //get each driver languages
-            $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with([
-                'language' => function ($query) {
-                    $query->select('id','lang')
-                    ;}
-            ])->get();
+            $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+                ->map(function ($languages) {
+                    $langs = $languages['language'];
+
+                    return $langs;
+                })
+                ->toArray();
 
             $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
         });
@@ -195,6 +198,17 @@ class Drivercontroller extends Controller
             }
         }
 
+        //get each driver languages
+        $languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+            ->map(function ($languages) {
+                $langs = $languages['language'];
+
+                return $langs;
+            })
+            ->toArray();
+
+
 
 //        $driver = Driver::where('email', $request->email)->first();
 //                    if (count($driver->getMedia('car_photos')) >= 0) {
@@ -220,7 +234,7 @@ class Drivercontroller extends Controller
                 "name" => $driver->name,
                 "country" => $driver->country->country,
                 "state" => $driver->state->state,
-                "lang" => [],
+                "languages" => $languages,
                 "bio" => $driver->bio,
                 "car_type" => $driver->car_type,
                 "car_model" => $driver->car_brand_name,
@@ -332,12 +346,16 @@ class Drivercontroller extends Controller
             }
 
         }
-        $languages = Languagesable::where('languagesable_id', $user->id)->with([
-            'language' => function ($query) {
-                $query->select('id','lang')
-                ;}
-        ])->get();
 
+        $languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+            ->map(function ($languages) {
+                $langs = $languages['language'];
+
+                return $langs;
+            })
+            ->toArray();
+        
 
         if ($request->document) {
             $driver->clearMediaCollection('document');
