@@ -13,20 +13,8 @@ class ConversationController extends Controller
     {
         $conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
     
-        $data = [];
-    
-        foreach ($conversations as $conversation) {
-            $messages = $conversation->Message;
-            $replies = $conversation->Replies;
-    
-            $data[] = [
-                "messages" => $messages,
-                "replies" => $replies,
-            ];
-        }
-    
         return response([
-            "data" => $data,
+            "data" => $conversations,
             "message" => "All Conversations Successfully",
             "status" => true,
         ], 200);
@@ -46,8 +34,16 @@ class ConversationController extends Controller
         $messages = $conversation->Message->toArray();
         $replies = $conversation->Replies->toArray();
     
+        foreach ($messages as &$message) {
+            $message['table_name'] = 'messages';
+        }
+    
+        foreach ($replies as &$reply) {
+            $reply['table_name'] = 'replies';
+        }
+    
         $mergedData = array_merge($messages, $replies);
-        
+    
         usort($mergedData, function($a, $b) {
             return strcmp($a['created_at'], $b['created_at']);
         });
@@ -58,7 +54,4 @@ class ConversationController extends Controller
             "status" => true,
         ], 200);
     }
-    
-    
-    
 }
