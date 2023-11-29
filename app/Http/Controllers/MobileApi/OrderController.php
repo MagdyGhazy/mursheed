@@ -83,10 +83,16 @@ class OrderController extends Controller
         return response(['orders' => $orders]);
     }
 
-    public function show(Order $order)
+    public function show(Order $order,$id)
     {
-        return response(['order' => $order->orderDetails()->get(), 'country_price' => CountryPrice::find($order->country_id),
-            'total_cost' => $order->cost, 'start_date' => $order->start_date, 'end_date' => $order->end_date]);
+        $order_info = $order->where('id',$id)->with('orderDetails')->first();
+        return response([
+            'order' => $order_info,
+            'country_price' => CountryPrice::where('country_id',$order_info->country_id)->first(),
+            'total_cost' => $order_info->cost,
+            'start_date' => $order_info->start_date,
+            'end_date' => $order_info->end_date
+        ]);
     }
 
     public function submitOrder(Order $order)
