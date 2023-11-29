@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 
 class ReplayController extends Controller
 {
+    //Get All Replays
     public function index(){
         $Replies = Replay::with('user:email')->get(); 
         return response([
@@ -20,6 +21,8 @@ class ReplayController extends Controller
         ], 200);
     }
 
+
+    //Get Replays Conversation From Conversation ID
     public function getOneReplay($id)
     {
         $replay = Replay::where('conversation_id', $id)->get();
@@ -35,6 +38,9 @@ class ReplayController extends Controller
             "status" => true,
         ], 200);
     }
+
+
+    //Sending a Replays based on the conversation ID
     public function createReplay(Request $request)
     {
 

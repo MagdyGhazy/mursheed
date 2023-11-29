@@ -22,6 +22,9 @@ class MessageController extends Controller
         ], 200);
     }
 
+
+
+    //Get Messages Conversation From Conversation ID
     public function getOneMessage($id)
     {
         $messages = Message::where('conversation_id', $id)->get();
@@ -37,6 +40,8 @@ class MessageController extends Controller
             "status" => true,
         ], 200);
     }
+    
+    // Create Conversation And Send Message In this Conversation From ID
     public function createConversation(Request $request)
     {
 
@@ -68,6 +73,7 @@ class MessageController extends Controller
     }
 
 
+    //Sending a message based on the conversation ID
     public function createMessage(Request $request)
     {
 

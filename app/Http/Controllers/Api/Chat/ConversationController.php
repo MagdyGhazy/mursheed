@@ -9,16 +9,20 @@ use Spatie\MediaLibrary\Conversions\Conversion;
 
 class ConversationController extends Controller
 {
+    // Get All Conversations
     public function index()
     {
-        $Conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
+        $conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
+    
         return response([
-            "data" => $Conversations,
+            "data" => $conversations,
             "message" => "All Conversations Successfully",
             "status" => true,
         ], 200);
     }
+    
 
+    // Get One Conversation From Id
     public function getOneConversation($id)
     {
         $conversation = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->find($id);
@@ -28,11 +32,28 @@ class ConversationController extends Controller
                 "status" => false,
             ], 404);
         }
+    
+        $messages = $conversation->Message->toArray();
+        $replies = $conversation->Replies->toArray();
+    
+        foreach ($messages as &$message) {
+            $message['table_name'] = 'messages';
+        }
+    
+        foreach ($replies as &$reply) {
+            $reply['table_name'] = 'replies';
+        }
+    
+        $mergedData = array_merge($messages, $replies);
+    
+        usort($mergedData, function($a, $b) {
+            return strcmp($a['created_at'], $b['created_at']);
+        });
+    
         return response([
-            "data" => $conversation,
+            "data" => $mergedData,
             "message" => "Get One Conversation Successfully",
             "status" => true,
         ], 200);
     }
-    
 }
