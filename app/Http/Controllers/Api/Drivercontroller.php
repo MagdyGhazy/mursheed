@@ -511,19 +511,24 @@ class Drivercontroller extends Controller
                 $driver->image_background = count($driver->getMedia('car_photos')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photos')->first()->getUrl();
 
                 $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
-                
+
                 //get each driver languages
-                $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with([
-                    'language' => function ($query) {
-                        $query->select('id','lang')
-                        ;}
-                ])->get();
+                $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+                    ->map(function ($languages) {
+                        $langs = $languages['language'];
+
+                    return $langs;
+                    })
+                    ->toArray();
+
 
                 $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
 
                 unset($driver->media);
             });
+
 
         return response()->json([
             "success" => true,
