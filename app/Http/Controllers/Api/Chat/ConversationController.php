@@ -12,7 +12,7 @@ class ConversationController extends Controller
     // Get All Conversations
     public function index()
     {
-        $conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
+        $conversations = Conversation::with(['Replies.user','Message.mursheedUsers'])->get();
     
         return response([
             "data" => $conversations,
@@ -25,7 +25,7 @@ class ConversationController extends Controller
     // Get One Conversation From Id
     public function getOneConversation($id)
     {
-        $conversation = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->find($id);
+        $conversation = Conversation::with(['Replies.user','Message.mursheedUsers'])->find($id);
         if (!$conversation) {
             return response([
                 "message" => "Conversation not found",
