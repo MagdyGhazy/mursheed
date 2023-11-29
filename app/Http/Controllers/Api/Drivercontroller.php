@@ -315,21 +315,21 @@ class Drivercontroller extends Controller
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
 
 
-        foreach ($request->languages as $value) {
-            Languagesable::create(
-                [
-                    'languagesable_type' => "App\Models\Driver",
-                    'languagesable_id' => $user->user_id,
-                    'language_id' => $value
-                ]
-            );
-        }
+            foreach ($request->languages as $value) {
+                Languagesable::create(
+                    [
+                        'languagesable_type' => "App\Models\Driver",
+                        'languagesable_id' => $user->user_id,
+                        'language_id' => $value
+                    ]
+                );
+            }
 
         }
         $languages = Languagesable::where('languagesable_id', $user->id)->with([
             'language' => function ($query) {
-            $query->select('id','lang')
-            ;}
+                $query->select('id','lang')
+                ;}
         ])->get();
 
 
@@ -344,16 +344,23 @@ class Drivercontroller extends Controller
 
 
 
-        if ($request->hasFile('car_photos')) {
+        if ($request->car_photos) {
+//            $driver->clearMediaCollection('car_photos');
+//            foreach ($request->file('car_photos') as $image) {
+//                $driver->addMedia($image)->toMediaCollection('car_photos');
+//            }
+
             $driver->clearMediaCollection('car_photos');
-            foreach ($request->file('car_photos') as $image) {
-                $driver->addMedia($image)->toMediaCollection('car_photos');
-            }
+            $driver->addMultipleMediaFromRequest(['car_photos'])->each(function ($fileAdder) {
+                $fileAdder->toMediaCollection('car_photos');
+            });
         }
 
         if (count($driver->getMedia('car_photos')) >= 0) {
+
+            $car_photos=[];
             foreach ($driver->getMedia('car_photos') as $media) {
-                $car_photos[] = $media->getUrl();
+                $car_photos = $media->getUrl();
             }
         }
 
@@ -401,7 +408,7 @@ class Drivercontroller extends Controller
                 "ratings_sum" => $driver->ratings_sum,
                 "total_rating" => $driver->total_rating,
                 "languages" => $languages,
-                "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
+                "car_photos" => $car_photos,
                 "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? null : $driver->getFirstMediaUrl('personal_pictures'),
                 "document" => empty($driver->getFirstMediaUrl('document')) ? null : $driver->getFirstMediaUrl('document'),
 
@@ -495,7 +502,7 @@ class Drivercontroller extends Controller
                 foreach ($driver->getMedia('car_photos') as $media) {
                     $car_photos[] = $media->getUrl();
                 }
-                $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                $driver->image_background = count($driver->getMedia('car_photos')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photos')->first()->getUrl();
 
                 $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
 
@@ -520,11 +527,11 @@ class Drivercontroller extends Controller
             })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
                 $driver->personal_photo =
                     count($driver->getMedia('personal_photo')) == 0
-                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                        ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
                 $driver->image_background =
                     count($driver->getMedia('car_photo')) == 0
-                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                        ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
                 unset($driver->media);
             }),
