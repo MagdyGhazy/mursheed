@@ -344,7 +344,6 @@ class Drivercontroller extends Controller
                     ]
                 );
             }
-
         }
 
         $languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
@@ -355,7 +354,7 @@ class Drivercontroller extends Controller
                 return $langs;
             })
             ->toArray();
-        
+
 
         if ($request->document) {
             $driver->clearMediaCollection('document');
