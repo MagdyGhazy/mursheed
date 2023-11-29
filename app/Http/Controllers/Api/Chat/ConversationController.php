@@ -9,6 +9,7 @@ use Spatie\MediaLibrary\Conversions\Conversion;
 
 class ConversationController extends Controller
 {
+    // Get All Conversations
     public function index()
     {
         $conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
@@ -21,6 +22,7 @@ class ConversationController extends Controller
     }
     
 
+    // Get One Conversation From Id
     public function getOneConversation($id)
     {
         $conversation = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->find($id);
