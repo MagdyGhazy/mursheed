@@ -409,7 +409,7 @@ class Drivercontroller extends Controller
             "user" => [
                 "id" => $driver->id,
                 "name" => $driver->name,
-                "notification_id" => $driver->mursheed_user->id,
+//                "notification_id" => $driver->mursheed_user,
                 "phone" => $driver->phone,
                 "email" => $driver->email,
                 "is_verified" => $driver->email_verified_at ? true : false,
