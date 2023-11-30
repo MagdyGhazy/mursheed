@@ -47,7 +47,12 @@ class PageController extends Controller
     public function store(PageRequest $request)
     {
 
-        return $this->ControllerHandler->store("page",  $request->except('images'));
+        $data = $request->validated();
+
+        // Encode HTML entities
+        $data['description'] = htmlspecialchars($request['description'], ENT_QUOTES, 'UTF-8');
+
+        return $this->ControllerHandler->store("page",  $data);
     }
 
     /**
