@@ -554,24 +554,26 @@ class Drivercontroller extends Controller
         ], 200);
     }
 
-    public function getDriverByCityWithPriceList(Request $request)
+    public function getDriverByCountryWithPriceList(Request $request)
     {
         return response([
             "drivers" => Driver::whereHas('priceServices', function ($query) use ($request) {
-                $query->where('city_id', $request->city_id);
+                $query->whereHas('city', function ($q) use ($request) {
+                    $q->where('country_id', $request->country_id);
+                });
             })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
                 $driver->personal_photo =
                     count($driver->getMedia('personal_photo')) == 0
                         ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
-
+    
                 $driver->image_background =
                     count($driver->getMedia('car_photo')) == 0
                         ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
-
+    
                 unset($driver->media);
             }),
             "status" => true
-
         ]);
     }
+    
 }

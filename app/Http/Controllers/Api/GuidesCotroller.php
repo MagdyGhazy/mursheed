@@ -396,22 +396,22 @@ class GuidesCotroller extends Controller
         ], 200);
     }
 
-    public function getGuideByCityWithPriceList(Request $request)
+    public function getGuideByCountryWithPriceList(Request $request)
     {
         return response([
-            "guides" => Guides::with(['priceServices'])->where("state_id", $request->city_id)->get()->append('state_name')->each(function ($driver) {
-                $driver->personal_photo =
-                    count($driver->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
-
-                $driver->image_background =
-                    count($driver->getMedia('car_photo')) == 0
-                        ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
-
-                unset($driver->media);
+            "guides" => Guides::with(['priceServices'])->where("country_id", $request->country_id)->get()->append('state_name')->each(function ($guide) {
+                $guide->personal_photo =
+                    count($guide->getMedia('personal_photo')) == 0
+                        ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+    
+                $guide->image_background =
+                    count($guide->getMedia('car_photo')) == 0
+                        ? url("car_photo_default.jpg") : $guide->getMedia('car_photo')->first()->getUrl();
+    
+                unset($guide->media);
             }),
             "status" => true
-
         ]);
     }
+    
 }
