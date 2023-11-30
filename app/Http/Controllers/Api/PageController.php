@@ -54,8 +54,7 @@ class PageController extends Controller
 
         $data['description'] = htmlspecialchars_decode(strip_tags($request['description'], $htmlTagsSequence), ENT_HTML5);
 
-        return $data;
-        
+
         return $this->ControllerHandler->store("page",  $data);
     }
 
