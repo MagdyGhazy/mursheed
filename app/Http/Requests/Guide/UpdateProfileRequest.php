@@ -24,7 +24,7 @@ class UpdateProfileRequest extends FormRequest
     {
         return [
             "name" => "nullable|string",
-            "email" => ["nullable", "email", Rule::unique('mursheed_users')->ignore($this->user()->id, 'id')],
+          //  "email" => ["nullable", "email", Rule::unique('mursheed_users')->ignore($this->user()->id, 'id')],
             "nationality" => "nullable|string",
             "country_id" => "nullable|int",
             "state_id" => "nullable|int",

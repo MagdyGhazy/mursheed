@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\OrderAccommmodition;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
+
 class AccommmoditionOrderController extends Controller
 {
     /**
@@ -15,11 +16,11 @@ class AccommmoditionOrderController extends Controller
      */
     public function index()
     {
-       $data =OrderAccommmodition::with('tourist');
-       return response()->json([
-        "data"=>$data,
-        "stutes"=>"successfuly To Add"
-       ]);
+        $data = OrderAccommmodition::get();
+        return response()->json([
+            "data" => $data,
+            "stutes" => "successfuly To Add"
+        ]);
     }
 
     /**
@@ -27,40 +28,38 @@ class AccommmoditionOrderController extends Controller
      */
     public function filter(Request $request)
     {
-        $data = OrderAccommmodition::when(
-            $request->start_date && $request->end_date,
-            function (Builder $builder) use ($request) {
-                $builder->whereBetween(
-                    DB::raw('DATE(start_date)'),
-                    [
-                        $request->start_date,
-                        $request->end_date
-                    ]
-                );
-            }
-        )->paginate(5);
-        return response()->json([
-            "data"=>$data,
-            "stutes"=>"successfuly To Add"
-           ]);
-        
+        // $employees = OrderAccommmodition::orderBy('id', 'desc')
+        // ->when(
+        //     $request->date_from && $request->date_to,
+        //     function (Builder $builder) use ($request) {
+        //         $builder->whereBetween(
+        //             DB::raw('DATE(created_at)'),
+        //             [
+        //                 $request->date_from,
+        //                 $request->date_to
+        //             ]
+        //         );
+        //     }
+        // )->paginate(5);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
-       $data = OrderAccommmodition::create($request->all());
-       return response()->json([
-        "data"=>$data,
-        "stutes"=>"successfuly To Add"
-       ]);
+        $data = OrderAccommmodition::create($request->all());
+        return response()->json([
+            "data" => $data,
+            "stutes" => "successfuly To Add"
+        ]);
     }
 
     public function show(string $id)
     {
-        //
+        $data = OrderAccommmodition::find($id);
+        return response()->json([
+            "data" => $data,
+            "stutes" => "successfuly To Add"
+        ]);
     }
 
     /**

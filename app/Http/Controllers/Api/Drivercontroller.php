@@ -98,13 +98,15 @@ class Drivercontroller extends Controller
         $paginatedDrivers->getCollection()->each(function ($driver) {
 
             //get each driver personal photo
-//            $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+            //            $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
             $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
 
             //get each driver car photos
-            $car_photos = [] ;
-            foreach ($driver->getMedia('car_photos') as $media) {$car_photos[] = $media->getUrl();}
+            $car_photos = [];
+            foreach ($driver->getMedia('car_photos') as $media) {
+                $car_photos[] = $media->getUrl();
+            }
             $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
 
 
@@ -123,7 +125,7 @@ class Drivercontroller extends Controller
                 })
                 ->toArray();
 
-            $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
+            $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
         });
 
         //        $drivers = Pipeline::send($drivers)
@@ -146,16 +148,16 @@ class Drivercontroller extends Controller
         ////                ->orderBy('total_rating', 'DESC')
         ////                ->get()
         ////                ->each(function ($driver) {
-//                            $driver->personal_photo =
-//                                count($driver->getMedia('personal_photo')) == 0
-//                                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
-//
-//                            $driver->image_background =
-//                                count($driver->getMedia('car_photo')) == 0
-//                                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
-//                            unset($driver->media);
-//
-//                            $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
+        //                            $driver->personal_photo =
+        //                                count($driver->getMedia('personal_photo')) == 0
+        //                                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+        //
+        //                            $driver->image_background =
+        //                                count($driver->getMedia('car_photo')) == 0
+        //                                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+        //                            unset($driver->media);
+        //
+        //                            $driver->is_favourite = $driver->favourites()->where('tourist_id',auth()->user()->user_id)->count() > 0 ;
         ////
         ////                })
         //            );
@@ -186,11 +188,6 @@ class Drivercontroller extends Controller
         $document = [];
         $driver->load(['country', 'state'])->with('priceServices');
 
-        if (count($driver->getMedia('car_photo')) >= 0) {
-            foreach ($driver->getMedia('car_photo') as $media) {
-                $car_photos[] = $media->getUrl();
-            }
-        }
 
         if (count($driver->getMedia('document')) >= 0) {
             foreach ($driver->getMedia('document') as $media) {
@@ -210,13 +207,13 @@ class Drivercontroller extends Controller
 
 
 
-//        $driver = Driver::where('email', $request->email)->first();
-//                    if (count($driver->getMedia('car_photos')) >= 0) {
-        $car_photos = [] ;
+        //        $driver = Driver::where('email', $request->email)->first();
+        //                    if (count($driver->getMedia('car_photos')) >= 0) {
+        $car_photos = [];
         foreach ($driver->getMedia('car_photos') as $media) {
             $car_photos[] = $media->getUrl();
         }
-//                    }
+        //                    }
 
 
 
@@ -239,10 +236,10 @@ class Drivercontroller extends Controller
                 "car_type" => $driver->car_type,
                 "car_model" => $driver->car_brand_name,
                 "car_date" => $driver->car_manufacturing_date,
-//                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
+                //                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
                 "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
 
-//                "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
+                //                "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
                 "car_photo" => empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos,
 
                 "total_rate" => $driver->total_rating,
@@ -320,7 +317,7 @@ class Drivercontroller extends Controller
         $user = Auth::user();
 
         $car_photos = [];
-        $driver = Driver::where('email', $request->email)->first();
+        $driver = Driver::where('email', $user->email)->first();
 
         if ($driver == null) {
             return response()->json(["message" => "unauthenticated"], 401);
@@ -345,16 +342,22 @@ class Drivercontroller extends Controller
                 );
             }
         }
-
-        $languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
-
-            ->map(function ($languages) {
-                $langs = $languages['language'];
-
-                return $langs;
-            })
-            ->toArray();
-
+        if ($request->has('languages')) {
+            foreach ($request->languages as $value) {
+                $data =   Languagesable::create(
+                    [
+                        'languagesable_type' => "App\Models\Driver",
+                        'languagesable_id' => $user->user_id,
+                        'language_id' => $value
+                    ]
+                );
+            }
+        }
+        $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
+            'language' => function ($query) {
+                $query->select('id', 'lang');
+            }
+        ])->get();
 
         if ($request->document) {
             $driver->clearMediaCollection('document');
@@ -363,16 +366,7 @@ class Drivercontroller extends Controller
             });
         }
 
-
-
-
-
-        if ($request->car_photos) {
-//            $driver->clearMediaCollection('car_photos');
-//            foreach ($request->file('car_photos') as $image) {
-//                $driver->addMedia($image)->toMediaCollection('car_photos');
-//            }
-
+        if ($request->hasFile('car_photos')) {
             $driver->clearMediaCollection('car_photos');
             $driver->addMultipleMediaFromRequest(['car_photos'])->each(function ($fileAdder) {
                 $fileAdder->toMediaCollection('car_photos');
@@ -381,11 +375,12 @@ class Drivercontroller extends Controller
 
         if (count($driver->getMedia('car_photos')) >= 0) {
 
-            $car_photos=[];
+            $car_photos = [];
             foreach ($driver->getMedia('car_photos') as $media) {
                 $car_photos = $media->getUrl();
             }
         }
+
 
         if ($request->personal_pictures) {
             $driver->clearMediaCollection('personal_pictures');
@@ -409,7 +404,7 @@ class Drivercontroller extends Controller
             "user" => [
                 "id" => $driver->id,
                 "name" => $driver->name,
-//                "notification_id" => $driver->mursheed_user,
+                //                "notification_id" => $driver->mursheed_user,
                 "phone" => $driver->phone,
                 "email" => $driver->email,
                 "is_verified" => $driver->email_verified_at ? true : false,
@@ -518,10 +513,10 @@ class Drivercontroller extends Controller
             ->limit(4)
             ->get()
             ->each(function ($driver) {
-//                $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                //                $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
                 $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
-                $car_photos = [] ;
+                $car_photos = [];
                 foreach ($driver->getMedia('car_photos') as $media) {
                     $car_photos[] = $media->getUrl();
                 }
@@ -535,7 +530,7 @@ class Drivercontroller extends Controller
                     ->map(function ($languages) {
                         $langs = $languages['language'];
 
-                    return $langs;
+                        return $langs;
                     })
                     ->toArray();
 
@@ -562,11 +557,11 @@ class Drivercontroller extends Controller
             })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
                 $driver->personal_photo =
                     count($driver->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
                 $driver->image_background =
                     count($driver->getMedia('car_photo')) == 0
-                        ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
                 unset($driver->media);
             }),
