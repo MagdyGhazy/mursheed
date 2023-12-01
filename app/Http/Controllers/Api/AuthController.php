@@ -131,7 +131,7 @@ class AuthController extends Controller
             //         'message' => 'your email must be verified first !',
             //     ], 402);
             // }
-            $languages = Languagesable::where('languagesable_id', $user->id)->with([
+            $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
                 'language' => function ($query) {
                     $query->select('id', 'lang');
                 }

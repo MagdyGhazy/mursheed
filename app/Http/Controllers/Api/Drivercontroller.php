@@ -269,7 +269,7 @@ class Drivercontroller extends Controller
         $user = Auth::user();
 
         $car_photos = [];
-        $driver = Driver::where('email', $request->email)->first();
+        $driver = Driver::where('email', $user->email)->first();
 
         if ($driver == null) {
             return response()->json(["message" => "unauthenticated"], 401);
@@ -284,22 +284,23 @@ class Drivercontroller extends Controller
         if ($request->has('languages')) {
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
         }
-
+        if ($request->has('languages')) {
         foreach ($request->languages as $value) {
-            Languagesable::create(
+          $data=   Languagesable::create(
                 [
                     'languagesable_type' => "App\Models\Driver",
                     'languagesable_id' => $user->user_id,
                     'language_id' => $value
                 ]
             );
+           
         }
-        $languages = Languagesable::where('languagesable_id', $user->id)->with([
+    }
+        $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
             'language' => function ($query) {
-            $query->select('id','lang')
-            ;}
+                $query->select('id', 'lang');
+            }
         ])->get();
-        
       
         if ($request->document) {
             $driver->clearMediaCollection('document');
@@ -307,10 +308,6 @@ class Drivercontroller extends Controller
                 $fileAdder->toMediaCollection('document');
             });
         }
-
-
-
-
 
         if ($request->hasFile('car_photos')) {
             $driver->clearMediaCollection('car_photos');
@@ -324,6 +321,7 @@ class Drivercontroller extends Controller
                 $car_photos[] = $media->getUrl();
             }
         }
+      
 
         if ($request->personal_pictures) {
             $driver->clearMediaCollection('personal_pictures');

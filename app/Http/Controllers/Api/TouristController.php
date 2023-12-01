@@ -73,11 +73,11 @@ class TouristController extends Controller
         $user = Auth::user();
    
 
-        $guide = Guides::where('email', $request->user()->email)->first();
+        $guide = Guides::where('email', $user->email)->first();
         if ($request->has('languages')) {
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
         }
-
+        if ($request->has('languages')) {
         foreach ($request->languages as $value) {
           $data =  Languagesable::create(
                 [
@@ -87,14 +87,14 @@ class TouristController extends Controller
                 ]
             );
         }
-
+    }
         $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
             'language' => function ($query) {
             $query->select('id','lang')
             ;}
         ])->get();
-        $tourist = Tourist::where('email', $request->user()->email)->first();
-    
+        $tourist = Tourist::where('email', $user->email)->first();
+      
         if ($tourist == null) {
             return response()->json(["message" => "unauthenticated"], 401);
         }
