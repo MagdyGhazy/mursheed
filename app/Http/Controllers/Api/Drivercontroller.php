@@ -293,7 +293,7 @@ class Drivercontroller extends Controller
                     'language_id' => $value
                 ]
             );
-           
+
         }
     }
         $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
@@ -301,7 +301,7 @@ class Drivercontroller extends Controller
                 $query->select('id', 'lang');
             }
         ])->get();
-      
+
         if ($request->document) {
             $driver->clearMediaCollection('document');
             $driver->addMultipleMediaFromRequest(['document'])->each(function ($fileAdder) {
@@ -321,7 +321,7 @@ class Drivercontroller extends Controller
                 $car_photos[] = $media->getUrl();
             }
         }
-      
+
 
         if ($request->personal_pictures) {
             $driver->clearMediaCollection('personal_pictures');
@@ -489,6 +489,7 @@ class Drivercontroller extends Controller
                     count($driver->getMedia('car_photo')) == 0
                     ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
+                
                 unset($driver->media);
             }),
             "status" => true
