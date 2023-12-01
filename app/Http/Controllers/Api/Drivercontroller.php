@@ -343,15 +343,15 @@ class Drivercontroller extends Controller
             }
         }
         if ($request->has('languages')) {
-            foreach ($request->languages as $value) {
-                $data =   Languagesable::create(
-                    [
-                        'languagesable_type' => "App\Models\Driver",
-                        'languagesable_id' => $user->user_id,
-                        'language_id' => $value
-                    ]
-                );
-            }
+        foreach ($request->languages as $value) {
+          $data=   Languagesable::create(
+                [
+                    'languagesable_type' => "App\Models\Driver",
+                    'languagesable_id' => $user->user_id,
+                    'language_id' => $value
+                ]
+            );
+
         }
         $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
             'language' => function ($query) {
@@ -563,6 +563,7 @@ class Drivercontroller extends Controller
                     count($driver->getMedia('car_photo')) == 0
                     ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
+                
                 unset($driver->media);
             }),
             "status" => true
