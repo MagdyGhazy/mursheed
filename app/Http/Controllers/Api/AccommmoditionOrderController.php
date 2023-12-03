@@ -15,10 +15,10 @@ class AccommmoditionOrderController extends Controller
      */
     public function index()
     {
-       $data =OrderAccommmodition::with('tourist');
+       $data =OrderAccommmodition::get();
        return response()->json([
         "data"=>$data,
-        "stutes"=>"successfuly To Add"
+        "stutes"=>"successfuly get  all"
        ]);
     }
 
@@ -60,7 +60,11 @@ class AccommmoditionOrderController extends Controller
 
     public function show(string $id)
     {
-        //
+        $data = OrderAccommmodition::find($id);
+       return response()->json([
+        "data"=>$data,
+        "stutes"=>"successfuly To Add"
+       ]);
     }
 
     /**
