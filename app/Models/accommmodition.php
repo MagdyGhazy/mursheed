@@ -31,6 +31,11 @@ class accommmodition extends Model implements HasMedia
         return $this->belongsTo(CategoryAccommodation::class);
     }
 
+    public function  accommmoditionorder()
+    {
+
+        return $this->hasMany(OrderAccommmodition::class);
+    }
 //    protected $casts = [
 //        'aval_status' => 'int',
 //        'info_status' => 'int',
