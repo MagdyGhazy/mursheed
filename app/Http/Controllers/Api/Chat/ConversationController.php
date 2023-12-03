@@ -29,7 +29,7 @@ class ConversationController extends Controller
             'Message.user:id,user_type,user_id',
             'Message.user.user:id,name,email',
             'Replies.user:id,first_name,email'
-            ])->find($id);
+        ])->find($id);
 
         if (!$conversation) {
             return response([
