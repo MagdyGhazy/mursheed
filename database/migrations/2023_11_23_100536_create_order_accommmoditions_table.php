@@ -19,6 +19,8 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->decimal('price');
             $table->decimal('total_cost');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
         });
     }

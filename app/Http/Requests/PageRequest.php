@@ -30,7 +30,7 @@ class PageRequest extends FormRequest
         return [
             'title'=>'required',
             'description'=>'required',
-            'images'=>'required',
+//            'images'=>'required',
         ];
     }
 }

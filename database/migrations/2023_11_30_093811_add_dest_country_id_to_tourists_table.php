@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            $table->string('phone');
+        Schema::table('tourists', function (Blueprint $table) {
+            $table->unsignedBigInteger('dest_country_id')->nullable()->index();
         });
     }
 
@@ -21,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('drivers', function (Blueprint $table) {
-           $table->string('phone');
-           
+        Schema::table('tourists', function (Blueprint $table) {
+            //
         });
     }
 };

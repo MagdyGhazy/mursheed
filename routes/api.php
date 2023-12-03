@@ -90,6 +90,7 @@ Route::post('/register', [AuthController::class, 'createUser']);
 
 Route::post('/login', [AuthController::class, 'loginUser']);
 Route::post('/login-clients', [AuthController::class, 'loginClients']);
+Route::post('/logout-all', [AuthController::class, 'logoutAll']);
 Route::post('/logoutt', [AuthController::class, 'logoutt']);
 Route::post('resset-password', [AuthController::class, 'ressetPassword']);
 

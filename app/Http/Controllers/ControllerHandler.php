@@ -69,7 +69,6 @@ class ControllerHandler
         if ($k !== false) {
             $model = $this->model::with($with)->get()->map(function ($data) {
                 $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
-
                 $data['pictures'] = count($collect) ? $collect : null;
                 return $data;
             });

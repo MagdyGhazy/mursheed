@@ -97,7 +97,7 @@ class GuidesCotroller extends Controller
             $guide->personal_photo = empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
 
 
-            $guide->image_background = url("guide_default.jpg");
+            $guide->image_background = $guide->getFirstMediaUrl('personal_pictures');
             unset($guide->media);
 
             $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
@@ -237,7 +237,7 @@ class GuidesCotroller extends Controller
         $user = Auth::user();
 
 
-        $guide = Guides::where('email', $request->user()->email)->first();
+        $guide = Guides::where('email', $request->email)->first();
         if ($request->has('languages')) {
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
         }
@@ -254,8 +254,8 @@ class GuidesCotroller extends Controller
         }
         $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
             'language' => function ($query) {
-            $query->select('id','lang')
-            ;}
+                $query->select('id','lang')
+                ;}
         ])->get();
 
         if ($guide == null) {
@@ -282,7 +282,7 @@ class GuidesCotroller extends Controller
         }
 
         $guide->update($data);
-return response()->json([
+        return response()->json([
             'status' => true,
             'message' => 'guides successfully created',
             'token' => $global_user->createToken("API TOKEN")->plainTextToken,
@@ -385,7 +385,7 @@ return response()->json([
 
                 $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
-                $guide->image_background = url("guide_default.jpg");
+                $guide->image_background =empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
                 unset($guide->media);
             });
 
@@ -402,11 +402,11 @@ return response()->json([
             "guides" => Guides::with(['priceServices'])->where("state_id", $request->city_id)->get()->append('state_name')->each(function ($driver) {
                 $driver->personal_photo =
                     count($driver->getMedia('personal_photo')) == 0
-                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                        ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
                 $driver->image_background =
                     count($driver->getMedia('car_photo')) == 0
-                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                        ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
                 unset($driver->media);
             }),

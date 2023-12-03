@@ -56,15 +56,19 @@ public function driver ()
     public function getVendorAttribute()
     {
 
-        $name = $this->user()->pluck('name')[0];
+//        $name = $this->user()->pluck('name')[0];
+        $name = $this->user()->pluck('name');
         return $name;
     }
 
     public function getRatingAttribute()
     {
 
-        $name = $this->user()->pluck('total_rating')[0];
-        return (int)$name;
+//        $name = $this->user()->pluck('total_rating')[0];
+//        return (int)$name;
+
+        $name = $this->user()->pluck('total_rating');
+        return $name;
     }
 
     public function getTouristNameAttribute()
@@ -101,13 +105,13 @@ public function driver ()
             $builder->when($arrayOfData['user_type'], function (Builder $builder) {
                 $builder->where('user_type', "App\Models\Driver");
          });
-            
+
         } elseif ($arrayOfData['user_type'] == "2") {
             $builder->when($arrayOfData['user_type'], function (Builder $builder) {
                 $builder->where('user_type', "App\Models\Guides");
          });
         }
-       
+
     }
 
     //
@@ -115,10 +119,10 @@ public function driver ()
     //    {
     //        return explode("\\", get_class($this->user_type))[2];
     //    }
-    protected function userType(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => explode("\\", get_class($this->user))[2],
-        );
-    }
+//    protected function userType(): Attribute
+//    {
+//        return Attribute::make(
+//            get: fn ($value) => explode("\\", get_class($this->user))[2],
+//        );
+//    }
 }

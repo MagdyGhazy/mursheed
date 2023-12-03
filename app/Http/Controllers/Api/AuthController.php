@@ -14,6 +14,7 @@ use App\Models\Languagesable;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -131,7 +132,7 @@ class AuthController extends Controller
             //         'message' => 'your email must be verified first !',
             //     ], 402);
             // }
-            $languages = Languagesable::where('languagesable_id', $user->id)->with([
+            $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
                 'language' => function ($query) {
                     $query->select('id', 'lang');
                 }
@@ -300,6 +301,12 @@ class AuthController extends Controller
     {
         Auth::guard('api')->logout();
         return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    public function logoutAll()
+    {
+        Session::regenerate();
+        return response()->json(['message' => 'all Successfully logged out']);
     }
 
     public function ressetPassword(Request $request)
