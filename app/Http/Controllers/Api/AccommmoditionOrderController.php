@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\OrderAccommmodition;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
+
 class AccommmoditionOrderController extends Controller
 {
     /**
@@ -15,10 +16,10 @@ class AccommmoditionOrderController extends Controller
      */
     public function index()
     {
-        $data =OrderAccommmodition::with('tourist');
+        $data = OrderAccommmodition::get();
         return response()->json([
-            "data"=>$data,
-            "stutes"=>"successfuly To Add"
+            "data" => $data,
+            "stutes" => "successfuly get  all"
         ]);
     }
 
@@ -40,10 +41,9 @@ class AccommmoditionOrderController extends Controller
             }
         )->paginate(5);
         return response()->json([
-            "data"=>$data,
-            "stutes"=>"successfuly To Add"
+            "data" => $data,
+            "stutes" => "successfuly To Add"
         ]);
-
     }
 
     /**
@@ -53,14 +53,18 @@ class AccommmoditionOrderController extends Controller
     {
         $data = OrderAccommmodition::create($request->all());
         return response()->json([
-            "data"=>$data,
-            "stutes"=>"successfuly To Add"
+            "data" => $data,
+            "stutes" => "successfuly To Add"
         ]);
     }
 
     public function show(string $id)
     {
-        //
+        $data = OrderAccommmodition::find($id);
+        return response()->json([
+            "data" => $data,
+            "stutes" => "successfuly To Add"
+        ]);
     }
 
     /**
