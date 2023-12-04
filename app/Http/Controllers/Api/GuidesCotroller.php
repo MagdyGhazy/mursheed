@@ -417,17 +417,23 @@ class GuidesCotroller extends Controller
     // }
 
 
-    public function getGuideByCityWithPriceList(Request $request)
+    public function getGuideByCityWithPriceList()
     {
         $user = Auth::user();
         $tourist = Tourist::where('id', $user->user_id)->first();
         if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
             $guides = Guides::where('country_id', $tourist->dest_country_id)->get();
+            return response()->json([
+                "success" => true,
+                "message" => "latest guides From Country",
+                "data" => $guides,
+            ], 200);
+        } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
+            return response()->json([
+                "success" => false,
+                "message" => "No valid tourist or destination country provided",
+                "data" => [],
+            ], 400);
         }
-        return response()->json([
-            "success" => true,
-            "message" => "latest guides From Country",
-            "data" => $guides,
-        ], 200);
     }
 }

@@ -512,17 +512,23 @@ class Drivercontroller extends Controller
     //     ]);
     // }
 
-    public function getDriverByCityWithPriceList(Request $request)
+    public function getDriverByCityWithPriceList()
     {
         $user = Auth::user();
         $tourist = Tourist::where('id', $user->user_id)->first();
         if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
             $drivers = Driver::where('country_id', $tourist->dest_country_id)->get();
+            return response()->json([
+                "success" => true,
+                "message" => "latest drivers From Country",
+                "data" => $drivers,
+            ], 200);
+        } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
+            return response()->json([
+                "success" => false,
+                "message" => "No valid tourist or destination country provided",
+                "data" => [],
+            ], 400);
         }
-        return response()->json([
-            "success" => true,
-            "message" => "latest drivers From Country",
-            "data" => $drivers,
-        ], 200);
     }
 }
