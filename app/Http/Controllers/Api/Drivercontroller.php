@@ -496,4 +496,11 @@ class Drivercontroller extends Controller
 
         ]);
     }
+
+    public function test(){
+        $auth = Auth::user();
+        if ($auth->user_type !== 'Tourist') {
+            $auth->dest_country_id = null;
+        }
+    }
 }
