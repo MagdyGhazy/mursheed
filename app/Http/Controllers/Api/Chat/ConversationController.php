@@ -4,15 +4,14 @@ namespace App\Http\Controllers\Api\Chat;
 
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
-use Illuminate\Http\Request;
-use Spatie\MediaLibrary\Conversions\Conversion;
+
 
 class ConversationController extends Controller
 {
     // Get All Conversations
     public function index()
     {
-        $conversations = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->get();
+        $conversations = Conversation::with(['Replies.user','Message.user.user'])->get();
     
         return response([
             "data" => $conversations,
@@ -25,7 +24,12 @@ class ConversationController extends Controller
     // Get One Conversation From Id
     public function getOneConversation($id)
     {
-        $conversation = Conversation::with('Message.mursheedUsers:user_type', 'Replies.user:email')->find($id);
+        $conversation = Conversation::with([
+            'Message.user:id,user_type,user_id',
+            'Message.user.user:id,name,email',
+            'Replies.user:id,first_name,email'
+        ])->find($id);
+
         if (!$conversation) {
             return response([
                 "message" => "Conversation not found",
