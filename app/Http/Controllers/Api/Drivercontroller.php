@@ -498,9 +498,9 @@ class Drivercontroller extends Controller
     }
 
     public function test(){
-        $auth = Auth::user();
-        if ($auth->user_type !== 'Tourist') {
-            $auth->dest_country_id = null;
+        $user = Auth::user();
+        if ($user->user_type === 'App\Models\Tourist' && $user->dest_city_id !== null) {
+            $desiredCountryId = $user->dest_country_id;
         }
     }
 }
