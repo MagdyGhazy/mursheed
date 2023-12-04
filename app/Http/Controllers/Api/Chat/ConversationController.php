@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api\Chat;
 
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
-use Illuminate\Http\Request;
-use Spatie\MediaLibrary\Conversions\Conversion;
+
 
 class ConversationController extends Controller
 {
