@@ -14,5 +14,9 @@ class OrderAccommmodition extends Model
     {
         return $this->belongsTo(Tourist::class,'tourist_id','id');
     }
+    public function touaccommdation ()
+    {
+        return $this->belongsTo(accommmodition::class,'accommmodition_id','id');
+    }
 
 }

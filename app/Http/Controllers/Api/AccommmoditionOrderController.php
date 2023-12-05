@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\OrderAccommmodition;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
+
 class AccommmoditionOrderController extends Controller
 {
     /**
@@ -15,16 +16,15 @@ class AccommmoditionOrderController extends Controller
      */
     public function index()
     {
-       $data =OrderAccommmodition::with('tourist');
-       return response()->json([
-        "data"=>$data,
-        "stutes"=>"successfuly To Add"
-       ]);
+
+        $data = OrderAccommmodition::with('tourist', 'touaccommdation')->get();
+        return response()->json([
+            "data" => $data,
+            "stutes" => "successfuly get  all"
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function filter(Request $request)
     {
         $data = OrderAccommmodition::when(
@@ -40,48 +40,41 @@ class AccommmoditionOrderController extends Controller
             }
         )->paginate(5);
         return response()->json([
-            "data"=>$data,
-            "stutes"=>"successfuly To Add"
-           ]);
-        
+            "data" => $data,
+            "stutes" => "successfuly To Add"
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
-       $data = OrderAccommmodition::create($request->all());
-       return response()->json([
-        "data"=>$data,
-        "stutes"=>"successfuly To Add"
-       ]);
+        $data = OrderAccommmodition::create($request->all());
+        return response()->json([
+            "data" => $data,
+            "stutes" => "successfuly To Add"
+        ]);
     }
 
     public function show(string $id)
     {
-        //
+        $data = OrderAccommmodition::find($id);
+        return response()->json([
+            "data" => $data,
+            "stutes" => "successfuly To Add"
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(string $id)
     {
         //
