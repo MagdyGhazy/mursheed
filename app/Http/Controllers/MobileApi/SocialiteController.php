@@ -12,7 +12,9 @@ class SocialiteController extends Controller
 {
     public function redirect($provider)
     {
+       return ($provider);
         return  Socialite::driver($provider)->redirect();
+
     }
     public function callback($provider)
     {

@@ -25,7 +25,7 @@ use App\Http\Controllers\Filter\SearchByLanguage;
 use App\Http\Requests\Driver\UpdateProfileRequest;
 use App\Http\Controllers\Filter\SearchByCarCategory;
 use App\Models\Language;
-use App\Models\Tourist;
+use App\Models\Tou  rist;
 
 class Drivercontroller extends Controller
 {
@@ -170,45 +170,68 @@ class Drivercontroller extends Controller
 
     public function show(driver $driver)
     {
+        $driver = Driver::where('id', $driver->id)->with(['media', 'country', 'state', 'languagesable', 'priceServices'])->first();
+        $user = Auth::user();
+        $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
+            'language' => function ($query) {
+                $query->select('id', 'lang');
+            }
+        ])->get();
         $car_photos = [];
         $document = [];
-        $driver->load(['country', 'state'])->with('priceServices');
-
-
+        if (count($driver->getMedia('car_photos')) >= 0) {
+            foreach ($driver->getMedia('car_photos') as $media) {
+                $car_photos[] = $media->getUrl();
+            }
+        }
         if (count($driver->getMedia('document')) >= 0) {
             foreach ($driver->getMedia('document') as $media) {
                 $document[] = $media->getUrl();
             }
         }
 
-        $collect = collect(collect($driver)['media'])->groupBy('collection_name')->toArray();
-        $driver['pictures'] = count($collect) ? $collect : null;
+        // $collect = collect(collect($driver)['media'])->groupBy('collection_name')->toArray();
+        // $driver['pictures'] = count($collect) ? $collect : null;
 
         $driver["personal_photo"] = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('personal_pictures');
-        $driver["car_photo"] = count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos;
+       // $driver["car_photo"] = count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos;
         $driver["document"] = count($document) == 0 ? [url("car_photo_default.jpg")] : $document;
+
         return response()->json([
-            "success" => true,
-            "message" => "driver details",
+            'status' => true,
+            'message' => 'Driver Update Is Successfully',
             "user" => [
                 "id" => $driver->id,
                 "name" => $driver->name,
-                "country" => $driver->country->country,
-                "state" => $driver->state->state,
-                "lang" => [],
+                "notification_id" => $driver->mursheed_user->id,
+                "phone" => $driver->phone,
+                "email" => $driver->email,
+                "is_verified" => $driver->email_verified_at ? true : false,
+                "type" => "Driver",
+                "nationality" => $driver->nationality,
+                "country_id" => (int) $driver->country_id,
+                "state_id" => (int) $driver->state_id,
+                "gender" => $driver->gender ? ($driver->gender == 1 ? "male" : "female") : null,
                 "bio" => $driver->bio,
+                "car_number" => $driver->car_number,
+                "driver_licence_number" => $driver->driver_licence_number,
+                "gov_id" => $driver->gov_id,
+                "status" => $driver->status,
                 "car_type" => $driver->car_type,
-                "car_model" => $driver->car_brand_name,
-                "car_date" => $driver->car_manufacturing_date,
-                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
+                "car_brand_name" => $driver->car_brand_name,
+                "car_manufacturing_date" => $driver->car_manufacturing_date,
+                "admin_rating" => $driver->admin_rating,
+                "ratings_count" => $driver->ratings_count,
+                "ratings_sum" => $driver->ratings_sum,
+                "total_rating" => $driver->total_rating,
+                "languages" => $languages,
                 "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
-                "total_rate" => $driver->total_rating,
-                "count_rate" => $driver->ratings_count,
-                'pictures' => $driver->pictures,
-                'document' => $driver->document,
-                'priceServices' => $driver->priceServices,
+                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? null : $driver->getFirstMediaUrl('personal_pictures'),
+                "document" => empty($driver->getFirstMediaUrl('document')) ? null : $driver->getFirstMediaUrl('document'),
+
+
             ],
-        ], 200);
+        ], 201);
     }
 
     public function show_web(driver $driver)
@@ -294,7 +317,7 @@ class Drivercontroller extends Controller
         }
         if ($request->has('languages')) {
             foreach ($request->languages as $value) {
-                $data =   Languagesable::create(
+                $data = Languagesable::create(
                     [
                         'languagesable_type' => "App\Models\Driver",
                         'languagesable_id' => $user->user_id,
