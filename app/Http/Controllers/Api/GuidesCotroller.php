@@ -393,23 +393,7 @@ class GuidesCotroller extends Controller
             "guides" => $guides,
         ], 200);
     }
-
-    public function getGuideByCountryWithPriceList(Request $request)
-    {
-        return response([
-            "guides" => Guides::with(['priceServices'])->where("country_id", $request->country_id)->get()->append('state_name')->each(function ($guide) {
-                $guide->personal_photo =
-                    count($guide->getMedia('personal_photo')) == 0
-                        ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
-
-                $guide->image_background =
-                    count($guide->getMedia('car_photo')) == 0
-                        ? url("car_photo_default.jpg") : $guide->getMedia('car_photo')->first()->getUrl();
-
-                unset($guide->media);
-            }),
-            "status" => true
-        ]);
+    
     // public function getGuideByCityWithPriceList(Request $request)
     // {
     //     return response([
