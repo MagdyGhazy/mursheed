@@ -43,6 +43,7 @@ class AccommmoditionController extends Controller
             $model = $this->accommmodition::
                 when($request->has('rooms'),fn($query)=>$query->where('rooms',$request->rooms))
                 ->when($request->has('category_id'),fn($query)=>$query->where('category_accommodations_id',$request->category_id))
+                ->where('aval_status',1)
                 ->with(['media', 'country', 'state'])->get()->map(function ($data) {
                 $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
 
@@ -68,20 +69,25 @@ class AccommmoditionController extends Controller
 
         $model = $this->accommmodition::query()->with(['media', 'country', 'state']);
 
-        $paginatedModel = $model->paginate($perPage, ['*'], 'page', $page);
 
         $k = array_search('media', ['media', 'country', 'state'], true);
         if ($k !== false) {
-            $model = $this->accommmodition::
-            when($request->has('rooms'),fn($query)=>$query->where('rooms',$request->rooms))
+            $model = $this->accommmodition::query()
+                ->when($request->has('rooms'),fn($query)=>$query->where('rooms',$request->rooms))
                 ->when($request->has('category_id'),fn($query)=>$query->where('category_accommodations_id',$request->category_id))
-                ->with(['media', 'country', 'state'])->get()->map(function ($data) {
-                    $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
-
-                    $data['pictures'] = count($collect) ? $collect : null;
-                    return $data;
-                });
+                ->where('aval_status',1)
+                ->with(['media', 'country', 'state']);
         }
+        
+        $paginatedModel = $model->paginate($perPage, ['*'], 'page', $page);
+
+        $paginatedModel->map(function ($data) {
+        $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
+
+        $data['pictures'] = count($collect) ? $collect : null;
+        return $data;
+        });
+
 
         $data = json_decode(json_encode($paginatedModel), true);
 

@@ -63,18 +63,20 @@ class ControllerHandler
         $perPage = $request->input('per_page', 10); // Default to 10 items per page
         $page = $request->input('page', 1);
 
-        $paginatedModel = $model->paginate($perPage, ['*'], 'page', $page);
 
         $k = array_search('media', $with, true);
         if ($k !== false) {
-            $model = $this->model::with($with)->get()->map(function ($data) {
-                $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
-                $data['pictures'] = count($collect) ? $collect : null;
-                return $data;
-            });
+            $model = $this->model::with($with);
         }
 
+        $paginatedModel = $model->paginate($perPage, ['*'], 'page', $page);
 
+        $paginatedModel->map(function ($data) {
+            $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
+            $data['pictures'] = count($collect) ? $collect : null;
+            return $data;
+        });
+        
         $data = json_decode(json_encode($paginatedModel), true);
 
         return response([
