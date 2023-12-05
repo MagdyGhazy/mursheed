@@ -14,6 +14,7 @@ class ConversationController extends Controller
         $conversations = Conversation::with([
             'Message.user:id,user_type,user_id',
             'Message.user.user:id,name,email',
+            'Message.user.user.media',
             'Replies.user:id,first_name,email'
         ])->get();
     
@@ -64,4 +65,5 @@ class ConversationController extends Controller
             "status" => true,
         ], 200);
     }
+
 }
