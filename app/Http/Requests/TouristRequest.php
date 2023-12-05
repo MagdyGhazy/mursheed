@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TouristRequest extends FormRequest
@@ -23,7 +24,12 @@ class TouristRequest extends FormRequest
     {
         return [
             "name" => "required|string",
-            "email" => "required|email|unique:mursheed_users",
+            "email" => [
+                "required",
+                "email",
+                Rule::unique('mursheed_users'),
+                Rule::unique('tourists'),
+            ],
             "password" => "required|string",
             "nationality" => "nullable|string",
             'dest_city_id' => "nullable|int",

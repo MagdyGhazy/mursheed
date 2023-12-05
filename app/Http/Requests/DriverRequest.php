@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DriverRequest extends FormRequest
@@ -30,7 +31,12 @@ class DriverRequest extends FormRequest
         return [
 
             "name" => "required|string",
-            "email" => "required|email|unique:mursheed_users",
+            "email" => [
+                "required",
+                "email",
+                Rule::unique('mursheed_users'),
+                Rule::unique('drivers'),
+            ],
             "country_id" => "required|int",
             "state_id" => "required|int",
             "nationality" => "required|string",

@@ -30,7 +30,12 @@ class GuideRequest extends FormRequest
     {
         return [
             "name" => "required|string",
-            "email" => "required|email|unique:mursheed_users",
+            "email" => [
+                "required",
+                "email",
+                Rule::unique('mursheed_users'),
+                Rule::unique('guides'),
+            ],
             "nationality" => "required|string",
             "country_id" => "required|int",
             "state_id" => "required|int",
