@@ -17,6 +17,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Support\Facades\Pipeline;
+use App\Http\Controllers\Filter\SearchByName;
+use App\Http\Controllers\Filter\SearchByState;
+use App\Http\Controllers\Filter\SearchByCountry;
+use App\Models\Tourist;
 
 class GuidesCotroller extends Controller
 {
@@ -404,6 +410,45 @@ class GuidesCotroller extends Controller
             }),
             "status" => true
         ]);
+    // public function getGuideByCityWithPriceList(Request $request)
+    // {
+    //     return response([
+    //         "guides" => Guides::with(['priceServices'])->where("state_id", $request->city_id)->get()->append('state_name')->each(function ($driver) {
+    //             $driver->personal_photo =
+    //                 count($driver->getMedia('personal_photo')) == 0
+    //                     ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+
+    //             $driver->image_background =
+    //                 count($driver->getMedia('car_photo')) == 0
+    //                     ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+
+    //             unset($driver->media);
+    //         }),
+    //         "status" => true
+
+    //     ]);
+    // }
+
+
+    public function getGuideByCityWithPriceList()
+    {
+        $user = Auth::user();
+        $tourist = Tourist::where('id', $user->user_id)->first();
+        if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
+            $guides = Guides::where('country_id', $tourist->dest_country_id)->get();
+            return response()->json([
+                "success" => true,
+                "message" => "latest guides From Country",
+                "data" => $guides,
+            ], 200);
+        } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
+            $guides = Guides::where('country_id', $tourist->dest_country_id)->orderBy('rating', 'desc')->limit(4)->get();
+            return response()->json([
+                "success" => false,
+                "message" => "No valid tourist or destination country provided",
+                "data" => $guides,
+            ], 400);
+        }
     }
 
 }
