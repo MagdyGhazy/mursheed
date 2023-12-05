@@ -108,7 +108,7 @@ class ReportServes
 
     public function allProfitsWithGuides($start_date, $end_date)
     {
-        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guide')->get()
+        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guides')->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
                 $allProfits += $profits['profit'];
