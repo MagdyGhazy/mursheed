@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Guide;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -30,17 +30,11 @@ class GuideRequest extends FormRequest
     {
         return [
             "name" => "required|string",
-            "email" => [
-                "required",
-                "email",
-                Rule::unique('mursheed_users'),
-                Rule::unique('guides'),
-            ],
+            "email" => ["required", "email", Rule::unique('mursheed_users'), Rule::unique('guides'),],
             "nationality" => "required|string",
             "country_id" => "required|int",
             "state_id" => "required|int",
             "password" => "required|string",
-
             "phone" => "nullable|string",
             "bio" => "nullable|string",
             "gender" => "nullable|int",

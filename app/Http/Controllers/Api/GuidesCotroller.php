@@ -2,29 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
-use App\Models\State;
-use App\Models\Guides;
-use Ramsey\Uuid\Guid\Guid;
-use App\Models\MursheedUser;
-use Illuminate\Http\Request;
-use App\Models\Languagesable;
-use Illuminate\Support\Carbon;
-use App\Http\Requests\UserRequest;
-use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ControllerHandler;
+use App\Http\Controllers\Filter\SearchByLanguage;
+use App\Http\Controllers\Filter\SearchByPrice;
+use App\Http\Requests\Guide\GuideRequest;
+use App\Http\Requests\Guide\UpdateProfileRequest;
+use App\Models\Guides;
+use App\Models\Languagesable;
+use App\Models\MursheedUser;
+use App\Models\State;
+use App\Notifications\SendEmailForApprove;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\UserUpdateRequest;
-use Illuminate\Support\Facades\Pipeline;
-use App\Notifications\SendEmailForApprove;
-use App\Http\Controllers\ControllerHandler;
-use App\Http\Controllers\Filter\SearchByName;
-use App\Http\Controllers\Filter\SearchByPrice;
-use App\Http\Controllers\Filter\SearchByState;
-use App\Http\Controllers\Filter\SearchByCountry;
-use App\Http\Controllers\Filter\SearchByLanguage;
-use App\Http\Requests\Guide\UpdateProfileRequest;
 
 class GuidesCotroller extends Controller
 {
@@ -403,15 +395,15 @@ class GuidesCotroller extends Controller
                 $guide->personal_photo =
                     count($guide->getMedia('personal_photo')) == 0
                         ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
-    
+
                 $guide->image_background =
                     count($guide->getMedia('car_photo')) == 0
                         ? url("car_photo_default.jpg") : $guide->getMedia('car_photo')->first()->getUrl();
-    
+
                 unset($guide->media);
             }),
             "status" => true
         ]);
     }
-    
+
 }

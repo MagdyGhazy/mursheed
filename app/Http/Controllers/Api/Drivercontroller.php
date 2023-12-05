@@ -2,32 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
-use Carbon\Carbon;
-use App\Models\State;
-use App\Models\Driver;
-use App\Models\Guides;
-use App\Models\Favourite;
-use App\Models\MursheedUser;
-use Illuminate\Http\Request;
-use App\Models\Languagesable;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DriverRequest;
+use App\Http\Controllers\ControllerHandler;
+use App\Http\Controllers\Filter\SearchByLanguage;
+use App\Http\Controllers\Filter\SearchByPrice;
+use App\Http\Requests\Driver\DriverRequest;
+use App\Http\Requests\Driver\UpdateProfileRequest;
+use App\Http\Requests\Guide\GuideRequest;
+use App\Models\Driver;
+use App\Models\Languagesable;
+use App\Models\MursheedUser;
+use App\Models\State;
+use App\Notifications\SendEmailForApprove;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Pipeline;
-use App\Notifications\SendEmailForApprove;
-use App\Http\Controllers\ControllerHandler;
-use App\Http\Controllers\Filter\SearchByName;
-use App\Http\Controllers\Filter\SearchByPrice;
-use App\Http\Controllers\Filter\SearchByState;
-use App\Http\Controllers\Filter\SearchByCountry;
-use App\Http\Controllers\Filter\SearchByCarModel;
-use App\Http\Controllers\Filter\SearchByLanguage;
-use App\Http\Requests\Driver\UpdateProfileRequest;
-use App\Http\Controllers\Filter\SearchByCarCategory;
-use App\Models\Language;
 
 class Drivercontroller extends Controller
 {

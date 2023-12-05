@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Guides;
-use App\Models\Tourist;
-use App\Models\MursheedUser;
-use Illuminate\Http\Request;
-use App\Models\Languagesable;
-use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ControllerHandler;
+use App\Http\Requests\Tourist\TouristRequest;
+use App\Http\Requests\Tourist\UpdateProfileRequest;
+use App\Models\Guides;
+use App\Models\Languagesable;
+use App\Models\MursheedUser;
+use App\Models\Tourist;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\TouristRequest;
-use App\Http\Controllers\ControllerHandler;
-use App\Http\Requests\Tourist\UpdateProfileRequest;
 
 class TouristController extends Controller
 {
