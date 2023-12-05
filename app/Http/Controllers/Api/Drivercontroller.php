@@ -25,7 +25,7 @@ use App\Http\Controllers\Filter\SearchByLanguage;
 use App\Http\Requests\Driver\UpdateProfileRequest;
 use App\Http\Controllers\Filter\SearchByCarCategory;
 use App\Models\Language;
-use App\Models\Tou  rist;
+use App\Models\Tourist;
 
 class Drivercontroller extends Controller
 {
