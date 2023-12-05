@@ -393,7 +393,7 @@ class GuidesCotroller extends Controller
             "guides" => $guides,
         ], 200);
     }
-    
+
     // public function getGuideByCityWithPriceList(Request $request)
     // {
     //     return response([
