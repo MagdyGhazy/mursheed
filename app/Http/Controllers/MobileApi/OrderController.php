@@ -49,7 +49,7 @@ class OrderController extends Controller
         if ($model) {
             return (new OrderServices($request->order['country_id'], $model))
                 ->calculateRoutingForCities($request->order_details)
-                ->storeOrderWithDetailsForUser($request->order, $model,$request->user_id,);
+                ->storeOrderWithDetailsForUser($request->order, $model);
 
         }
         return response(['message' => "model not found", 'status' => false], 404);
