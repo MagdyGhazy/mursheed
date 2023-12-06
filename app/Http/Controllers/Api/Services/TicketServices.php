@@ -20,8 +20,13 @@ class TicketServices
     {
         $tickets = Ticket::with(['user.user:id,name,email', 'message', 'replay'])
             ->get()
+//        ;
+//        foreach ( $tickets as $ticket) {
+//            $data[] = $ticket->user_id;
+//        }
+//        return $data;
+//           $tickets
             ->map(function ($ticket) {
-//                $user = $ticket->user->user;
                 $messages = $ticket->message->toArray();
                 $replies = $ticket->replay->toArray();
 
@@ -47,8 +52,8 @@ class TicketServices
                     "status" => $ticket->status,
                     "priority" => $ticket->priority,
                     "type" => $ticket->type,
-                    'ticket_user_id' => $ticket->user_id,
-                    "user" =>$ticket->user->user,
+                    "ticket_user_id" => $ticket->user_id,
+                    "user" =>$ticket->user['user'],
                     "conversation" => $mergedArray,
                 ];
                 return $ticketData;
@@ -63,11 +68,8 @@ class TicketServices
     public function show($id)
     {
 
-        $ticket = Ticket::with(['user.user:id,name,email', 'message', 'replay'])->find($id)
-        ->makeHidden(['created_at', 'updated_at', 'user_id']);
-
-            $user = $ticket->user->user;
-            $messages = $ticket->message->toArray();
+        $ticket = Ticket::with(['user.user:id,name,email', 'message', 'replay'])->find($id);
+         $messages = $ticket->message->toArray();
             $replies = $ticket->replay->toArray();
 
             foreach ($messages as $message) {
@@ -92,8 +94,11 @@ class TicketServices
                 "status" => $ticket->status,
                 "priority" => $ticket->priority,
                 "type" => $ticket->type,
-                'ticket_user_id' => $ticket->user_id,
-                "user" =>$user,
+                "user" =>[
+                    'id' => $ticket->user_id,
+                    'name' => $ticket->user['user']->name,
+                    'email' => $ticket->user['user']->email,
+                ],
                 "conversation" => $mergedArray,
             ];
 
@@ -122,7 +127,7 @@ class TicketServices
                 }
 
                 $mergedArray = array_merge($messages, $replies);
-                
+
                 usort($mergedArray, function ($a, $b) {
                     return strtotime($a['created_at']) - strtotime($b['created_at']);
                 });
