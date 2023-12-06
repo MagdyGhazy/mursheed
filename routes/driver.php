@@ -14,6 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{driver}/update', [\App\Http\Controllers\Api\Drivercontroller::class, 'update'])->name('driver.update');
         Route::post('update', [\App\Http\Controllers\Api\Drivercontroller::class, 'update_mobile'])->name('driver.update_mobile');
         Route::post('/get-driver-by-city', [\App\Http\Controllers\Api\Drivercontroller::class, 'getDriverByCityWithPriceList'])->name('driver.getDriverByCityWithPriceList');
+        Route::post('/get-driver-by-country', [\App\Http\Controllers\Api\Drivercontroller::class, 'getDriverByCountryWithPriceList'])->name('driver.getDriverByCountryWithPriceList');
 
         Route::post('/{driver}/active', [\App\Http\Controllers\Api\Drivercontroller::class, 'active'])->name('driver.active');
         Route::post('/{driver}/inActive', [\App\Http\Controllers\Api\Drivercontroller::class, 'inActive'])->name('driver.inActive');

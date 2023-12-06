@@ -525,41 +525,102 @@ class Drivercontroller extends Controller
         ], 200);
     }
 
-    // public function getDriverByCityWithPriceList(Request $request)
-    // {
-    //     return response([
-    //         "drivers" => Driver::whereHas('priceServices', function ($query) use ($request) {
-    //             $query->where('city_id', $request->city_id);
-    //         })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
-    //         $driver->personal_photo =
-    //             count($driver->getMedia('personal_photo')) == 0
-    //             ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+     public function getDriverByCityWithPriceList(Request $request)
+     {
+         return response([
+             "drivers" => Driver::whereHas('priceServices', function ($query) use ($request) {
+                 $query->where('city_id', $request->city_id);
+             })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
+             $driver->personal_photo =
+                 count($driver->getMedia('personal_photo')) == 0
+                 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
-    //         $driver->image_background =
-    //             count($driver->getMedia('car_photo')) == 0
-    //             ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+             $driver->image_background =
+                 count($driver->getMedia('car_photo')) == 0
+                 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
 
-    //         unset($driver->media);
-    //     }),
-    //         "status" => true
+             unset($driver->media);
+         }),
+             "status" => true
 
-    //     ]);
-    // }
+         ]);
+     }
 
-    public function getDriverByCityWithPriceList()
+    public function getDriverByCountryWithPriceList()
     {
         $user = Auth::user();
         $tourist = Tourist::where('id', $user->user_id)->first();
         if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
-            $drivers = Driver::where('country_id', $tourist->dest_country_id)->get();
+//            $drivers = Driver::where('country_id', $tourist->dest_country_id)->get();
+            $drivers = Driver::query()
+                ->select('id', 'name', 'state_id', 'total_rating')->with([
+                    'priceServices' => function ($query) {
+                        $query->first();
+                    }
+                ])
+                ->orderBy('ratings_sum', 'DESC')
+                ->with([
+                    'priceServices' => function ($query) {
+                        $query->limit(1)->latest();
+                    }
+                ])
+                ->where('status', 1)
+                ->where('country_id', $tourist->dest_country_id)
+                ->get()
+                ->each(function ($driver) {
+                    $driver->personal_photo =
+                        count($driver->getMedia('personal_photo')) == 0
+                            ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+
+                    $driver->image_background =
+                        count($driver->getMedia('car_photo')) == 0
+                            ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+
+                    $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
+
+
+                    unset($driver->media);
+                });
             return response()->json([
                 "success" => true,
                 "message" => "latest drivers From Country",
                 "data" => $drivers,
             ], 200);
         } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
-            $drivers = Driver::where('country_id', $tourist->dest_country_id)->orderBy('total_rating', 'desc')->limit(4)->get();
+
+            $drivers = Driver::query()
+                ->select('id', 'name', 'state_id', 'total_rating')->with([
+                    'priceServices' => function ($query) {
+                        $query->first();
+                    }
+                ])
+                ->orderBy('ratings_sum', 'DESC')
+                ->with([
+                    'priceServices' => function ($query) {
+                        $query->limit(1)->latest();
+                    }
+                ])
+                ->where('status', 1)
+
+                ->limit(4)
+                ->get()
+                ->each(function ($driver) {
+                    $driver->personal_photo =
+                        count($driver->getMedia('personal_photo')) == 0
+                            ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+
+                    $driver->image_background =
+                        count($driver->getMedia('car_photo')) == 0
+                            ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+
+                    $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
+
+
+                    unset($driver->media);
+                });
+
+//            $drivers = Driver::orderBy('total_rating', 'desc')->limit(4)->get();
             return response()->json([
                 "success" => false,
                 "message" => "No valid tourist or destination country provided",
