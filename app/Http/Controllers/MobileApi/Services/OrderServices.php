@@ -43,6 +43,7 @@ class OrderServices
     public function calculateRoutingForCities($cities, $index = 0 , $cost = 0)
     {
 //        return count($cities);
+//        $index = 1 , $cost = 151.00;
 
         if ($index >= count($cities)) {  // base case
 //            return ['cities'=>$cities, 'cost' => $cost+ $this->country_price->fees + $this->country_price->tax  ];
@@ -75,7 +76,7 @@ class OrderServices
         return ['cities'=>$this->cities, 'cost' => $this->cost];
 
     }
-    public function storeOrderWithDetailsForUser($order, $model)
+    public function storeOrderWithDetailsForUser($order, $model,$user_id)
     {
         $profit =round($this->sub_total * ($this->country_price->fees/100),2);
         $taxAmount =round($this->sub_total * ($this->country_price->tax/100),2);
@@ -83,6 +84,6 @@ class OrderServices
         $tax = round($this->country_price->tax,2);
         $cost = round($this->sub_total + $taxAmount + $profit,2);
 
-        return OrderRepository::createOrderWithDetails(array_merge($order,['cost'=>$cost],['sub_total'=>$this->sub_total],['profit'=>$profit],['tax_amount'=>$taxAmount],['fees'=>$fees],['tax'=>$tax]),$this->cities,$model,$this->country_price,$this->sub_total,);
+        return OrderRepository::createOrderWithDetails(array_merge($order,['cost'=>$cost],['sub_total'=>$this->sub_total],['profit'=>$profit],['tax_amount'=>$taxAmount],['fees'=>$fees],['tax'=>$tax]),$this->cities,$model,$this->country_price,$this->sub_total,$user_id);
     }
 }
