@@ -20,29 +20,24 @@ class TicketServices
     {
         $tickets = Ticket::with(['user.user:id,name,email', 'message', 'replay'])
             ->get()
-//        ;
-//        foreach ( $tickets as $ticket) {
-//            $data[] = $ticket->user_id;
-//        }
-//        return $data;
-//           $tickets
             ->map(function ($ticket) {
                 $messages = $ticket->message->toArray();
                 $replies = $ticket->replay->toArray();
 
-                foreach ($messages as $message) {
-                    $message['type'] = 'message';
-                }
+                $array1WithTypes = array_map(function ($item) {
+                    $item['type'] = 'message';
+                    return $item;
+                }, $messages);
 
-                foreach ($replies as $reply) {
-                    $reply['type'] = 'reply';
-                }
+                $array2WithTypes = array_map(function ($item) {
+                    $item['type'] = 'reply';
+                    return $item;
+                }, $replies);
 
-                $mergedArray = array_merge($messages, $replies);
+                $mergedData = array_merge($array1WithTypes, $array2WithTypes);
 
-
-                usort($mergedArray, function ($a, $b) {
-                    return strtotime($a['created_at']) - strtotime($b['created_at']);
+                usort($mergedData, function($a, $b) {
+                    return strcmp($a['created_at'], $b['created_at']);
                 });
 
                 $ticketData = [
@@ -53,8 +48,8 @@ class TicketServices
                     "priority" => $ticket->priority,
                     "type" => $ticket->type,
                     "ticket_user_id" => $ticket->user_id,
-                    "user" =>$ticket->user['user'],
-                    "conversation" => $mergedArray,
+                    "user" =>$ticket->user->user,
+                    "conversation" => $mergedData,
                 ];
                 return $ticketData;
             })
@@ -68,21 +63,22 @@ class TicketServices
     public function show($id)
     {
 
-        $ticket = Ticket::with(['user.user:id,name,email', 'message', 'replay'])->find($id);
-         $messages = $ticket->message->toArray();
-         $replies = $ticket->replay->toArray();
+        $ticket = Ticket::with(['user.user:id,name,email', 'message', 'replay'])->find($id)
+        ->makeHidden(['created_at', 'updated_at', 'user_id']);
+        $messages = $ticket->message->toArray();
+        $replies = $ticket->replay->toArray();
 
-            foreach ($messages as $message) {
-                $message->type = 'message';
-            }
+        $array1WithTypes = array_map(function ($item) {
+            $item['type'] = 'message';
+            return $item;
+        }, $messages);
 
-            foreach ($replies as $reply) {
-                $reply['type'] = 'reply';
-            }
+        $array2WithTypes = array_map(function ($item) {
+            $item['type'] = 'reply';
+            return $item;
+        }, $replies);
 
-            return $messages;
-
-            $mergedArray = array_merge($messages, $replies);
+            $mergedArray = array_merge($array1WithTypes, $array2WithTypes);
 
 
             usort($mergedArray, function ($a, $b) {
@@ -96,11 +92,8 @@ class TicketServices
                 "status" => $ticket->status,
                 "priority" => $ticket->priority,
                 "type" => $ticket->type,
-                "user" =>[
-                    'id' => $ticket->user_id,
-                    'name' => $ticket->user['user']->name,
-                    'email' => $ticket->user['user']->email,
-                ],
+                "ticket_user_id" => $ticket->user_id,
+                "user" =>$ticket->user->user,
                 "conversation" => $mergedArray,
             ];
 
@@ -120,15 +113,17 @@ class TicketServices
                 $messages = $ticket->message->toArray();
                 $replies = $ticket->replay->toArray();
 
-                foreach ($messages as $message) {
-                    $message['type'] = 'message';
-                }
+                $array1WithTypes = array_map(function ($item) {
+                    $item['type'] = 'message';
+                    return $item;
+                }, $messages);
 
-                foreach ($replies as $reply) {
-                    $reply['type'] = 'reply';
-                }
+                $array2WithTypes = array_map(function ($item) {
+                    $item['type'] = 'reply';
+                    return $item;
+                }, $replies);
 
-                $mergedArray = array_merge($messages, $replies);
+                 $mergedArray = array_merge($array1WithTypes, $array2WithTypes);
 
                 usort($mergedArray, function ($a, $b) {
                     return strtotime($a['created_at']) - strtotime($b['created_at']);
@@ -141,7 +136,7 @@ class TicketServices
                     "status" => $ticket->status,
                     "priority" => $ticket->priority,
                     "type" => $ticket->type,
-                    'ticket_user_id' => $ticket->user_id,
+
                     "conversation" => $mergedArray,
                 ];
                 return $ticketData;
@@ -150,7 +145,8 @@ class TicketServices
 
         return response([
             "status" => "success",
-            "ticket" => $ticket,
+            'ticket_user_id' => (int)$UserId,
+            "tickets" => $ticket,
         ], 200);
     }
 
