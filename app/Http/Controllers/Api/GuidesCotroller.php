@@ -423,15 +423,15 @@ class GuidesCotroller extends Controller
             $guides = Guides::query()
                 ->select('id', 'name', 'state_id', 'total_rating')
                 ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
-               ->where('status', 1)
-                ->where('country_id', $tourist->dest_country_id)
                 ->with(['priceServices' => function ($query) {
-                    $query->limit(1)->latest();
+                        $query->get();
                 }])
+                ->where('status', 1)
+                ->where('country_id', $tourist->dest_country_id)
+                ->whereHas('priceServices')
                 ->orderBy('ratings_sum', 'DESC')
                 ->get()
                 ->each(function ($guide) {
-//                $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
                     $guide->personal_photo = empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
 
                     $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
@@ -439,6 +439,7 @@ class GuidesCotroller extends Controller
                     $guide->image_background =empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
                     unset($guide->media);
                 });
+
             return response()->json([
                 "success" => true,
                 "message" => "latest guides From Country",
@@ -449,15 +450,15 @@ class GuidesCotroller extends Controller
             $guides = Guides::query()
                 ->select('id', 'name', 'state_id', 'total_rating')
                 ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
-                ->where('status', 1)
                 ->with(['priceServices' => function ($query) {
                     $query->limit(1)->latest();
                 }])
+                ->where('status', 1)
+                ->whereHas('priceServices')
                 ->orderBy('ratings_sum', 'DESC')
                 ->limit(4)
                 ->get()
                 ->each(function ($guide) {
-//                $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
                     $guide->personal_photo = empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
 
                     $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;

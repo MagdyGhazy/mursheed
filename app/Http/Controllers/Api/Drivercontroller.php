@@ -543,7 +543,6 @@ class Drivercontroller extends Controller
              unset($driver->media);
          }),
              "status" => true
-
          ]);
      }
 
@@ -552,40 +551,28 @@ class Drivercontroller extends Controller
         $user = Auth::user();
         $tourist = Tourist::where('id', $user->user_id)->first();
         if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
-//            $drivers = Driver::where('country_id', $tourist->dest_country_id)->get();
+
             $drivers = Driver::query()
-                ->whereHas('priceServices')
                 ->select('id', 'name', 'state_id', 'total_rating')
-                 ->with([
-                    'priceServices' => function ($query) {
-                        $query->first();
-                    }
-                ])
                 ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
-                ->orderBy('ratings_sum', 'DESC')
-                ->with([
-                    'priceServices' => function ($query) {
-                        $query->limit(1)->latest();
-                    }
-                ])
+                ->with(['priceServices' => function ($query) {
+                    $query->get();
+                }])
                 ->where('status', 1)
                 ->where('country_id', $tourist->dest_country_id)
+                ->whereHas('priceServices')
+                ->orderBy('ratings_sum', 'DESC')
                 ->get()
                 ->each(function ($driver) {
-                    $driver->personal_photo =
-                        count($driver->getMedia('personal_photo')) == 0
-                            ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                    $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
 
-                    $driver->image_background =
-                        count($driver->getMedia('car_photo')) == 0
-                            ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                    $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
                     $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
-
-
                     unset($driver->media);
                 });
+
             return response()->json([
                 "success" => true,
                 "message" => "latest drivers From Country",
