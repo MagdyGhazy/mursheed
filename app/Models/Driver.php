@@ -76,6 +76,7 @@ class Driver extends Authenticatable implements HasMedia
         return $this->morphMany(priceService::class, 'user');
     }
 
+
     public function delete()
     {
         $this->mursheed_user()->delete();

@@ -11,6 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{guide}/update', [\App\Http\Controllers\Api\GuidesCotroller::class, 'update'])->name('guide.update');
         Route::post('update', [\App\Http\Controllers\Api\GuidesCotroller::class, 'update_mobile'])->name('guide.update_mobile');
         Route::post('/get-guide-by-city', [\App\Http\Controllers\Api\GuidesCotroller::class, 'getGuideByCityWithPriceList'])->name('guide.getGuideByCityWithPriceList');
+        Route::post('/get-guide-by-country', [\App\Http\Controllers\Api\GuidesCotroller::class, 'getGuideByCountryWithPriceList'])->name('guide.getGuideByCountryWithPriceList');
         Route::post('/{guide}/active', [\App\Http\Controllers\Api\GuidesCotroller::class, 'active'])->name('guide.active');
         Route::post('/{guide}/inActive', [\App\Http\Controllers\Api\GuidesCotroller::class, 'inActive'])->name('guide.inActive');
         Route::post('/{guide}/changeStatus', [\App\Http\Controllers\Api\GuidesCotroller::class, 'change'])->name('guide.changeStatus');

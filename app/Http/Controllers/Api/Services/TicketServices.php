@@ -70,15 +70,17 @@ class TicketServices
 
         $ticket = Ticket::with(['user.user:id,name,email', 'message', 'replay'])->find($id);
          $messages = $ticket->message->toArray();
-            $replies = $ticket->replay->toArray();
+         $replies = $ticket->replay->toArray();
 
             foreach ($messages as $message) {
-                $message['type'] = 'message';
+                $message->type = 'message';
             }
 
             foreach ($replies as $reply) {
                 $reply['type'] = 'reply';
             }
+
+            return $messages;
 
             $mergedArray = array_merge($messages, $replies);
 

@@ -554,11 +554,14 @@ class Drivercontroller extends Controller
         if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
 //            $drivers = Driver::where('country_id', $tourist->dest_country_id)->get();
             $drivers = Driver::query()
-                ->select('id', 'name', 'state_id', 'total_rating')->with([
+                ->whereHas('priceServices')
+                ->select('id', 'name', 'state_id', 'total_rating')
+                 ->with([
                     'priceServices' => function ($query) {
                         $query->first();
                     }
                 ])
+                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
                 ->orderBy('ratings_sum', 'DESC')
                 ->with([
                     'priceServices' => function ($query) {
@@ -580,12 +583,13 @@ class Drivercontroller extends Controller
                     $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
 
+
                     unset($driver->media);
                 });
             return response()->json([
                 "success" => true,
                 "message" => "latest drivers From Country",
-                "data" => $drivers,
+                "drivers" => $drivers,
             ], 200);
         } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
 
@@ -595,6 +599,7 @@ class Drivercontroller extends Controller
                         $query->first();
                     }
                 ])
+                ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
                 ->orderBy('ratings_sum', 'DESC')
                 ->with([
                     'priceServices' => function ($query) {
@@ -624,7 +629,7 @@ class Drivercontroller extends Controller
             return response()->json([
                 "success" => false,
                 "message" => "No valid tourist or destination country provided",
-                "data" => $drivers,
+                "drivers" => $drivers,
             ], 400);
         }
     }
