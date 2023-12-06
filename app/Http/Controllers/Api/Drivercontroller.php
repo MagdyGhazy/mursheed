@@ -559,7 +559,7 @@ class Drivercontroller extends Controller
                 "data" => $drivers,
             ], 200);
         } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
-            $drivers = Driver::where('country_id', $tourist->dest_country_id)->orderBy('rating', 'desc')->limit(4)->get();
+            $drivers = Driver::where('country_id', $tourist->dest_country_id)->orderBy('total_rating', 'desc')->limit(4)->get();
             return response()->json([
                 "success" => false,
                 "message" => "No valid tourist or destination country provided",
