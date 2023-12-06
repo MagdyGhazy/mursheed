@@ -17,14 +17,14 @@ class ConversationController extends Controller
             'Message.user.user.media',
             'Replies.user:id,first_name,email'
         ])->get();
-    
+
         return response([
             "data" => $conversations,
             "message" => "All Conversations Successfully",
             "status" => true,
         ], 200);
     }
-    
+
 
     // Get One Conversation From Id
     public function getOneConversation($id)
@@ -41,24 +41,24 @@ class ConversationController extends Controller
                 "status" => false,
             ], 404);
         }
-    
+
         $messages = $conversation->Message->toArray();
         $replies = $conversation->Replies->toArray();
-    
-        foreach ($messages as &$message) {
+
+        foreach ($messages as $message) {
             $message['table_name'] = 'messages';
         }
-    
-        foreach ($replies as &$reply) {
+
+        foreach ($replies as $reply) {
             $reply['table_name'] = 'replies';
         }
-    
+
         $mergedData = array_merge($messages, $replies);
-    
+
         usort($mergedData, function($a, $b) {
             return strcmp($a['created_at'], $b['created_at']);
         });
-    
+
         return response([
             "data" => $mergedData,
             "message" => "Get One Conversation Successfully",

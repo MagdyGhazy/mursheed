@@ -76,7 +76,7 @@ class ControllerHandler
             $data['pictures'] = count($collect) ? $collect : null;
             return $data;
         });
-        
+
         $data = json_decode(json_encode($paginatedModel), true);
 
         return response([

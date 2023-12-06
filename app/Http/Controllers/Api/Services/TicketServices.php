@@ -18,11 +18,29 @@ class TicketServices
 
     public function index()
     {
-        $tickets = Ticket::with(['user.user', 'message', 'replay'])
+        $tickets = Ticket::with(['user.user:id,name,email', 'message', 'replay'])
             ->get()
-            ->makeHidden(['created_at', 'updated_at', 'user_id'])
+
             ->map(function ($ticket) {
-                $user = $ticket->user->user;
+                $user = $ticket->user->user->toArray();
+                $messages = $ticket->message->toArray();
+                $replies = $ticket->replay->toArray();
+
+                foreach ($messages as $message) {
+                    $message['type'] = 'message';
+                }
+
+                foreach ($replies as $reply) {
+                    $reply['type'] = 'reply';
+                }
+
+                $mergedArray = array_merge($messages, $replies);
+
+
+                usort($mergedArray, function ($a, $b) {
+                    return strtotime($a['created_at']) - strtotime($b['created_at']);
+                });
+
                 $ticketData = [
                     "id" => $ticket->id,
                     "number" => $ticket->number,
@@ -30,9 +48,11 @@ class TicketServices
                     "status" => $ticket->status,
                     "priority" => $ticket->priority,
                     "type" => $ticket->type,
-                    "user" =>$user,
-                    "message" => $ticket->message,
-                    "replay" => $ticket->replay,
+                    "user" =>[
+                        'id' => $ticket->user_id,
+                        'name' => gettype($user),
+                    ],
+                    "conversation" => $mergedArray,
                 ];
                 return $ticketData;
             })
@@ -46,54 +66,93 @@ class TicketServices
     public function show($id)
     {
 
-        $ticket = Ticket::with(['user.user', 'message', 'replay'])->find($id);
-        $user = User::where('id',auth()->user()->id)->first();
+        $ticket = Ticket::with(['user.user:id,name,email', 'message', 'replay'])->find($id)
+        ->makeHidden(['created_at', 'updated_at', 'user_id']);
 
-        $response = [
+            $user = $ticket->user->user;
+            $messages = $ticket->message->toArray();
+            $replies = $ticket->replay->toArray();
+
+            foreach ($messages as $message) {
+                $message['type'] = 'message';
+            }
+
+            foreach ($replies as $reply) {
+                $reply['type'] = 'reply';
+            }
+
+            $mergedArray = array_merge($messages, $replies);
+
+
+            usort($mergedArray, function ($a, $b) {
+                return strtotime($a['created_at']) - strtotime($b['created_at']);
+            });
+
+            $ticketData = [
+                "id" => $ticket->id,
+                "number" => $ticket->number,
+                "title" => $ticket->title,
+                "status" => $ticket->status,
+                "priority" => $ticket->priority,
+                "type" => $ticket->type,
+                "user" =>$user,
+                "conversation" => $mergedArray,
+            ];
+
+        return response([
             "status" => "success",
-            "user" => $user,
-            "tickets" => [
-                [
-                    "id" => $ticket->id,
-                    "number" => $ticket->number,
-                    "title" => $ticket->title,
-                    "status" => $ticket->status,
-                    "priority" => $ticket->priority,
-                    "type" => $ticket->type,
-                    "user" => $ticket->user->user,
-                    "message" => $ticket->message,
-                    "replay" => $ticket->replay,
-                ],
-            ],
-        ];
-        return response($response, 200);
+            "ticket" => $ticketData,
+        ], 200);
+
     }
 
     public function userTickets($UserId)
     {
-        $ticket = Ticket::with(['user'])->where('user_id',$UserId)->get()
-            ->makeHidden(['created_at', 'updated_at'])
-            ->map(function ($ticket) {
-                $user = $ticket->user->user;
-                $ticketData = [
-                    "id" => $ticket->id,
-                    "number" => $ticket->number,
-                    "title" => $ticket->title,
-                    "status" => $ticket->status,
-                    "priority" => $ticket->priority,
-                    "type" => $ticket->type,
-                    "user" =>$user,
-                    "message" => $ticket->message,
-                    "replay" => $ticket->replay,
-                ];
-                return $ticketData;
-            })
-            ->toArray();
 
-        return response([
-            "status" => "success",
-            "ticket" => $ticket,
-        ], 200);
+        $ticket = Ticket::where('user_id',$UserId)->get();
+
+        return $ticket;
+
+
+//            ->makeHidden(['created_at', 'updated_at'])
+//            ->map(function ($ticket) {
+//                $user = $ticket->user->user;
+//                $messages = $ticket->message->toArray();
+//                $replies = $ticket->replay->toArray();
+//
+//                foreach ($messages as $message) {
+//                    $message['type'] = 'message';
+//                }
+//
+//                foreach ($replies as $reply) {
+//                    $reply['type'] = 'reply';
+//                }
+//
+//                $mergedArray = array_merge($messages, $replies);
+//
+//
+//                usort($mergedArray, function ($a, $b) {
+//                    return strtotime($a['created_at']) - strtotime($b['created_at']);
+//                });
+//
+//                $ticketData = [
+//                    "id" => $ticket->id,
+//                    "number" => $ticket->number,
+//                    "title" => $ticket->title,
+//                    "status" => $ticket->status,
+//                    "priority" => $ticket->priority,
+//                    "type" => $ticket->type,
+//                    "user" =>$user,
+//                    "conversation" => $mergedArray,
+//                ];
+//                return $ticketData;
+//            })
+//            ->toArray();
+
+//        return response([
+//            "status" => "success",
+//            "ticket" => $ticket,
+//        ], 200);
     }
 
 

@@ -36,13 +36,14 @@ class ReportServes
             ]);
 
         }
+
         $start_date = $request->has('start_date')?  $request->start_date : Order::first()->created_at->format('Y-m-d');
         $end_date = $request->has('end_date')?   Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->addDays(1)->format('Y-m-d');
 
 
-        $allProfits = $request->country_id == null ? $this->allProfits($start_date, $end_date) : $this->allCountryProfits($start_date, $end_date, (int)$request->country_id);
-        $driversProfits = $request->country_id == null ? $this->allProfitsWithDriver($start_date, $end_date) : $this->allCountryProfitsWithDriver($start_date, $end_date, (int)$request->country_id);
-        $guidesProfits = $request->country_id == null ? $this->allProfitsWithGuides($start_date, $end_date) :  $this->allCountryProfitsWithGuides($start_date, $end_date, (int)$request->country_id);
+        $allProfits = $request->country_id == null ? $this->allProfits($start_date, $end_date) : $this->allCountryProfits($start_date, $end_date, $request->country_id);
+        $driversProfits = $request->country_id == null ? $this->allProfitsWithDriver($start_date, $end_date) : $this->allCountryProfitsWithDriver($start_date, $end_date, $request->country_id);
+        $guidesProfits = $request->country_id == null ? $this->allProfitsWithGuides($start_date, $end_date) :  $this->allCountryProfitsWithGuides($start_date, $end_date, $request->country_id);
 
         return response()->json([
             'message' => "success",
@@ -54,8 +55,7 @@ class ReportServes
         ]);
 
     }
-
-
+    W
     public function allProfits($start_date, $end_date)
     {
         return Order::whereBetween('created_at', [$start_date, $end_date])->get()
@@ -107,7 +107,7 @@ class ReportServes
 
     public function allProfitsWithGuides($start_date, $end_date)
     {
-        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guides')->get()
+        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guide')->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
                 $allProfits += $profits['profit'];
