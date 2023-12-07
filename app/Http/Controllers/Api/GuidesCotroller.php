@@ -188,6 +188,40 @@ class GuidesCotroller extends Controller
             ],
         ], 200);
     }
+    public function show_web(Guides $guide)
+    {
+
+
+        $guide->load(['country', 'state', 'priceServices'])->with(['priceServices']);
+
+        if (count($guide->getMedia('car_photo')) >= 0) {
+            foreach ($guide->getMedia('car_photo') as $media) {
+                $car_photos[] = $media->getUrl();
+            }
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "guide details",
+            "user" => [
+                "id" => $guide->id,
+                "name" => $guide->name,
+                "email"=>$guide->email,
+                "phone"=>$guide->phone,
+                "gender"=>$guide->gender,
+                "nationality"=>$guide->nationality,
+                "country" => $guide->country->country,
+                "state" => $guide->state->state,
+                "is_verified" => $guide->mursheed_user->email_verified_at ? true : false,
+                "lang" => [],
+                "bio" => $guide->bio,
+                "personal_photo" => empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures'),
+                "total_rate" => $guide->total_rating,
+                "count_rate" => $guide->ratings_count,
+                "priceServices" => $guide->priceServices
+            ],
+        ], 200);
+    }
 
     public function store(GuideRequest $request)
     {

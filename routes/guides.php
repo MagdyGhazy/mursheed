@@ -8,6 +8,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/all', [\App\Http\Controllers\Api\GuidesCotroller::class, 'index_mobile'])->name('guide.index_mobile');
         Route::get('/latest', [\App\Http\Controllers\Api\GuidesCotroller::class, 'getLatestWithCity'])->name('guides.latest');
         Route::get('/{guide}', [\App\Http\Controllers\Api\GuidesCotroller::class, 'show'])->name('guide.show');
+        Route::get('/show/{guide}', [\App\Http\Controllers\Api\GuidesCotroller::class, 'show_web'])->name('guide.showWeb');
         Route::post('/{guide}/update', [\App\Http\Controllers\Api\GuidesCotroller::class, 'update'])->name('guide.update');
         Route::post('update', [\App\Http\Controllers\Api\GuidesCotroller::class, 'update_mobile'])->name('guide.update_mobile');
         Route::post('/get-guide-by-city', [\App\Http\Controllers\Api\GuidesCotroller::class, 'getGuideByCityWithPriceList'])->name('guide.getGuideByCityWithPriceList');
