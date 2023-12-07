@@ -208,7 +208,7 @@ class GuidesCotroller extends Controller
                 "name" => $guide->name,
                 "email"=>$guide->email,
                 "phone"=>$guide->phone,
-                "gender"=>$guide->gender,
+                "gender" => $guide->gender ? ($guide->gender == 1 ? "male" : "female") : null,
                 "nationality"=>$guide->nationality,
                 "country" => $guide->country->country,
                 "state" => $guide->state->state,

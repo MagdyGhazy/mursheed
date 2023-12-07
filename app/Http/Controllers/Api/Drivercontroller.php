@@ -236,11 +236,11 @@ class Drivercontroller extends Controller
             }
         }
 
-        // $collect = collect(collect($driver)['media'])->groupBy('collection_name')->toArray();
-        // $driver['pictures'] = count($collect) ? $collect : null;
+        $collect = collect(collect($driver)['media'])->groupBy('collection_name')->toArray();
+        $driver['pictures'] = count($collect) ? $collect : null;
 
         $driver["personal_photo"] = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('personal_pictures');
-       // $driver["car_photo"] = count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos;
+        $driver["car_photo"] = count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos;
         $driver["document"] = count($document) == 0 ? [url("car_photo_default.jpg")] : $document;
 
         return response()->json([
@@ -252,7 +252,7 @@ class Drivercontroller extends Controller
                 "notification_id" => $driver->mursheed_user->id,
                 "phone" => $driver->phone,
                 "email" => $driver->email,
-                "is_verified" => $driver->email_verified_at ? true : false,
+                "is_verified" => $driver->mursheed_user->email_verified_at ? true : false,
                 "type" => "Driver",
                 "nationality" => $driver->nationality,
                 "country_id" => (int) $driver->country_id,
@@ -274,8 +274,8 @@ class Drivercontroller extends Controller
                 "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
                 "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? null : $driver->getFirstMediaUrl('personal_pictures'),
                 "document" => empty($driver->getFirstMediaUrl('document')) ? null : $driver->getFirstMediaUrl('document'),
-
-
+                'priceServices' => $driver->priceServices,
+                'pictures' => $driver->pictures,
             ],
         ], 201);
     }
