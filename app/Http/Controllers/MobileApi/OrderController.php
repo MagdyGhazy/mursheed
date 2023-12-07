@@ -127,23 +127,37 @@ class OrderController extends Controller
 
     public function getMyOrders()
     {
-        if (class_basename(auth()->user()->user_type) != "Tourist")
-            return response(['myOrders' => Order::with('orderDetails')
+        if (class_basename(auth()->user()->user_type) != "Tourist"){
+            $orders = Order::with('orderDetails')
                 ->when(request('status') == 'open', function ($query) {
                     return $query->where('status', '!=', OrderStatus::canceled)->where('status', '!=', OrderStatus::paid)->where('status', '!=', OrderStatus::expired)->where('status', '!=', OrderStatus::approved);
                 })
                 ->when(request('status') == 'close', function ($query) {
                     return $query->where('status', OrderStatus::canceled)->where('status', OrderStatus::paid)->where('status', OrderStatus::expired)->where('status', OrderStatus::approved);
                 })
-                ->where('user_id', auth()->user()->user->id)->where('user_type', auth()->user()->user_type)->orderBy('created_at','DESC')->get(), "status" => true]);
-        else
-            return response(['myOrders' => Order::with('orderDetails')
+                ->where('user_id', auth()->user()->user->id)->where('user_type', auth()->user()->user_type)->orderBy('created_at', 'DESC')->get();
+            $orders = collect($orders->toArray())->map(function ($order) {
+                $order['rating'] = intval($order['rating']);
+                return $order;
+            });
+
+        return response(['myOrders' => $orders, "status" => true]);
+        } else {
+            $orders = Order::with('orderDetails')
                 ->when(request('status') == 'open', function ($query) {
                     return $query->where('status', '!=', OrderStatus::canceled)->where('status', '!=', OrderStatus::paid)->where('status', '!=', OrderStatus::expired)->where('status', '!=', OrderStatus::approved);
                 })
                 ->when(request('status') == 'close', function ($query) {
                     return $query->where('status', OrderStatus::canceled)->where('status', OrderStatus::paid)->where('status', OrderStatus::expired)->where('status', OrderStatus::approved);
-                })->where('tourist_id', auth()->user()->user->id)->orderBy('created_at','DESC')->get(), "status" => true]);
+                })
+                ->where('tourist_id', auth()->user()->user->id)->orderBy('created_at', 'DESC')->get();
+
+            $orders = collect($orders->toArray())->map(function ($order) {
+                $order['rating'] = intval($order['rating']);
+                return $order;
+            });
+            return response(['myOrders' => $orders, "status" => true]);
+        }
     }
       public function profiteCost()
     {
