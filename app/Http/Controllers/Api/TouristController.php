@@ -128,7 +128,7 @@ class TouristController extends Controller
                 "notification_id" => $tourist->id,
                 "phone" => $tourist->phone,
                 "email" => $tourist->email,
-                "is_verified" => $tourist->email_verified_at ? true : false,
+                "is_verified" => $tourist->mursheed_user->email_verified_at ? true : false,
                 "type" =>  "Tourist",
                 "dest_city_id" => $tourist->dest_city_id,
                 "county" => $tourist->county,

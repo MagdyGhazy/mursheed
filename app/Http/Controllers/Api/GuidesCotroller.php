@@ -290,7 +290,7 @@ class GuidesCotroller extends Controller
                 "name" => $guide->name,
                 "phone" => $guide->phone,
                 "email" => $guide->email,
-                "is_verified" => $guide->email_verified_at ? true : false,
+                "is_verified" => $guide->mursheed_user->email_verified_at ? true : false,
                 "type" =>  "Guides",
                 "nationality" => $guide->nationality,
                 "country_id" => (int)$guide->country_id,

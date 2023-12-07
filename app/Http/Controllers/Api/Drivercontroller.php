@@ -394,7 +394,7 @@ class Drivercontroller extends Controller
                 "notification_id" => $driver->mursheed_user->id,
                 "phone" => $driver->phone,
                 "email" => $driver->email,
-                "is_verified" => $driver->email_verified_at ? true : false,
+                "is_verified" => $driver->mursheed_user->email_verified_at ? true : false,
                 "type" => "Driver",
                 "nationality" => $driver->nationality,
                 "country_id" => (int) $driver->country_id,
