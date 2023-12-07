@@ -270,7 +270,7 @@ class Drivercontroller extends Controller
                 "ratings_count" => $driver->ratings_count,
                 "ratings_sum" => $driver->ratings_sum,
                 "total_rating" => $driver->total_rating,
-                "languages" => $languages,
+                "languages" => $driver->languagesable,
                 "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
                 "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? null : $driver->getFirstMediaUrl('personal_pictures'),
                 "document" => empty($driver->getFirstMediaUrl('document')) ? null : $driver->getFirstMediaUrl('document'),

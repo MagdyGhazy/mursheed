@@ -192,7 +192,7 @@ class GuidesCotroller extends Controller
     {
 
 
-        $guide->load(['country', 'state', 'priceServices'])->with(['priceServices']);
+        $guide->load(['country', 'state', 'priceServices', 'languagesable'])->with(['priceServices']);
 
         if (count($guide->getMedia('car_photo')) >= 0) {
             foreach ($guide->getMedia('car_photo') as $media) {
@@ -213,7 +213,7 @@ class GuidesCotroller extends Controller
                 "country" => $guide->country->country,
                 "state" => $guide->state->state,
                 "is_verified" => $guide->mursheed_user->email_verified_at ? true : false,
-                "lang" => [],
+                "languages" => $guide->languagesable,
                 "bio" => $guide->bio,
                 "personal_photo" => empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures'),
                 "total_rate" => $guide->total_rating,
