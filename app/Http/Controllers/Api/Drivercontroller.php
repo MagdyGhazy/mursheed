@@ -199,6 +199,28 @@ class Drivercontroller extends Controller
             }
         }
 
+        //get each driver languages
+        $languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+            ->map(function ($languages) {
+                $langs = $languages['language'];
+
+                return $langs;
+            })
+            ->toArray();
+
+
+
+        //        $driver = Driver::where('email', $request->email)->first();
+        //                    if (count($driver->getMedia('car_photos')) >= 0) {
+        $car_photos = [];
+        foreach ($driver->getMedia('car_photos') as $media) {
+            $car_photos[] = $media->getUrl();
+        }
+        //                    }
+
+
+
         $collect = collect(collect($driver)['media'])->groupBy('collection_name')->toArray();
         $driver['pictures'] = count($collect) ? $collect : null;
 
@@ -213,13 +235,17 @@ class Drivercontroller extends Controller
                 "name" => $driver->name,
                 "country" => $driver->country->country,
                 "state" => $driver->state->state,
-                "lang" => [],
+                "languages" => $languages,
                 "bio" => $driver->bio,
                 "car_type" => $driver->car_type,
                 "car_model" => $driver->car_brand_name,
                 "car_date" => $driver->car_manufacturing_date,
-                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
-                "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
+                //                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
+                "personal_photo" => empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures'),
+
+                //                "car_photo" => count($car_photos) == 0 ? [url("car_photo_default.jpg")] : $car_photos,
+                "car_photo" => empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos,
+
                 "total_rate" => $driver->total_rating,
                 "count_rate" => $driver->ratings_count,
                 'pictures' => $driver->pictures,
