@@ -622,8 +622,8 @@ class Drivercontroller extends Controller
     public function getDriverByCountryWithPriceList()
     {
         $user = Auth::user();
-        $tourist = Tourist::where('id', $user->user_id)->first();
-        if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null) {
+        $tourist = Tourist::where('email', $user->email)->first();
+        if ($tourist->dest_country_id != null) {
 
             $drivers = Driver::query()
                 ->select('id', 'name', 'state_id', 'total_rating')
@@ -671,7 +671,7 @@ class Drivercontroller extends Controller
                 "message" => "latest drivers From Country",
                 "drivers" => $drivers,
             ], 200);
-        } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
+        } elseif ($tourist->dest_country_id == null) {
 
             $drivers = Driver::query()
                 ->select('id', 'name', 'state_id', 'total_rating')->with([
@@ -720,7 +720,6 @@ class Drivercontroller extends Controller
                     $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
                 });
 
-            //            $drivers = Driver::orderBy('total_rating', 'desc')->limit(4)->get();
             return response()->json([
                 "success" => false,
                 "message" => "No valid tourist or destination country provided",
