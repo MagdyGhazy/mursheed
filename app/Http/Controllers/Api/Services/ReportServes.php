@@ -48,9 +48,9 @@ class ReportServes
         return response()->json([
             'message' => "success",
             'profits' => [
-                'all_profits' => array_sum($allProfits),
-                'drivers_profits' => array_sum($driversProfits),
-                'guides_profits' => array_sum($guidesProfits),
+                'all_profits' => round(array_sum($allProfits),2),
+                'drivers_profits' => round(array_sum($driversProfits),2),
+                'guides_profits' => round(array_sum($guidesProfits),2),
             ],
         ]);
 
