@@ -269,7 +269,7 @@ class GuidesCotroller extends Controller
         $user = Auth::user();
 
 
-        $guide = Guides::where('email', $request->email)->first();
+        $guide = Guides::where('email', $user->email)->first();
         if ($request->has('languages')) {
             $languagesable = Languagesable::where('languagesable_id', $user->user_id)->delete();
         }
