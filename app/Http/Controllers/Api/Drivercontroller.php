@@ -97,7 +97,7 @@ class Drivercontroller extends Controller
             ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
             ->with([
                 'priceServices' => function ($query) {
-                    $query->limit(1)->latest();
+                    $query->get();
                 }
             ])
             ->orderBy('total_rating', 'DESC');
@@ -106,16 +106,38 @@ class Drivercontroller extends Controller
         $page = $request->input('page', 1);
         $paginatedDrivers = $drivers->paginate($perPage, ['*'], 'page', $page);
 
-        $paginatedDrivers->getCollection()->each(function ($guide) {
-            $guide->personal_photo = count($guide->getMedia('personal_photo')) == 0
-                ? url("default_user.jpg") : $guide->getMedia('personal_photo')->first()->getUrl();
+        $paginatedDrivers->getCollection()->each(function ($driver) {
+            //get each driver personal photo
+            //            $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+            $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
-            $guide->image_background = url("guide_default.jpg");
-            unset($guide->media);
 
-            $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
-            unset($guide->favourites_count);
+            //get each driver car photos
+            $car_photos = [];
+            foreach ($driver->getMedia('car_photos') as $media) {
+                $car_photos[] = $media->getUrl();
+            }
+            $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
+
+
+            //get each driver background photo
+            $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('car_photos');
+
+            unset($driver->media);
+
+            //get each driver languages
+            $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+                ->map(function ($languages) {
+                    $langs = $languages['language'];
+
+                    return $langs;
+                })
+                ->toArray();
+
+            $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
         });
+
 
         //        $drivers = Pipeline::send($drivers)
         //            ->through([
