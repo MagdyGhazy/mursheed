@@ -106,7 +106,7 @@ class ReportServes
 
     public function allProfitsWithGuides($start_date, $end_date)
     {
-        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guide')->get()
+        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guides')->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
                 $allProfits += $profits['profit'];
@@ -118,7 +118,7 @@ class ReportServes
 
     public function allCountryProfitsWithGuides($start_date, $end_date,$country_id)
     {
-        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guide')->where('country_id',$country_id)->get()
+        return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guides')->where('country_id',$country_id)->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
                 $allProfits += $profits['profit'];
