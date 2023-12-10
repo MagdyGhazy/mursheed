@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Driver\DriverRequest;
 use Carbon\Carbon;
 use App\Models\State;
 use App\Models\Driver;
@@ -13,7 +14,6 @@ use App\Models\Languagesable;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DriverRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Pipeline;
@@ -444,7 +444,7 @@ class Drivercontroller extends Controller
         ], 201);
     }
 
-    public function update(GuideRequest $request, driver $driver)
+    public function update(DriverRequest $request, driver $driver)
     {
 
         $global_user = MursheedUser::where('email', $driver->email)->first();
@@ -518,7 +518,7 @@ class Drivercontroller extends Controller
             ->orderBy('ratings_sum', 'DESC')
             ->with([
                 'priceServices' => function ($query) {
-                    $query->limit(1)->latest();
+                    $query->get();
                 }
             ])
             ->where('status', 1)
@@ -526,18 +526,35 @@ class Drivercontroller extends Controller
             ->limit(4)
             ->get()
             ->each(function ($driver) {
-                $driver->personal_photo =
-                    count($driver->getMedia('personal_photo')) == 0
-                    ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                //get each driver personal photo
+                //            $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
-                $driver->image_background =
-                    count($driver->getMedia('car_photo')) == 0
-                    ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
-                $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
+                //get each driver car photos
+                $car_photos = [];
+                foreach ($driver->getMedia('car_photos') as $media) {
+                    $car_photos[] = $media->getUrl();
+                }
+                $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
 
+
+                //get each driver background photo
+                $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('car_photos');
 
                 unset($driver->media);
+
+                //get each driver languages
+                $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+                    ->map(function ($languages) {
+                        $langs = $languages['language'];
+
+                        return $langs;
+                    })
+                    ->toArray();
+
+                $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
             });
 
         return response()->json([
@@ -553,16 +570,33 @@ class Drivercontroller extends Controller
              "drivers" => Driver::whereHas('priceServices', function ($query) use ($request) {
                  $query->where('city_id', $request->city_id);
              })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
-             $driver->personal_photo =
-                 count($driver->getMedia('personal_photo')) == 0
-                 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
-
-             $driver->image_background =
-                 count($driver->getMedia('car_photo')) == 0
-                 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                 $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
 
-             unset($driver->media);
+                 //get each driver car photos
+                 $car_photos = [];
+                 foreach ($driver->getMedia('car_photos') as $media) {
+                     $car_photos[] = $media->getUrl();
+                 }
+                 $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
+
+
+                 //get each driver background photo
+                 $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('car_photos');
+
+                 unset($driver->media);
+
+                 //get each driver languages
+                 $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+                     ->map(function ($languages) {
+                         $langs = $languages['language'];
+
+                         return $langs;
+                     })
+                     ->toArray();
+
+                 $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;;
          }),
              "status" => true
          ]);
@@ -586,13 +620,33 @@ class Drivercontroller extends Controller
                 ->orderBy('ratings_sum', 'DESC')
                 ->get()
                 ->each(function ($driver) {
-                    $driver->personal_photo = count($driver->getMedia('personal_photo')) == 0 ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                    $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
-                    $driver->image_background = count($driver->getMedia('car_photo')) == 0 ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
-                    $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
+                    //get each driver car photos
+                    $car_photos = [];
+                    foreach ($driver->getMedia('car_photos') as $media) {
+                        $car_photos[] = $media->getUrl();
+                    }
+                    $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
+
+
+                    //get each driver background photo
+                    $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('car_photos');
 
                     unset($driver->media);
+
+                    //get each driver languages
+                    $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+                        ->map(function ($languages) {
+                            $langs = $languages['language'];
+
+                            return $langs;
+                        })
+                        ->toArray();
+
+                    $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
                 });
 
             return response()->json([
@@ -605,14 +659,14 @@ class Drivercontroller extends Controller
             $drivers = Driver::query()
                 ->select('id', 'name', 'state_id', 'total_rating')->with([
                     'priceServices' => function ($query) {
-                        $query->first();
+                        $query->get();
                     }
                 ])
                 ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
                 ->orderBy('ratings_sum', 'DESC')
                 ->with([
                     'priceServices' => function ($query) {
-                        $query->limit(1)->latest();
+                        $query->get();
                     }
                 ])
                 ->where('status', 1)
@@ -620,18 +674,33 @@ class Drivercontroller extends Controller
                 ->limit(4)
                 ->get()
                 ->each(function ($driver) {
-                    $driver->personal_photo =
-                        count($driver->getMedia('personal_photo')) == 0
-                            ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+                    $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
-                    $driver->image_background =
-                        count($driver->getMedia('car_photo')) == 0
-                            ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
 
-                    $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
+                    //get each driver car photos
+                    $car_photos = [];
+                    foreach ($driver->getMedia('car_photos') as $media) {
+                        $car_photos[] = $media->getUrl();
+                    }
+                    $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
 
+
+                    //get each driver background photo
+                    $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('car_photos');
 
                     unset($driver->media);
+
+                    //get each driver languages
+                    $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+
+                        ->map(function ($languages) {
+                            $langs = $languages['language'];
+
+                            return $langs;
+                        })
+                        ->toArray();
+
+                    $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
                 });
 
 //            $drivers = Driver::orderBy('total_rating', 'desc')->limit(4)->get();

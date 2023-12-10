@@ -76,7 +76,7 @@ class GuidesCotroller extends Controller
 
             ->select('id', 'name', 'state_id', 'total_rating')
             ->with(['priceServices' => function ($query) {
-                $query->limit(1)->latest();
+                $query->get();
             }])
             ->withCount(['favourites' => function ($q) {
                 $q->where('tourist_id', '=', auth()->user()->user_id);
@@ -95,7 +95,7 @@ class GuidesCotroller extends Controller
             $guide->personal_photo = empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
 
 
-            $guide->image_background = $guide->getFirstMediaUrl('personal_pictures');
+            $guide->image_background =empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
             unset($guide->media);
 
             $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
@@ -406,7 +406,7 @@ class GuidesCotroller extends Controller
                 $query->where('state_id', $request->state_id);
             })->where('status', 1)
             ->with(['priceServices' => function ($query) {
-                $query->limit(1)->latest();
+                $query->get();
             }])
             ->orderBy('ratings_sum', 'DESC')
             ->limit(4)
@@ -431,16 +431,15 @@ class GuidesCotroller extends Controller
      public function getGuideByCityWithPriceList(Request $request)
      {
          return response([
-             "guides" => Guides::with(['priceServices'])->where("state_id", $request->city_id)->get()->append('state_name')->each(function ($driver) {
-                 $driver->personal_photo =
-                     count($driver->getMedia('personal_photo')) == 0
-                         ? url("default_user.jpg") : $driver->getMedia('personal_photo')->first()->getUrl();
+             "guides" => Guides::with(['priceServices'])->where("state_id", $request->city_id)->get()->append('state_name')->each(function ($guide) {
+                 $guide->personal_photo = empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
 
-                 $driver->image_background =
-                     count($driver->getMedia('car_photo')) == 0
-                         ? url("car_photo_default.jpg") : $driver->getMedia('car_photo')->first()->getUrl();
+                 $guide->is_favourite = $guide->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
 
-                 unset($driver->media);
+                 $guide->image_background =empty($guide->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $guide->getFirstMediaUrl('personal_pictures');
+                 unset($guide->media);
+
+
              }),
              "status" => true
 
@@ -485,7 +484,7 @@ class GuidesCotroller extends Controller
                 ->select('id', 'name', 'state_id', 'total_rating')
                 ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'guides.state_id')])
                 ->with(['priceServices' => function ($query) {
-                    $query->limit(1)->latest();
+                    $query->get();
                 }])
                 ->where('status', 1)
                 ->whereHas('priceServices')
