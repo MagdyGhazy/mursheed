@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\AccommmoditionOrderController;
 Route::middleware('auth:sanctum')->group(function () {
   Route::group(['prefix' => 'reports'], function () {
 
-    Route::get("fillter", [ReportController::class, "index"]);
+    Route::post("fillter", [ReportController::class, "index"]);
     Route::get('profite', [OrderController::class, 'profiteCost']);
 
     Route::post('allProfits', [ReportController::class, 'profits']);
