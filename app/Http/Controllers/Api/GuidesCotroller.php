@@ -450,8 +450,8 @@ class GuidesCotroller extends Controller
     public function getGuideByCountryWithPriceList()
     {
         $user = Auth::user();
-        $tourist = Tourist::where('id', $user->user_id)->first();
-        if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
+        $tourist = Tourist::where('email', $user->email)->first();
+        if ($tourist->dest_country_id != null ) {
 //            $guides = Guides::where('country_id', $tourist->dest_country_id)->get();
             $guides = Guides::query()
                 ->select('id', 'name', 'state_id', 'total_rating')
@@ -478,7 +478,7 @@ class GuidesCotroller extends Controller
                 "message" => "latest guides From Country",
                 "guides" => $guides,
             ], 200);
-        } elseif ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id == null) {
+        } elseif ($tourist->dest_country_id == null) {
 //            $guides = Guides::where('country_id', $tourist->dest_country_id)->orderBy('total_rating', 'desc')->limit(4)->get();
             $guides = Guides::query()
                 ->select('id', 'name', 'state_id', 'total_rating')
