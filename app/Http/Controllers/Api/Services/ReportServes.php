@@ -55,7 +55,6 @@ class ReportServes
         ]);
 
     }
-    W
     public function allProfits($start_date, $end_date)
     {
         return Order::whereBetween('created_at', [$start_date, $end_date])->get()
