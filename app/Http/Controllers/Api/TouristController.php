@@ -170,7 +170,7 @@ class TouristController extends Controller
 
     public function destroy(Tourist $tourist)
     {
-        return $this->ControllerHandler->destory("tourist", $tourist);
+        return $this->ControllerHandler->destory("tourists", $tourist);
     }
 
 

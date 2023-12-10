@@ -246,6 +246,7 @@ class ControllerHandler
     {
         return response([
             "deleted" => $model->delete(),
+            "message" => "Deleted Successfully",
             "$key" => $this->model::all(),
             "status" => true
         ], 200);
