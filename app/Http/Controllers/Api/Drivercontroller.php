@@ -6,22 +6,15 @@ use App\Http\Requests\Driver\DriverRequest;
 use Carbon\Carbon;
 use App\Models\State;
 use App\Models\Driver;
-use App\Models\Guides;
-use App\Models\Favourite;
 use App\Models\MursheedUser;
 use Illuminate\Http\Request;
 use App\Models\Languagesable;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\GuideRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Pipeline;
 use App\Notifications\SendEmailForApprove;
 use App\Http\Controllers\ControllerHandler;
-use App\Http\Controllers\Filter\SearchByName;
 use App\Http\Controllers\Filter\SearchByPrice;
-use App\Http\Controllers\Filter\SearchByState;
 use App\Http\Controllers\Filter\SearchByCountry;
 use App\Http\Controllers\Filter\SearchByCarModel;
 use App\Http\Controllers\Filter\SearchByLanguage;
@@ -79,14 +72,14 @@ class Drivercontroller extends Controller
         //        return $request->carBrandName;
 
         $drivers = Driver::query()
-            ->when($request->has('price'), fn($query) => $query->whereHas('priceServices', fn($query) => $query->where('price', '<=', $request->price)))
-            ->when($request->has('language_id'), fn($query) => $query->whereHas('languagesable', fn($query) => $query->whereIn('language_id', $request->language_id)))
-            ->when($request->has('carBrandName'), fn($query) => $query->where('car_brand_name', "$request->carBrandName"))
-            ->when($request->has('name'), fn($query) => $query->where('name', 'LIKE', "%{$request->name}%"))
-            ->when($request->has('rating'), fn($query) => $query->where('total_rating', (float) $request->rating))
-            ->when($request->has('country_id'), fn($query) => $query->where('country_id', $request->country_id))
-            ->when($request->has('state_id'), fn($query) => $query->where('state_id', $request->state_id))
-            ->when($request->has('car_type'), fn($query) => $query->where('car_type', $request->car_type))
+            ->when($request->has('price'), fn ($query) => $query->whereHas('priceServices', fn ($query) => $query->where('price', '<=', $request->price)))
+            ->when($request->has('language_id'), fn ($query) => $query->whereHas('languagesable', fn ($query) => $query->whereIn('language_id', $request->language_id)))
+            ->when($request->has('carBrandName'), fn ($query) => $query->where('car_brand_name', "$request->carBrandName"))
+            ->when($request->has('name'), fn ($query) => $query->where('name', 'LIKE', "%{$request->name}%"))
+            ->when($request->has('rating'), fn ($query) => $query->where('total_rating', (float) $request->rating))
+            ->when($request->has('country_id'), fn ($query) => $query->where('country_id', $request->country_id))
+            ->when($request->has('state_id'), fn ($query) => $query->where('state_id', $request->state_id))
+            ->when($request->has('car_type'), fn ($query) => $query->where('car_type', $request->car_type))
             ->where('status', 1)
             ->select('id', 'name', 'state_id', 'country_id', 'total_rating', 'ratings_count')
             ->withCount([
@@ -278,7 +271,7 @@ class Drivercontroller extends Controller
                 "type" => "Driver",
                 "nationality" => $driver->nationality,
                 "country" => $driver->country->country,
-                "state" =>$driver->state->state,
+                "state" => $driver->state->state,
                 "gender" => $driver->gender ? ($driver->gender == 1 ? "male" : "female") : null,
                 "bio" => $driver->bio,
                 "car_number" => $driver->car_number,
@@ -304,7 +297,6 @@ class Drivercontroller extends Controller
 
     public function store(DriverRequest $request)
     {
-
         $data = $request->validated();
         $data['password'] = Hash::make($request->validated('password'));
         $data['status'] = -1;
@@ -361,7 +353,6 @@ class Drivercontroller extends Controller
                         'language_id' => $value
                     ]
                 );
-
             }
         }
         $languages = Languagesable::where('languagesable_id', $user->user_id)->with([
@@ -507,10 +498,10 @@ class Drivercontroller extends Controller
 
         $drivers = Driver::query()
             ->select('id', 'name', 'state_id', 'total_rating')->with([
-                    'priceServices' => function ($query) {
-                        $query->first();
-                    }
-                ])
+                'priceServices' => function ($query) {
+                    $query->first();
+                }
+            ])
             ->addSelect(['state_name' => State::select('state')->whereColumn('states.id', 'drivers.state_id')])
             ->when($request->state_id, function ($query) use ($request) {
                 $query->where('state_id', $request->state_id);
@@ -564,49 +555,49 @@ class Drivercontroller extends Controller
         ], 200);
     }
 
-     public function getDriverByCityWithPriceList(Request $request)
-     {
-         return response([
-             "drivers" => Driver::whereHas('priceServices', function ($query) use ($request) {
-                 $query->where('city_id', $request->city_id);
-             })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
-                 $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
+    public function getDriverByCityWithPriceList(Request $request)
+    {
+        return response([
+            "drivers" => Driver::whereHas('priceServices', function ($query) use ($request) {
+                $query->where('city_id', $request->city_id);
+            })->with('priceServices')->get()->append('state_name')->each(function ($driver) {
+                $driver->personal_photo = empty($driver->getFirstMediaUrl('personal_pictures')) ? url("default_user.jpg") : $driver->getFirstMediaUrl('personal_pictures');
 
 
-                 //get each driver car photos
-                 $car_photos = [];
-                 foreach ($driver->getMedia('car_photos') as $media) {
-                     $car_photos[] = $media->getUrl();
-                 }
-                 $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
+                //get each driver car photos
+                $car_photos = [];
+                foreach ($driver->getMedia('car_photos') as $media) {
+                    $car_photos[] = $media->getUrl();
+                }
+                $driver->car_photos = empty($driver->getMedia('car_photos')) ? url("default_user.jpg") : $car_photos;
 
 
-                 //get each driver background photo
-                 $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('car_photos');
+                //get each driver background photo
+                $driver->image_background = empty($driver->getMedia('car_photos')) ? url("car_photo_default.jpg") : $driver->getFirstMediaUrl('car_photos');
 
-                 unset($driver->media);
+                unset($driver->media);
 
-                 //get each driver languages
-                 $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
+                //get each driver languages
+                $driver->languages = Languagesable::where('languagesable_id', $driver->id)->with('language')->get()
 
-                     ->map(function ($languages) {
-                         $langs = $languages['language'];
+                    ->map(function ($languages) {
+                        $langs = $languages['language'];
 
-                         return $langs;
-                     })
-                     ->toArray();
+                        return $langs;
+                    })
+                    ->toArray();
 
-                 $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;;
-         }),
-             "status" => true
-         ]);
-     }
+                $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;;
+            }),
+            "status" => true
+        ]);
+    }
 
     public function getDriverByCountryWithPriceList()
     {
         $user = Auth::user();
         $tourist = Tourist::where('id', $user->user_id)->first();
-        if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null ) {
+        if ($user->user_type == 'App\\Models\\Tourist' && $tourist->dest_country_id != null) {
 
             $drivers = Driver::query()
                 ->select('id', 'name', 'state_id', 'total_rating')
@@ -703,7 +694,7 @@ class Drivercontroller extends Controller
                     $driver->is_favourite = $driver->favourites()->where('tourist_id', auth()->user()->user_id)->count() > 0;
                 });
 
-//            $drivers = Driver::orderBy('total_rating', 'desc')->limit(4)->get();
+            //            $drivers = Driver::orderBy('total_rating', 'desc')->limit(4)->get();
             return response()->json([
                 "success" => false,
                 "message" => "No valid tourist or destination country provided",

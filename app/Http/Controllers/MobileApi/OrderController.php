@@ -89,18 +89,21 @@ class OrderController extends Controller
 
     public function show(Order $order,$id)
     {
-        $order_info = $order->where('id',$id)->with('orderDetails')->get();
-        $order_info = collect($order_info->toArray())->map(function ($order) {
-            $order['rating'] = intval($order['rating']);
-            return $order;
-        });
+//        $order_info = $order->where('id',$id)->with('orderDetails')->get();
+//        $order_info = collect($order_info->toArray())->map(function ($order) {
+//            $order['rating'] = intval($order['rating']);
+//            return $order;
+//        });
+        $order_info = $order->find($id);
+
         return response([
             'status' =>  'success',
-            'order' =>  $order_info[0]['order_details'],
-            'country_price' => CountryPrice::where('country_id',$order_info[0]['country_id'])->first(),
-            'total_cost' => $order_info[0]['cost'],
-            'start_date' => $order_info[0]['start_date'],
-            'end_date' => $order_info[0]['end_date']
+            'vendor' =>  $order_info->vendor[0],
+            'order' =>  $order_info->orderDetails,
+            'country_price' => CountryPrice::where('country_id',$order_info['country_id'])->first(),
+            'total_cost' => $order_info['cost'],
+            'start_date' => $order_info['start_date'],
+            'end_date' => $order_info['end_date']
         ]);
     }
 

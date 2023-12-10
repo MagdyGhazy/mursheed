@@ -78,7 +78,7 @@ class AccommmoditionController extends Controller
                 ->where('aval_status',1)
                 ->with(['media', 'country', 'state']);
         }
-        
+
         $paginatedModel = $model->paginate($perPage, ['*'], 'page', $page);
 
         $paginatedModel->map(function ($data) {
@@ -175,5 +175,20 @@ class AccommmoditionController extends Controller
 
 
         return $this->ControllerHandler->destory("accommmodition", $accommmodition);
+    }
+
+    public function deleteImage($id)
+    {
+        // Find the media item by ID
+        $mediaItem = Media::find($id);
+
+        // Delete the media item along with the associated file
+        if ($mediaItem) {
+            $mediaItem->delete();
+        }
+        return response([
+            'status' => "success",
+            'message' => "deleted",
+        ]);
     }
 }

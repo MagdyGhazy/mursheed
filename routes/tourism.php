@@ -11,6 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/{accommmodition}', [\App\Http\Controllers\Api\AccommmoditionController::class, 'show'])->name('accommodition.show');
         Route::post('/{accommmodition}/update', [\App\Http\Controllers\Api\AccommmoditionController::class, 'update'])->name('accommodition.update');
+        Route::post('delete_image/{id}', [\App\Http\Controllers\Api\AccommmoditionController::class, 'deleteImage'])->name('accommodition.deleteImage');
         Route::delete('/{accommmodition}/delete', [\App\Http\Controllers\Api\AccommmoditionController::class, 'destroy'])->name('accommodition.delete');
     });
 });
