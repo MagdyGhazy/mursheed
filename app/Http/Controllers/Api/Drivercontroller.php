@@ -687,7 +687,7 @@ class Drivercontroller extends Controller
                     }
                 ])
                 ->where('status', 1)
-
+                ->whereHas('priceServices')
                 ->limit(4)
                 ->get()
                 ->each(function ($driver) {
@@ -721,7 +721,7 @@ class Drivercontroller extends Controller
                 });
 
             return response()->json([
-                "success" => false,
+                "success" => true,
                 "message" => "No valid tourist or destination country provided",
                 "drivers" => $drivers,
             ], 400);

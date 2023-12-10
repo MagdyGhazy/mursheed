@@ -500,7 +500,7 @@ class GuidesCotroller extends Controller
                     unset($guide->media);
                 });
             return response()->json([
-                "success" => false,
+                "success" => true,
                 "message" => "No valid tourist or destination country provided",
                 "guides" => $guides,
             ], 400);
