@@ -96,7 +96,7 @@ class OrderController extends Controller
         });
         return response([
             'status' =>  'success',
-            'order' =>  (object)$order_info[0],
+            'order' =>  $order_info[0]['order_details'],
             'country_price' => CountryPrice::where('country_id',$order_info[0]['country_id'])->first(),
             'total_cost' => $order_info[0]['cost'],
             'start_date' => $order_info[0]['start_date'],
