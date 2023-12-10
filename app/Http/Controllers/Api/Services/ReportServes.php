@@ -60,7 +60,7 @@ class ReportServes
         return Order::whereBetween('created_at', [$start_date, $end_date])->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
-                $allProfits += $profits['profit'];
+                $allProfits += round($profits['profit'],2);
 
                 return $allProfits;
             })
@@ -72,7 +72,7 @@ class ReportServes
         return Order::whereBetween('created_at', [$start_date, $end_date])->where('country_id',$country_id)->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
-                $allProfits += $profits['profit'];
+                $allProfits += round($profits['profit'],2);
 
                 return $allProfits;
             })
@@ -85,7 +85,7 @@ class ReportServes
         return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Driver')->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
-                $allProfits += $profits['profit'];
+                $allProfits += round($profits['profit'],2);
 
                 return $allProfits;
             })
@@ -97,7 +97,7 @@ class ReportServes
         return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Driver')->where('country_id',$country_id)->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
-                $allProfits += $profits['profit'];
+                $allProfits += round($profits['profit'],2);
 
                 return $allProfits;
             })
@@ -109,7 +109,7 @@ class ReportServes
         return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guides')->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
-                $allProfits += $profits['profit'];
+                $allProfits += round($profits['profit'],2);
 
                 return $allProfits;
             })
@@ -121,7 +121,7 @@ class ReportServes
         return Order::whereBetween('created_at', [$start_date, $end_date])->where('user_type','App\Models\Guides')->where('country_id',$country_id)->get()
             ->map(function ($profits) {
                 $allProfits = 0 ;
-                $allProfits += $profits['profit'];
+                $allProfits += round($profits['profit'],2);
 
                 return $allProfits;
             })
