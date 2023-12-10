@@ -92,14 +92,14 @@ class AuthController extends Controller
                     'message' => 'Email & Password does not match with our record.',
                 ], 401);
             }
-            $role = Role::where('name',$user->role)->first();
+        //    $role = Role::where('name',$user->role)->first();
 
 
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged In Successfully',
                 "user" =>  $user,
-                "roles"=>$role->permission,
+                // "roles"=>$role->permission,
                 'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
         } catch (\Throwable $th) {
