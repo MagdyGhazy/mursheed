@@ -23,7 +23,7 @@ class ReminderRequest extends FormRequest
     {
         return [
             'type'=>'required',
-            'selected'=>'required',
+            'selected'=>'required|nullable',
             'subject'=>'required',
             'body'=>'required'
         ];
