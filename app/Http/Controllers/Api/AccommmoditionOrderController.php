@@ -16,10 +16,10 @@ class AccommmoditionOrderController extends Controller
      */
     public function index()
     {
-        $data = OrderAccommmodition::get();
+        $data = OrderAccommmodition::with('category','tourist')->get();
         return response()->json([
             "data" => $data,
-            "stutes" => "successfuly To Add"
+            "stutes" => "successfuly To Get All Data"
         ]);
     }
 
@@ -55,7 +55,7 @@ class AccommmoditionOrderController extends Controller
 
     public function show(string $id)
     {
-        $data = OrderAccommmodition::find($id);
+        $data = OrderAccommmodition::where('id',$id)->with('category','tourist')->get();
         return response()->json([
             "data" => $data,
             "stutes" => "successfuly To Add"

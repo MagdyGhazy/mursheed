@@ -28,7 +28,7 @@ class accommmodition extends Model implements HasMedia
     }
     public function category()
     {
-        return $this->belongsTo(CategoryAccommodation::class);
+        return $this->belongsTo(CategoryAccommodation::class,'category_accommodations_id','id');
     }
 
 //    protected $casts = [

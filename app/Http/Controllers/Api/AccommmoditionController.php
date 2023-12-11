@@ -43,7 +43,7 @@ class AccommmoditionController extends Controller
             $model = $this->accommmodition::
                 when($request->has('rooms'),fn($query)=>$query->where('rooms',$request->rooms))
                 ->when($request->has('category_id'),fn($query)=>$query->where('category_accommodations_id',$request->category_id))
-                ->with(['media', 'country', 'state'])->get()->map(function ($data) {
+                ->with(['media', 'country', 'state','category'])->get()->map(function ($data) {
                 $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
 
                 $data['pictures'] = count($collect) ? $collect : null;

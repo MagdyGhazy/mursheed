@@ -17,5 +17,8 @@ class CategoryAccommodation extends Model
     {
         return $this->hasMany(accommmodition::class);
     }
-
+    public function accommodationsorder()
+    {
+        return $this->hasMany(OrderAccommmodition::class);
+    }
 }
