@@ -17,14 +17,15 @@ class ReminderController extends Controller
     {
         $users = null;
         if ($request->type == 0) {
-            $users = Driver::query();
+
+            $users = $request->selected == null? Driver::query() : Driver::whereIn('id', $request->selected)->get();
 
         } elseif ($request->type == 1) {
-            $users = Guides::query();
+
+            $users = $request->selected == null? Guides::query() : Guides::whereIn('id', $request->selected)->get();
 
         } else {
             $users = Tourist::query();
-
         }
 
         $users->chunk(30,function ($user)use ($request){
@@ -33,7 +34,6 @@ class ReminderController extends Controller
         });
 
         return response(['message' => 'success', 'status' => 200]);
-
 
     }
 }
