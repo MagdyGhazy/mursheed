@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('total_cost');
             $table->date('start_date');
             $table->date('end_date');
+            $table->unsignedBigInteger('category_id');
             $table->timestamps();
         });
     }

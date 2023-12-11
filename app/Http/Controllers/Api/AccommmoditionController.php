@@ -32,24 +32,23 @@ class AccommmoditionController extends Controller
 
         $model = Pipeline::send($this->accommmodition::query())->through(
             [
-              //  SearchByAccomoditionCategory::class,
-               // SearchByAccomoditionRooms::class
+                //  SearchByAccomoditionCategory::class,
+                // SearchByAccomoditionRooms::class
             ]
         )->then(
-            fn($user) => $user->with(['media', 'country', 'state'])->get()
+            fn ($user) => $user->with(['media', 'country', 'state'])->get()
         );
         $k = array_search('media', ['media', 'country', 'state'], true);
         if ($k !== false) {
-            $model = $this->accommmodition::
-                when($request->has('rooms'),fn($query)=>$query->where('rooms',$request->rooms))
-                ->when($request->has('category_id'),fn($query)=>$query->where('category_accommodations_id',$request->category_id))
-                ->where('aval_status',1)
-                ->with(['media', 'country', 'state'])->get()->map(function ($data) {
-                $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
+            $model = $this->accommmodition::when($request->has('rooms'), fn ($query) => $query->where('rooms', $request->rooms))
+                ->when($request->has('category_id'), fn ($query) => $query->where('category_accommodations_id', $request->category_id))
+                ->where('aval_status', 1)
+                ->with(['media', 'country', 'state', 'category'])->get()->map(function ($data) {
+                    $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
 
-                $data['pictures'] = count($collect) ? $collect : null;
-                return $data;
-            });
+                    $data['pictures'] = count($collect) ? $collect : null;
+                    return $data;
+                });
         }
         return response([
             "accommmoditions" => $model,
@@ -73,19 +72,19 @@ class AccommmoditionController extends Controller
         $k = array_search('media', ['media', 'country', 'state'], true);
         if ($k !== false) {
             $model = $this->accommmodition::query()
-                ->when($request->has('rooms'),fn($query)=>$query->where('rooms',$request->rooms))
-                ->when($request->has('category_id'),fn($query)=>$query->where('category_accommodations_id',$request->category_id))
-                ->where('aval_status',1)
+                ->when($request->has('rooms'), fn ($query) => $query->where('rooms', $request->rooms))
+                ->when($request->has('category_id'), fn ($query) => $query->where('category_accommodations_id', $request->category_id))
+                ->where('aval_status', 1)
                 ->with(['media', 'country', 'state']);
         }
 
         $paginatedModel = $model->paginate($perPage, ['*'], 'page', $page);
 
         $paginatedModel->map(function ($data) {
-        $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
+            $collect = collect(collect($data)['media'])->groupBy('collection_name')->toArray();
 
-        $data['pictures'] = count($collect) ? $collect : null;
-        return $data;
+            $data['pictures'] = count($collect) ? $collect : null;
+            return $data;
         });
 
 
@@ -108,7 +107,6 @@ class AccommmoditionController extends Controller
             "total" => $data['total'],
 
         ], 200);
-
     }
 
 
@@ -149,13 +147,13 @@ class AccommmoditionController extends Controller
 
     public function update(AccommoditionRequest $request, accommmodition $accommmodition)
     {
-//        return $request;
+        //        return $request;
 
         // here some validation check parent or admin
-        $request->media_id == null ?   : $accommmodition->deleteMedia($request->media_id) ;
+        $request->media_id == null ?: $accommmodition->deleteMedia($request->media_id);
 
         if (request()->images) {
-//            $accommmodition->clearMediaCollection('photos');
+            //            $accommmodition->clearMediaCollection('photos');
 
             //
             $accommmodition->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
