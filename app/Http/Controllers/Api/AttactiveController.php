@@ -70,6 +70,7 @@ class AttactiveController extends Controller
 
     public function show(AttractiveLocation $attractiveLocation)
     {
+        $mapUrl = "https://www.google.com/maps?q={$attractiveLocation->lat},{$attractiveLocation->long}";
 
         $photos = [];
 
@@ -81,21 +82,20 @@ class AttactiveController extends Controller
             }
         }
 
-        $data = json_decode(json_encode($attractiveLocation), true);
         return response()->json([
             "status" => true,
             "message" => "Attractive Location details",
             "attractiveLocation" => [
                 "id" => $attractiveLocation->id,
-                "name" => $data['name'],
+                "name" => $attractiveLocation->name,
                 "country_id" => $attractiveLocation->country->id,
                 "country" => $attractiveLocation->country->country,
                 "state" => $attractiveLocation->state->state,
-                "city_id"=>$attractiveLocation->state_id,
-                "url" => $attractiveLocation->url,
-                "long"=>$attractiveLocation->long,
-                "lat"=>$attractiveLocation->lat,
-                "description" => $data['description'],
+                "city_id" => $attractiveLocation->state_id,
+                "url" => $mapUrl,
+                "long" => $attractiveLocation->long,
+                "lat" => $attractiveLocation->lat,
+                "description" => $attractiveLocation->description,
                 "photos" => empty($photos) ? [url("car_photo_default.jpg")] : $photos,
             ],
         ], 200);
