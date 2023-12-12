@@ -22,10 +22,10 @@ class ReminderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'=>'required',
-            'selected'=>'required|nullable',
-            'subject'=>'required',
-            'body'=>'required'
+            'type' => 'required',
+            //            'selected'=>'required',
+            'subject' => 'required',
+            'body' => 'required'
         ];
     }
 }

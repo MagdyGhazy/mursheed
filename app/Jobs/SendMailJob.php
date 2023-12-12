@@ -36,7 +36,6 @@ class SendMailJob implements ShouldQueue
         foreach ($this->users as $user )
         {
             $user->notify(new SendReminder($this->subject, $this->body));
-
         }
 
     }

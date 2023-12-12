@@ -42,7 +42,7 @@ class SendReminder extends Notification
         return (new MailMessage)
             ->from('mursheed@visualinnvate.com')
             ->subject($this->subject)
-            ->line('Hello ' . $notifiable->name)
+            ->greeting('Hello ' . $notifiable->name)
             ->line($this->body);
     }
 
