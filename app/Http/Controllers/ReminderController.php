@@ -10,6 +10,7 @@ use App\Models\MursheedUser;
 use App\Models\Tourist;
 use App\Notifications\SendEmailForApprove;
 use App\Notifications\SendOtpNotification;
+use App\Notifications\SendReminder;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -32,7 +33,8 @@ class ReminderController extends Controller
 
         $user = MursheedUser::where('email','megoghazy55@gmail.com')->first();
         $otp = 452;
-        $user->notify(new SendOtpNotification($otp));
+
+        $user->notify(new SendReminder($request->subject, $request->body));
 
 //        $job = new SendMailJob($users, $request->subject, $request->body);
 //        if ($job){
@@ -43,7 +45,7 @@ class ReminderController extends Controller
 //            dispatch($job);
 //        });
 
-        return response(['message' => 'fail', 'status' => 400]);
+        return response(['message' => 'success', 'status' => 200]);
 
 
     }
