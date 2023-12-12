@@ -80,19 +80,34 @@ class OfferController extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
 
-    public function update(OfferRequestUpdate $request, Offer $offer)
+    public function update(OfferRequestUpdate $request, $id)
     {
-        if ($request->hasFile('images')) {
-            $offer->clearMediaCollection('photos');
-            //
+        $validated = $request->validated();
+        $offer = Offer::find($id);
 
-            $offer->addMultipleMediaFromRequest(['images'])->each(function ($fileAdder) {
-                $fileAdder->toMediaCollection('photos');
-            });
+        if (!$offer) {
+            return response([
+                "data" => null,
+                "message" => "Not Found",
+                "status" => false,
+            ], 404);
         }
 
+        $offer->clearMediaCollection('offer');
+        $offer->update([
+            'number' => $request->number,
+            'title' => $request->title,
+            'status' => $request->status,
+            'price' => $request->price,
+            'lang' => $request->lang,
+        ]);
+        $offer->addMediaFromRequest('images')->toMediaCollection('offer');
 
-        return $this->ControllerHandler->update("offer", $offer, array_merge($request->except('images'), ['status' => $request->status == "true" ? 1 : 0]));
+        return response([
+            "data" => new OfferRequestUpdate($offer),
+            "message" => "Updated Success",
+            "status" => true,
+        ], 200);
     }
 
 

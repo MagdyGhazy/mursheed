@@ -8,7 +8,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/approved', [\App\Http\Controllers\Api\OfferController::class, 'approvedOffers'])->name('offer.approvedOffers');
         Route::post('/create', [\App\Http\Controllers\Api\OfferController::class, 'store'])->name('offer.create');
         Route::get('/{offer}', [\App\Http\Controllers\Api\OfferController::class, 'show'])->name('offer.show');
-        Route::post('/{offer}/update', [\App\Http\Controllers\Api\OfferController::class, 'update'])->name('offer.update');
+        Route::post('/{id}/update', [\App\Http\Controllers\Api\OfferController::class, 'update'])->name('offer.update');
         Route::delete('/{offer}/delete', [\App\Http\Controllers\Api\OfferController::class, 'destroy'])->name('offer.delete');
     });
 });
