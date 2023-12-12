@@ -10,8 +10,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Offer extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia,HasTranslations;
-    protected $guarded=array();
-    public $translatable= ['title'];
+    use HasFactory,InteractsWithMedia;
+    protected $guarded=[];
 
 }

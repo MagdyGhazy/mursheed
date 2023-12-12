@@ -48,8 +48,26 @@ class OfferController extends Controller
      */
     public function store(OfferRequest $request)
     {
-        //        return response($request->status == "true"?1 : 0);
-        return $this->ControllerHandler->store("offer", array_merge($request->except('images'), ['status' => $request->status == "true" ? 1 : 0]));
+        $validated = $request->validated();
+    
+        $offer = Offer::create($request->except('images'));
+        if (!$offer) {
+            return response([
+                "data" => null,
+                "message" => "Not Saved",
+                "status" => false,
+            ], 400);
+        }
+    
+        if ($request->hasFile('images')) {
+            $offer->addMediaFromRequest('images')->toMediaCollection('Offer');
+        }
+    
+        return response([
+            "data" => $offer,
+            "message" => "Success",
+            "status" => true,
+        ], 200);
     }
 
     /**
