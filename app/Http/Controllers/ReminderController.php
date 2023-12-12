@@ -28,12 +28,17 @@ class ReminderController extends Controller
             $users = Tourist::query();
         }
 
-        $users->chunk(30,function ($user)use ($request){
-            $job = new SendMailJob($user, $request->subject, $request->body);
-            dispatch($job);
-        });
+        $job = new SendMailJob($users, $request->subject, $request->body);
+        if ($job){
+            return response(['message' => 'success', 'status' => 200]);
+        }
+//        $users->chunk(30,function ($user)use ($request){
+//            $job = new SendMailJob($user, $request->subject, $request->body);
+//            dispatch($job);
+//        });
 
-        return response(['message' => 'success', 'status' => 200]);
+        return response(['message' => 'fail', 'status' => 400]);
+
 
     }
 }
