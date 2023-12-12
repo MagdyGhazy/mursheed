@@ -23,12 +23,12 @@ class OfferController extends Controller
      */
     public function index()
     {
-        return $this->ControllerHandler->getAllWith("offers",['media']);
+        return $this->ControllerHandler->getAllWith("offers", ['media']);
     }
 
     public function approvedOffers()
     {
-        return $this->ControllerHandler->getAllWithWhere("offers",['media'],'status',1);
+        return $this->ControllerHandler->getAllWithWhere("offers", ['media'], 'status', 1);
     }
 
 
@@ -39,7 +39,7 @@ class OfferController extends Controller
      */
     public function show(Offer $offer)
     {
-        return $this->ControllerHandler->showWith("offer", $offer,['media']);
+        return $this->ControllerHandler->showWith("offer", $offer, ['media']);
     }
 
     /**
@@ -50,11 +50,18 @@ class OfferController extends Controller
     {
         $validated = $request->validated();
         $offer = Offer::create($request->except('images'));
-        $offer->addMediaFromRequest('images')->toMediaCollection('Offer');
 
-        if($offer){
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $offer->addMediaFromRequest('images')->toMediaCollection('offer');
+        }
+
+        $data = Offer::where('id',$offer->id)->with('media')->get();
+
+
+        if ($offer) {
             return response([
                 "message" => "Success",
+                'data' => $data,
                 "status" => true,
             ], 200);
         }
@@ -65,7 +72,7 @@ class OfferController extends Controller
             "status" => false,
         ], 400);
     }
-    
+
 
     /**
      * @param ChildRequest $request
