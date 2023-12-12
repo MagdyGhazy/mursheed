@@ -37,13 +37,27 @@ class SendReminder extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-
-
         return (new MailMessage)
             ->from('mursheed@visualinnvate.com')
             ->subject($this->subject)
             ->greeting('Hello ' . $notifiable->name)
-            ->line($this->body);
+//            ->line($this->body)
+            ->html($this->body);
+
+//        $email = (new MailMessage)
+//            ->from('mursheed@visualinnovate.com')
+//            ->subject($this->subject)
+//            ->greeting('Hello ' . $notifiable->name);
+//
+//        // Add HTML content with images
+//        $email->line(function ($message) {
+//            $message->html($this->body, ['mime' => 'text/html']);
+//        });
+//
+//        // You can also add a plain text version of your email
+////        $email->line(strip_tags($this->body));
+//
+//        return $email;
     }
 
     /**
