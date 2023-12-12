@@ -32,7 +32,7 @@ class OfferRequest extends FormRequest
             'title'=>"required",
             'price'=>'required',
             'status'=>'required',
-            // 'images'=>'required'
+            'images'=>'required'
         ];
     }
 }
