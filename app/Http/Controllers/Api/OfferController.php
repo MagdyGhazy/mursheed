@@ -55,8 +55,7 @@ class OfferController extends Controller
             $offer->addMediaFromRequest('images')->toMediaCollection('offer');
         }
 
-        $data = Offer::where('id',$offer->id)->with('media')->get();
-
+        $data = Offer::where('id', $offer->id)->with('media')->first();
 
         if ($offer) {
             return response([
@@ -68,7 +67,7 @@ class OfferController extends Controller
 
         return response([
             "data" => null,
-            "message" => "Not Save",
+            "message" => "Not Saved",
             "status" => false,
         ], 400);
     }
