@@ -83,17 +83,16 @@ class OfferController extends Controller
     public function update(OfferRequestUpdate $request, $id)
     {
         $validated = $request->validated();
-        $offer = Offer::find($id);
+        $offer = Offer::with('media')->find($id);
 
         if (!$offer) {
             return response([
                 "data" => null,
-                "message" => "Not Found",
+                "message" => "Offer Not Found",
                 "status" => false,
             ], 404);
         }
 
-        $offer->clearMediaCollection('offer');
         $offer->update([
             'number' => $request->number,
             'title' => $request->title,
@@ -101,14 +100,25 @@ class OfferController extends Controller
             'price' => $request->price,
             'lang' => $request->lang,
         ]);
+
+        $offer->clearMediaCollection('offer');
         $offer->addMediaFromRequest('images')->toMediaCollection('offer');
 
+        $mediaUrls = $offer->getMedia('offer')->map(function ($media) {
+            return $media->getUrl();
+        });
+
         return response([
-            "data" => new OfferRequestUpdate($offer),
-            "message" => "Updated Success",
+            "data" => [
+                "offer" => $offer,
+                "media_urls" => $mediaUrls,
+            ],
+            "message" => "Offer Updated Successfully",
             "status" => true,
         ], 200);
     }
+
+
 
 
     public function destroy(Offer $offer)
