@@ -18,32 +18,31 @@ class ReminderController extends Controller
 {
     public function sendEmail(ReminderRequest $request)
     {
-//        $users = null;
-//        if ($request->type == 0) {
-//
-//            $users = $request->selected == null? Driver::query() : Driver::whereIn('id', $request->selected)->get();
-//
-//        } elseif ($request->type == 1) {
-//
-//            $users = $request->selected == null? Guides::query() : Guides::whereIn('id', $request->selected)->get();
-//
-//        } else {
-//            $users = Tourist::query();
-//        }
+        $users = null;
+        if ($request->type == 0) {
 
-        $user = MursheedUser::where('email','megoghazy55@gmail.com')->first();
-        $otp = 452;
+            $users = $request->selected == null? Driver::query() : Driver::whereIn('id', $request->selected)->get();
 
-        $user->notify(new SendReminder($request->subject, $request->body));
+        } elseif ($request->type == 1) {
+
+            $users = $request->selected == null? Guides::query() : Guides::whereIn('id', $request->selected)->get();
+
+        } else {
+            $users = Tourist::query();
+        }
+
+//        $user = MursheedUser::where('email','megoghazy55@gmail.com')->first();
+//
+//        $user->notify(new SendReminder($request->subject, $request->body));
 
 //        $job = new SendMailJob($users, $request->subject, $request->body);
 //        if ($job){
 //            return response(['message' => 'success', 'status' => 200]);
 //        }
-//        $users->chunk(30,function ($user)use ($request){
-//            $job = new SendMailJob($user, $request->subject, $request->body);
-//            dispatch($job);
-//        });
+        $users->chunk(10,function ($user)use ($request){
+            $job = new SendMailJob($user, $request->subject, $request->body);
+            dispatch($job);
+        });
 
         return response(['message' => 'success', 'status' => 200]);
 

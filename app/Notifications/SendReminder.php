@@ -41,24 +41,7 @@ class SendReminder extends Notification
             ->from('mursheed@visualinnvate.com')
             ->subject($this->subject)
             ->greeting('Hello ' . $notifiable->name)
-            ->view('Email.ReminderEmail', ['body' => $this->body]); // Pass the $body variable to the view
-//            ->line($this->body)
-//            ->html($this->body);
-
-//        $email = (new MailMessage)
-//            ->from('mursheed@visualinnovate.com')
-//            ->subject($this->subject)
-//            ->greeting('Hello ' . $notifiable->name);
-//
-//        // Add HTML content with images
-//        $email->line(function ($message) {
-//            $message->html($this->body, ['mime' => 'text/html']);
-//        });
-//
-//        // You can also add a plain text version of your email
-////        $email->line(strip_tags($this->body));
-//
-//        return $email;
+            ->view('Email.ReminderEmail', ['body' => $this->body]);
     }
 
     /**
