@@ -39,10 +39,14 @@ class ReminderController extends Controller
 //        if ($job){
 //            return response(['message' => 'success', 'status' => 200]);
 //        }
-        $users->chunk(10,function ($user)use ($request){
-            $job = new SendMailJob($user, $request->subject, $request->body);
-            dispatch($job);
-        });
+//        $users->chunk(10,function ($user)use ($request){
+//            $job = new SendMailJob($user, $request->subject, $request->body);
+//            dispatch($job);
+//        });
+
+        $job = new SendMailJob($users, $request->subject, $request->body);
+        $job->dispatch();
+
 
         return response(['message' => 'success', 'status' => 200]);
 
