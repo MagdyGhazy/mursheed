@@ -33,6 +33,8 @@ class ReminderController extends Controller
             'body' => $request->body
         ]);
 
+        $attachment = null;
+        
         if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
             $attachment = $bodyMail->addMediaFromRequest('attachment')->toMediaCollection('mail_image');
         }
