@@ -57,16 +57,19 @@ class OfferController extends Controller
         $offer->status = $request->status;
         $offer->price = $request->price;
         $offer->lang = $request->lang;
+        //Adding the number is automatic
         $offer->number = 'MUR|' . Str::random(10);
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $offer->addMediaFromRequest('images')->toMediaCollection('offer');
         }
 
+        //After the saving process, the ID is added to the number
         if ($offer->save()) {
             $offer->number .= '|' . $offer->id;
             $offer->save();
 
+            //get data after saving
             $data = Offer::where('id', $offer->id)->with('media')->first();
 
             return response([
@@ -95,6 +98,7 @@ class OfferController extends Controller
         $validated = $request->validated();
         $offer = Offer::with('media')->find($id);
 
+        // check if have  offer 
         if (!$offer) {
             return response([
                 "data" => null,
@@ -103,15 +107,18 @@ class OfferController extends Controller
             ], 404);
         }
 
+        // Save a New Data
         $offer->title = $request->title;
         $offer->status = $request->status;
         $offer->price = $request->price;
         $offer->lang = $request->lang;
         $offer->save();
 
+        // clear image only
         $offer->clearMediaCollection('offer');
         $offer->addMediaFromRequest('images')->toMediaCollection('offer');
 
+        // Get Image With Media From id
         $mediaUrls = $offer->getMedia('offer')->map(function ($media) {
             return $media->getUrl();
         });
