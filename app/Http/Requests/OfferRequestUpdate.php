@@ -28,7 +28,7 @@ class OfferRequestUpdate extends FormRequest
     public function rules(): array
     {
         return [
-            'number'=>"required|string",
+            // 'number'=>"required|string",
             'title'=>"required",
             'price'=>'required',
             'status'=>'required',
