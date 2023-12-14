@@ -104,8 +104,9 @@ class TicketServices
 
     }
 
-    public function userTickets($UserId)
+    public function userTickets()
     {
+        $UserId = auth()->user()->id;
 
         $ticket = Ticket::where('user_id',$UserId)->get()
             ->makeHidden(['created_at', 'updated_at'])
