@@ -174,20 +174,25 @@ class OrderController extends Controller
       public function profiteCost()
     {
         $user = Auth::user()->user_id;
-
+        $newdata = [];
         $orderData = Order::where('user_id', $user)
-            ->where('status', "1")->with('orderDetails')->get()
-            ->map(function ($orderData) {
-                $details = $orderData['orderDetails'];
-                foreach ($details as $detail) {
-                    $newdata = 0;
-                    $newdata = $newdata + $detail->price_city;
-                }
-                return $newdata;
-            })
-            ->toArray();
+            ->where('status', "1")->get();
+        foreach ($orderData as $order) {
+            $newdata[] = $order->sub_total;
+        }
+//        ;
+//            ->map(function ($orderDatas) {
+//
+//                foreach ($orderDatas as $orderData) {
+//                    $newdata = 0;
+//                    $newdata = $newdata + $orderData->sub_total;
+//                }
+//                return $newdata;
+//            })
+//            ->toArray();
         return response()->json([
-            'sumOrder' => array_sum($orderData)
+//            'sumOrder' => array_sum($orderData)
+            'sumOrder' => array_sum($newdata)
         ]);
     }
 }
