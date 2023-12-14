@@ -51,26 +51,24 @@ class OfferController extends Controller
     {
         $validated = $request->validated();
         $fillableData = $request->except('images');
-        $fillableData['number'] = 'MUR|'. Str::random(10);
-        
+
         $offer = new Offer();
-        $offer->number = $fillableData['number'];
         $offer->title = $request->title;
         $offer->status = $request->status;
         $offer->price = $request->price;
         $offer->lang = $request->lang;
-        
-        $offer->save();
-        
-        
+        $offer->number = 'MUR|' . Str::random(10);
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $offer->addMediaFromRequest('images')->toMediaCollection('offer');
         }
 
-        $data = Offer::where('id', $offer->id)->with('media')->first();
+        if ($offer->save()) {
+            $offer->number .= '|' . $offer->id;
+            $offer->save();
 
-        if ($offer) {
+            $data = Offer::where('id', $offer->id)->with('media')->first();
+
             return response([
                 "message" => "Success",
                 'data' => $data,
@@ -105,13 +103,10 @@ class OfferController extends Controller
             ], 404);
         }
 
-        $fillableData['number'] = 'MUR|'. Str::random(10);
-        $offer->number = $fillableData['number'];
         $offer->title = $request->title;
         $offer->status = $request->status;
         $offer->price = $request->price;
         $offer->lang = $request->lang;
-    
         $offer->save();
 
         $offer->clearMediaCollection('offer');
@@ -130,6 +125,7 @@ class OfferController extends Controller
             "status" => true,
         ], 200);
     }
+
 
 
 
