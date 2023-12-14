@@ -38,7 +38,7 @@ class ReminderController extends Controller
         if($request->hasFile('attachment') && $request->file('attachment')->isValid()){
             $attachment= $bodyMail->addMediaFromRequest('attachment')->toMediaCollection('mail_image');
         }
-     
+    
 //        $attachment = $request->has('attachment')? $request->attachment: null;
 
 //        $user = MursheedUser::where('email','megoghazy55@gmail.com')->first();
