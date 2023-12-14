@@ -180,19 +180,8 @@ class OrderController extends Controller
         foreach ($orderData as $order) {
             $newdata[] = $order->sub_total;
         }
-//        ;
-//            ->map(function ($orderDatas) {
-//
-//                foreach ($orderDatas as $orderData) {
-//                    $newdata = 0;
-//                    $newdata = $newdata + $orderData->sub_total;
-//                }
-//                return $newdata;
-//            })
-//            ->toArray();
         return response()->json([
-//            'sumOrder' => array_sum($orderData)
-            'sumOrder' => array_sum($newdata)
+            'sumOrder' => round(array_sum($newdata),2)
         ]);
     }
 }

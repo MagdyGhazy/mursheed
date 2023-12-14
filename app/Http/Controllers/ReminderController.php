@@ -18,17 +18,17 @@ class ReminderController extends Controller
 {
     public function sendEmail(ReminderRequest $request)
     {
-        $users = null;
+//        $users = null;
         if ($request->type == 0) {
 
-            $users = $request->selected == null? Driver::query() : Driver::whereIn('id', $request->selected)->get();
+            $users = $request->selected == [null]? Driver::all() : Driver::whereIn('id', $request->selected)->get();
 
         } elseif ($request->type == 1) {
 
-            $users = $request->selected == null? Guides::query() : Guides::whereIn('id', $request->selected)->get();
+            $users = $request->selected == [null]? Guides::all() : Guides::whereIn('id', $request->selected)->get();
 
         } else {
-            $users = Tourist::query();
+            $users = Tourist::all();
         }
 
 //        $user = MursheedUser::where('email','megoghazy55@gmail.com')->first();
