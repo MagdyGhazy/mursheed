@@ -20,11 +20,13 @@ class SendMailJob implements ShouldQueue
     protected $users;
     protected $subject;
     protected $body;
-    public function __construct($users , $subject , $body)
+    protected $attachment;
+    public function __construct($users , $subject , $body,$attachment)
     {
         $this->users = $users;
         $this->subject = $subject;
         $this->body = $body;
+        $this->attachment = $attachment;
     }
 
     /**
@@ -35,7 +37,7 @@ class SendMailJob implements ShouldQueue
 
         foreach ($this->users as $user )
         {
-            $user->notify(new SendReminder($this->subject, $this->body));
+            $user->notify(new SendReminder($this->subject, $this->body, $this->attachment));
         }
 
     }

@@ -31,6 +31,13 @@ class ReminderController extends Controller
             $users = Tourist::all();
         }
 
+        if($request->hasFile('image') && $request->file('image')->isValid()){
+            $users->addMediaFromRequest('image')->toMediaCollection('images');
+        }
+
+
+//        $attachment = $request->has('attachment')? $request->attachment: null;
+
 //        $user = MursheedUser::where('email','megoghazy55@gmail.com')->first();
 //
 //        $user->notify(new SendReminder($request->subject, $request->body));
@@ -44,9 +51,11 @@ class ReminderController extends Controller
 //            dispatch($job);
 //        });
 
-        SendMailJob::dispatch($users, $request->subject, $request->body);
-
-
+//        foreach ($users as $user )
+//        {
+//            $user->notify(new SendReminder($request->subject, $request->body));
+//        }
+        SendMailJob::dispatch($users, $request->subject, $request->body, $attachment);
 
         return response(['message' => 'success', 'status' => 200]);
 

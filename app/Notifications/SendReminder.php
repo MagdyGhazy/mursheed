@@ -16,10 +16,12 @@ class SendReminder extends Notification
      */
     protected $body;
     protected $subject;
-    public function __construct($subject,$body)
+    protected $attachment;
+    public function __construct($subject,$body,$attachment)
     {
         $this->body =$body;
         $this->subject  =$subject;
+        $this->attachment  =$attachment;
     }
 
     /**
@@ -37,11 +39,16 @@ class SendReminder extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        $mailMessage  = (new MailMessage)
             ->from('mursheed@visualinnvate.com')
             ->subject($this->subject)
             ->greeting('Hello ' . $notifiable->name)
             ->view('Email.ReminderEmail', ['body' => $this->body]);
+        if ($this->attachment != null) {
+            // Add attachment to the email
+            $mailMessage->attach($this->attachment);
+        }
+        return $mailMessage;
     }
 
     /**
