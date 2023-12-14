@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\ControllerHandler;
-use App\Http\Requests\OfferRequest;
-use App\Http\Requests\OfferRequestUpdate;
 use App\Models\Offer;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Requests\OfferRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\OfferRequestUpdate;
+use App\Http\Controllers\ControllerHandler;
 
 class OfferController extends Controller
 {
@@ -49,7 +50,19 @@ class OfferController extends Controller
     public function store(OfferRequest $request)
     {
         $validated = $request->validated();
-        $offer = Offer::create($request->except('images'));
+        $fillableData = $request->except('images');
+        $fillableData['number'] = 'MUR|'. Str::random(10);
+        
+        $offer = new Offer();
+        $offer->number = $fillableData['number'];
+        $offer->title = $request->title;
+        $offer->status = $request->status;
+        $offer->price = $request->price;
+        $offer->lang = $request->lang;
+        
+        $offer->save();
+        
+        
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $offer->addMediaFromRequest('images')->toMediaCollection('offer');
@@ -92,13 +105,14 @@ class OfferController extends Controller
             ], 404);
         }
 
-        $offer->update([
-            'number' => $request->number,
-            'title' => $request->title,
-            'status' => $request->status,
-            'price' => $request->price,
-            'lang' => $request->lang,
-        ]);
+        $fillableData['number'] = 'MUR|'. Str::random(10);
+        $offer->number = $fillableData['number'];
+        $offer->title = $request->title;
+        $offer->status = $request->status;
+        $offer->price = $request->price;
+        $offer->lang = $request->lang;
+    
+        $offer->save();
 
         $offer->clearMediaCollection('offer');
         $offer->addMediaFromRequest('images')->toMediaCollection('offer');

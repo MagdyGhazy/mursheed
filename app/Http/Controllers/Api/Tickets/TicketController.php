@@ -29,9 +29,9 @@ class TicketController extends Controller
         return $this->ticketServices->show($id);
     }
 
-    public function userTickets($UserId)
+    public function userTickets()
     {
-        return $this->ticketServices->userTickets($UserId);
+        return $this->ticketServices->userTickets();
     }
 
     public function store(StoreTicketRequest $request)
