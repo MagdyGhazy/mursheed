@@ -50,15 +50,18 @@ class ReminderController extends Controller
         //            return response(['message' => 'success', 'status' => 200]);
         //        }
         //        $users->chunk(10,function ($user)use ($request){
-        //            $job = new SendMailJob($user, $request->subject, $request->body);
-        //            dispatch($job);
+//                    $job = new SendMailJob($user, $request->subject, $request->body);
+//                    dispatch($job);
         //        });
 
         //        foreach ($users as $user )
         //        {
         //            $user->notify(new SendReminder($request->subject, $request->body));
         //        }
-        SendMailJob::dispatch($users, $request->subject, $request->body, $attachment);
+//        SendMailJob::dispatch($users, $request->subject, $request->body, $attachment);
+        
+        $job = new SendMailJob($users, $request->subject, $request->body, $attachment);
+        dispatch($job);
 
         return response(['message' => 'success', 'status' => 200]);
     }
