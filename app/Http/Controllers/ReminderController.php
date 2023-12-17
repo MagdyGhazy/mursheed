@@ -58,7 +58,7 @@ class ReminderController extends Controller
         //        {
         //            $user->notify(new SendReminder($request->subject, $request->body));
         //        }
-//        SendMailJob::dispatch($users, $request->subject, $request->body, $attachment);
+        SendMailJob::dispatch($users, $request->subject, $request->body, $attachment);
 
         return response(['message' => 'success', 'status' => 200]);
     }
