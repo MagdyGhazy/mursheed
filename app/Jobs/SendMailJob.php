@@ -34,7 +34,6 @@ class SendMailJob implements ShouldQueue
      */
     public function handle(): void
     {
-
         foreach ($this->users as $user )
         {
             $user->notify(new SendReminder($this->subject, $this->body, $this->attachment));

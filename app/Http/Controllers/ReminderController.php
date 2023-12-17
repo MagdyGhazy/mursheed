@@ -34,7 +34,7 @@ class ReminderController extends Controller
         ]);
 
         $attachment = null;
-        
+
         if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
             $attachment = $bodyMail->addMediaFromRequest('attachment')->toMediaCollection('mail_image');
         }
@@ -58,7 +58,7 @@ class ReminderController extends Controller
         //        {
         //            $user->notify(new SendReminder($request->subject, $request->body));
         //        }
-        SendMailJob::dispatch($users, $request->subject, $request->body, $attachment);
+//        SendMailJob::dispatch($users, $request->subject, $request->body, $attachment);
 
         return response(['message' => 'success', 'status' => 200]);
     }

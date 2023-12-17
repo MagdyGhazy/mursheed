@@ -98,9 +98,9 @@ class OrderController extends Controller
 
         return response([
             'status' =>  'success',
-            'vendor' =>  $order_info->vendor[0],
-            'userType' =>  $order_info,
-            'order' =>  $order_info->orderDetails,
+//            'vendor' =>  $order_info->vendor,
+            'order' =>  $order_info,
+//            'orderDetails' =>  $order_info->orderDetails,
             'country_price' => CountryPrice::where('country_id',$order_info['country_id'])->first(),
             'total_cost' => $order_info['cost'],
             'start_date' => $order_info['start_date'],
