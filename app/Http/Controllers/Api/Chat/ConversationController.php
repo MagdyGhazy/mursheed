@@ -45,11 +45,11 @@ class ConversationController extends Controller
         $messages = $conversation->Message->toArray();
         $replies = $conversation->Replies->toArray();
 
-        foreach ($messages as $message) {
+        foreach ($messages as &$message) {
             $message['table_name'] = 'messages';
         }
 
-        foreach ($replies as $reply) {
+        foreach ($replies as &$reply) {
             $reply['table_name'] = 'replies';
         }
 
