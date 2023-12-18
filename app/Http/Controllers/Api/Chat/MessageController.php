@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\Chat;
 
 use Throwable;
+use App\Models\Replay;
 use App\Models\Message;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use App\Events\ReplayCreated;
 use App\Events\MessageCreated;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -49,16 +51,20 @@ class MessageController extends Controller
         try {
             $conversation = Conversation::create();
 
-            $message = Message::create(
-                [
-                    'content' => $request['content'],
-                    'user_id' => auth()->user()->id,
-                    'conversation_id' => $conversation->id,
-                ]
-            );
+            // Auth replay user
+            $userId = auth()->user()->id;
+
+            $message = Message::create([
+                'content' => $request['content'],
+                'user_id' => auth()->user()->id,
+                'conversation_id' => $conversation->id,
+            ]);
 
             DB::commit();
             broadcast(new MessageCreated($message));
+
+            //Call the automatic response function
+            $this->createAutomaticReply($conversation,$userId);
 
             return response([
                 "data" => $message,
@@ -70,6 +76,18 @@ class MessageController extends Controller
             DB::rollBack();
             throw $e;
         }
+    }
+
+    //Sending an automatic response when the user sends the first message
+    private function createAutomaticReply($conversation, $userId)
+    {
+        $automaticReplyContent = "مرحبا سيتم الرد علي رسالتك قريبا";
+        $automaticReply=Replay::create([
+            'content' => $automaticReplyContent,
+            'user_id' => $userId,
+            'conversation_id' => $conversation->id,
+        ]);
+        broadcast(new ReplayCreated($automaticReply));
     }
 
 
